@@ -1,0 +1,123 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{subfig}
+\renewcommand{\figurename}{Fig.}
+\renewcommand*{\figureautorefname}{Fig.}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{placeins}
+\usepackage{color}
+\usepackage{array}
+\usepackage{cancel}
+\usepackage[margin=1in]{geometry}
+%\usepackage[left=1.5in, right=1.5in]{geometry}
+
+\usepackage[nameinlink,noabbrev]{cleveref}
+\crefname{equation}{eq.}{eqs.} % force abbreviated forms for equation "names"
+\Crefname{equation}{Eq.}{Eqs.}
+\crefname{figure}{fig.}{figs.}
+\Crefname{Figure}{Fig.}{Figs.}
+
+
+%\usepackage{cmbright}
+%\renewcommand{\familydefault}{\sfdefault}
+
+\newcommand{\diff}{\mathrm{d}}
+\newcommand{\V}[1]{\boldsymbol{#1}}
+\newcommand{\B}[1]{\mathbf{#1}}
+\newcommand{\myhat}[2]{\hat{#1}_{#2}}
+\renewcommand*\arraystretch{1.5}
+\renewcommand{\div}[1]{\nabla_{#1} \cdot}
+\newcommand{\lapl}{\nabla^2}
+\newcommand{\grad}[1]{\nabla_{#1}}
+\newcommand{\curl}{\nabla \times}
+\newcommand{\Tr}{\mathrm{Tr}}
+\newcommand{\op}[1]{\mathcal{#1}}
+
+
+\DeclareMathAlphabet\mathbfcal{OMS}{cmsy}{b}{n}
+
+
+\title{Phase-field modeling of binary alloy solidification with coupled heat and solute diffusion}
+\author{Yuanxun Bao}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Model}
+
+We consider a phase-field model for simulating quantitatively microstructural pattern formation in solidification of dilute binary alloys with coupled heat and solute diffusion. 
+\begin{align}
+\tau A^2(\theta) \frac{\partial \phi}{\partial t}  & =   W^2  \left\{ \div{} (A^2(\theta) \grad{} \phi) - \partial_x [ A(\theta) A'(\theta) \partial_y \phi ] + \partial_y [A(\theta) A'(\theta) \partial_x \phi ] \right\}, \\
+ &  + \phi - \phi^3  - \lambda g'(\phi) \left( e^{u} - \frac{T-T_M}{m c_{\infty}} \right),  \nonumber \\
+ \frac{\partial c}{\partial t }  & = \div{} [ D_l q(\phi) c \grad{} u - \vec{j}_{at} ], \\
+ \frac{\partial T}{\partial t} &= \div{} (\kappa(\phi) \grad{} T) + \frac{1}{2} \frac{\partial \phi}{\partial t},
+\end{align}
+where 
+\begin{align}
+ u &= \ln \left(  \frac{2c/c_{\infty}}{1+k-(1-k) \phi } \right), \\
+ q(\phi) &= \frac{1-\phi}{1+k - (1-k)\phi}, \\ 
+ \vec{j}_{at} &= -\frac{c_{\infty}(1-k)W}{2\sqrt{2}} e^{u} \frac{\partial \phi}{ \partial t} \frac{\grad{} \phi}{|\grad{} \phi|}, \\
+ \kappa(\phi) & = k_l  \frac{1-h(\phi)}{2} + k_s \frac{1+h(\phi)}{2},
+\end{align}
+where $h(\phi)$ is a monotonously increasing function of $\phi$ with $h(\pm 1) = \pm 1$, with $\phi = 1$ ($\phi = -1$) corresponding to solid (liquid). To model anisotropic growth of dendrites, we employ the function $A(\theta) = 1 + \epsilon \cos ( 4 \theta )$, where $\theta = \arctan(\phi_y / \phi_x)$.
+
+
+\section{Numerical Discretization}
+We use an equispaced grid in two spatial dimensions with $(x_i, y_j) = ( i \Delta x, j \Delta y)$, $\Delta x = \Delta y = L/N$ and $i,j = 0, \dots, N$. We define the quantities
+\begin{align}
+P & \equiv A^2(\theta)\phi_x - A(\theta) A'(\theta) \phi_y, \\ 
+Q & \equiv A^2(\theta)\phi_y + A(\theta) A'(\theta) \phi_x,
+\end{align}
+and apply the standard finite difference method to discretize the phase-field equation
+\begin{align}
+\phi^{n+1}_{i,j} & = \phi^n_{i,j} \nonumber  \\ 
+& + \frac{\Delta \bar{t}}{A^2(\theta_{i,j})}  \left\{ 
+ \frac{1}{\Delta \bar{x}} \left(P_{i+\frac{1}{2},j} - P_{i-\frac{1}{2},j} \right) +   
+  \frac{1}{\Delta \bar{x}} \left(Q_{i, j+ \frac{1}{2}} - Q_{i, j-\frac{1}{2}} \right)  \right\} \\
+& + \phi_{i,j} - \phi_{i,j}^3  + q(\phi_{i,j}, c_{i,j}, T_{i,j}) \nonumber,
+\end{align}
+where
+\begin{align}
+(\phi_x)_{i+\frac{1}{2},j} &= \frac{\phi_{i+1,j} - \phi_{i,j}}{\Delta \bar{x}}, \\
+(\phi_y)_{i+\frac{1}{2},j} &= \frac{1}{4\Delta \bar{x}} (\phi_{i,j}+\phi_{i+1,j}+\phi_{i,j+1}+\phi_{i+1,j+1}) - \frac{1}{4\Delta \bar{x}} (\phi_{i,j}+\phi_{i,j-1}+\phi_{i+1,j}+\phi_{i+1,j-1}),
+\end{align}
+and the values $(\phi_y)_{i,j+\frac{1}{2}}$ and $(\phi_x)_{i,j+\frac{1}{2}}$ are defined in a similar way.  We also need to evaluate $A(\theta)$ and $A'(\theta)$  in terms of $\phi_x$ and $\phi_y$. After some algebraic manipulation using trigonometric identities, we obtain
+\begin{align}
+A(\theta) & \equiv A[\phi] = 1 - 3\epsilon + 4 \epsilon \left(  \phi_x^4 + \phi_y^4  \right) / (\phi_x^2 + \phi_y^2)^2, \\
+A'(\theta) & \equiv A'[\phi]= -16 \epsilon \phi_x \phi_y (\phi_x^2 - \phi_y^2) / (\phi_x^2 + \phi_y^2)^2.
+\end{align}
+The concentration equation can be efficiently discretized using a finite volume method
+\begin{equation}
+c^{n+1}_{i,j} = c^n_{i,j} - \frac{\Delta \bar{t}}{\Delta \bar{x}} \{ (\op{J}_R^n - \op{J}_L^n) + (\op{J}_T^n - \op{J}_B^n)\}
+\end{equation}
+where it is assumed $\Delta x = \Delta y$, and the term $\op{J}^n_R \equiv \op{J} \cdot \vec{i}$ denotes the normal component of the flux on the right edge of the finite volume box, where $\op{J}$ is given by 
+\begin{equation}
+\op{J} = -D_L q(\phi) c  \grad{} u - \vec{j}_{at}.
+\end{equation} 
+Taking the right edge of the finite volume box as an example, the quantities that enter $\op{J}_R^n$ are evaluated at $(x_{i+1/2},y_j)$ as follows:
+\begin{align}
+q(\phi^n_{i+1/2,j}) c^n_{i+1/2,j} &= q\left( \frac{\phi^n_{i+1,j} + \phi^n_{i,j}}{2} \right) \times \left( \frac{c^n_{i+1,j} + c^n_{i,j}}{2} \right), \\
+\grad{} u \cdot \hat{i} \left|_{i+1/2,j} \right. =(u_x)_{i+1/2,j} &= \frac{e^u_{i+1,j} - e^u_{i,j}}{\Delta \bar{x} (e^u_{i+1,j}+e^u_{i,j})/2}, \\
+\left[ e^u \frac{\partial \phi}{\partial t} \right]_{i+1/2,j}^{n+1} &= \left( \frac{e^{u(\phi^n_{i+1,j}, c^n_{i+1,j})} + e^{u(\phi^n_{i,j}, c^n_{i,j})} }{2} \right) \times  \left( \frac{\partial_t \phi^{n+1}_{i+1,j} + \partial_t \phi^{n+1}_{i,j}}{2} \right), \\
+\frac{\partial \phi^n}{\partial x} \bigg|_{i+1/2,j}  &= \frac{\phi^n_{i+1,j}- \phi^n_{i,j}}{\Delta x} , \\
+\frac{\partial \phi^n}{\partial y} \bigg|_{i+1/2,j}  &= \frac{\phi_{i,j+1}+\phi_{i+1,j+1} - (\phi_{i,j-1} + \phi_{i+1,j-1}) }{2(2\Delta y)} , \\
+\hat{n}_x^R &= \frac{\frac{\partial \phi^n}{\partial x} \bigg|_{i+1/2,j}  }{ \left\{  \left( \frac{\partial \phi^n}{\partial x} |_{i+1/2,j} \right)^2  + \left( \frac{\partial \phi^n}{\partial y} |_{i+1/2,j} \right)^2 \right\}^{1/2} }.
+\end{align}
+
+
+% \bibliographystyle{unsrt}
+% \bibliography{../library.bib}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
