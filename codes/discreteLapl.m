@@ -1,24 +1,25 @@
 % 2D discrete Laplacian on a regular grid with Dir BC
-nx = 10;
+% ref: https://en.wikipedia.org/wiki/Kronecker_sum_of_discrete_Laplacians
+nx = 50;
 ex = ones(nx,1);
 Dxx = spdiags([-ex 2*ex -ex],[-1 0 1], nx, nx);
 Ix = speye(nx); % sparse identity
 
-ny = 20;
+ny = 10;
 ey = ones(ny,1);
 Dyy = spdiags([-ey 2*ey -ey], [-1 0 1], ny, ny);
 Iy = speye(ny);
 
-% row ordering
-Lrow = kron(Dxx, Iy) + kron(Ix,Dyy);
+% col ordering
+Lcol = kron(Dxx, Iy) + kron(Ix,Dyy);
 
-% column ordering
-Lcol= kron(Dyy, Ix) + kron(Iy,Dxx);
+% row ordering
+Lrow= kron(Dyy, Ix) + kron(Iy,Dxx);
 
 % several method for reordering.
-p1 = dissect(Lcol);
-p2 = amd(Lcol);
-p3 = symrcm(Lcol);
+p1 = dissect(Lrow);
+p2 = amd(Lrow);
+p3 = symrcm(Lrow);
 
 
 figure(1)
@@ -31,43 +32,34 @@ title('chol. factorization')
 
 figure(2)
 subplot(121)
-spy(chol(Lcol))
+spy(Lcol)
 title('col. ordering')
 subplot(122)
-spy(L2)
+spy(chol(Lcol))
 title('chol. factorization')
 
 figure(3)
 subplot(121)
-spy(Lcol(p,p))
-title('tested dissection')
+spy(Lrow(p1,p1))
+title('nested dissection')
 subplot(122)
-spy(chol(Lcol(p,p)))
+spy(chol(Lrow(p1,p1)))
 title('chol. factorization')
 
 figure(4)
 subplot(121)
-spy(Lcol(p1,p1))
-title('nested dissection')
+spy(Lrow(p2,p2))
+title('Approximate Minimum Degree')
 subplot(122)
-spy(chol(Lcol(p1,p1)))
+spy(chol(Lrow(p2,p2)))
 title('chol. factorization')
-
 
 figure(5)
 subplot(121)
-spy(Lcol(p2,p2))
-title('Approximate Minimum Degree')
-subplot(122)
-spy(chol(Lcol(p2,p2)))
-title('chol. factorization')
-
-figure(6)
-subplot(121)
-spy(Lcol(p3,p3))
+spy(Lrow(p3,p3))
 title('Reverse Cuthill-McKee')
 subplot(122)
-spy(chol(Lcol(p3,p3)))
+spy(chol(Lrow(p3,p3)))
 title('chol. factorization')
 
 
