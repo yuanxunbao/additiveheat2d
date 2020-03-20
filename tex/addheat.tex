@@ -39,7 +39,7 @@
 \newcommand{\op}[1]{\mathcal{#1}}
 
 \newcommand{\yxb}[1]{  {\bf \color{red}{ Bao: #1}} }
-
+\newcommand{\ygq}[1]{  {\bf \color{blue}{ Qin: #1}} }
 
 \DeclareMathAlphabet\mathbfcal{OMS}{cmsy}{b}{n}
 
@@ -60,12 +60,22 @@ We model the macroscopic heat transfer in the rectangular domain $\Omega$
 \begin{equation}
 \frac{\partial T}{ \partial t} = \div{} ( K \grad{} T) + L_m \frac{\partial f_l(T)}{\partial t} \quad \text{in }  \Omega
 \end{equation}
+\ygq{1. From one paper you gave me, I think the equation is following, could you check? I am not sure about the sign of $f_l$}
+\begin{equation}
+\frac{\partial \rho c_{p} T}{ \partial t} = \div{} ( K \grad{} T) -\frac{\partial \rho L  f_l(T)}{\partial t} \quad \text{in }  \Omega
+\end{equation}
+\begin{equation}
+\frac{\partial T}{ \partial t} = \alpha \Delta T - \frac{L}{c_p}\frac{\partial   f_l(T)}{\partial t} \quad \text{in }  \Omega
+\end{equation}
+where $\alpha$ is thermal diffusivity
+
 with boundary conditions 
 \begin{align}
 (-K \grad{} T) \cdot \hat{n} = q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
+\ygq{2. negative\ sign\ of \ qs}(-K \grad{} T) \cdot \hat{n} = - q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\ 
 (-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
 \end{align}
-where $K$ is the heat conductivity, $L_m$ is the latent heat, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
+where $K$ is the heat conductivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
 \begin{equation}
 f_l(T) =
 \left\{
@@ -84,31 +94,59 @@ q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} 
 where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
 
 \section{Discretization}
-We discretize the domain $\Omega$ using $(N + 1) \times (M+1)$ grid with meshwidth $h$. Let $T_{ij}^n=T(ih, jh, t_n )$ for $i=0,\dots,N$ and $j = 0, \dots, M$.
+\ygq{3. Do we need higher order discretization of time?}\\
+We discretize the domain $\Omega$ using $(N+1) \times (M+1)$ grid with meshwidth $h$. Lx = Nh, x = ih.
+Let $T_{ij}^n=T(ih, jh, t_n )$ for $i=0,\dots,N$ and $j = 0, \dots, M$.
 
 \begin{equation}
-\frac{T_{i,j}^n - T_{i,j}^{n-1}}{\Delta t} = K \frac{T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n }{h^2} + L_m \frac{\partial f_l(T) }{\partial t} \bigg|_{t = t_n}
+\frac{T_{i,j}^n - T_{i,j}^{n-1}}{\Delta t} = \alpha \frac{T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n }{h^2} - L_m \frac{\partial f_l(T) }{\partial t} \bigg|_{t = t_n}
 \end{equation}
-At the top boundary $(j=M)$, we treat the convection and radiation term explicitly,
+At the top boundary $(j=0)$, we treat the convection and radiation term explicitly,
 \begin{equation}
--K \frac{T_{i, M+1}^n - T_{i,M-1}^n}{2h} = q_s (ih, t_n) + h (T^{n-1}_{i,M} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,M})^4 - T_e^4), \ i = 0 , \dots , N
+-K \frac{T_{i, -1}^n - T_{i,1}^n}{2h} = -q_s (ih, t_n) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4), \ i = 0 , \dots , N
 \end{equation}
 
-\yxb{1. Can you fill the details of the other boundaries? Basically, no flux BCs. }
-
-\yxb{2. How do we treat the latent heat term? Implicit or explicit? }
+\begin{equation}
+T_{i, -1}^n = T_{i,1}^n -\frac{2h}{K}\left(-q_s (ih, t_n) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right)=T_{i,1}^n+U_i^{n-1}, \ i = 0 , \dots , N
+\end{equation}
+Bottom boundaries:
+\begin{align}
+T_{i, M+1}^n =T_{i,M-1}^n, \ i = 0 , \dots , N\\
+T_{-1, j}^n =T_{1,j}^n, \ j = 0 , \dots ,M\\
+T_{N-1, j}^n =T_{N+1,j}^n, \ j = 0 , \dots ,M
+\end{align}
 
 Eventually, the linear system of equation should look like 
 \begin{equation}
-(\B{I} - \alpha \B{L} ) \B{T}^n - \B{N} (\B{T}^n) = \B{T}^{n-1} + \text{BC terms}
+(\B{I} - C\B{L} ) \B{T}^n - \B{N} (\B{T}^n) = \B{T}^{n-1} + \text{BC terms}
 \end{equation}
-where $\B{L}$ is the discrete 2D laplacian with Neumann BCs and $\B{N}$ is a nonlinear function due the implicit treatment of latent heat term. If we treat the latent heat term explicitly, we need two starting values initially. 
+where C is CFL number, $\B{L}$ is the discrete 2D laplacian with Neumann BCs and $\B{N}$ is a nonlinear function due the implicit treatment of latent heat term. If we treat the latent heat term explicitly, we need two starting values initially. 
 
 \yxb{3. Can you find out what $\B{L}$, $\B{N}$ and BC terms are?}
 
 \yxb{4. I am afraid we have to solve nonlinear system of equation due to the latent heat term.}
 
+\section{Numerical Tests}
 
+\subsection{No latent heat term}
+
+\begin{equation}
+\frac{T_{i,j}^n - T_{i,j}^{n-1}}{\Delta t} = \alpha \frac{T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n }{h^2} 
+\end{equation}
+
+for top boundary (j=0)
+\begin{equation}
+\frac{T_{i,0}^n - T_{i,0}^{n-1}}{\Delta t} = \alpha \frac{T_{i,1}^n + T_{i,-1}^n + T_{i-1,0}^n + T_{i+1,0}^n - 4 T_{i,0}^n }{h^2} =\alpha \frac{2T_{i,1}^n + U_i^{n-1}+ T_{i-1,0}^n + T_{i+1,0}^n - 4 T_{i,0}^n }{h^2} 
+\end{equation}
+\begin{equation}
+ \text{BC terms}=CU_i^{n-1},\ \  j=0,  \ i = 0 , \dots , N
+\end{equation}
+\begin{equation}
+U_i^{n-1}=-\frac{2h}{K}\left(-q_s (ih, t_n) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right), \ i = 0 , \dots , N
+\end{equation}
+\subsection{Explicit latent heat term }
+
+\subsection{Implicit latent heat term }
 % \bibliographystyle{unsrt}
 % \bibliography{../library.bib}
 
