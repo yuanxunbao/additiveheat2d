@@ -25,8 +25,18 @@ def Up_boundary(t,h,Tu):
     
     return -2*h/p.K*( -qs + p.hc*(Tu-p.Te) + p.epsilon*p.sigma*(Tu**4-p.Te**4) )
 
-
-
+def imex_latent(y):
+    
+    down = y>p.Ts
+    up = y<p.Tl
+    
+    y_l = y*down*up
+    ind = np.ones((nv,1))*down*up
+    ind = np.reshape(ind,(nv))
+    A_l = sp.diags(ind,format='csc')
+    
+    return y_l,A_l
+    
 #====================parameters==========================
 
 p = parameters()
@@ -45,7 +55,10 @@ t=0
 
 C = p.alpha*dt/h**2  #CFL number
 
-save('para.mat',{'nx': nx})
+lat = p.Lm/dt/(p.Tl-p.Ts)
+
+
+#save('para.mat',{'nx': nx})
 
 #=====================Generate matrix========================
 
@@ -65,17 +78,20 @@ Aarr = A.toarray()
 
 #pd =is_pos_def(A.toarray())   #check if A matrix is positive definite 
 # LU decomposition Pr*A*Pc = LU
-lu = la.splu(A)
+# lu = la.splu(A)
 
 
 ##====================Initial condition=========================
 Temp = np.zeros((nv,6))
 
 #T = np.zeros((ny,nx))      # temperature T0
-#T = np.arange(nv).reshape((ny,nx))
+#T0 = np.arange(nv).reshape((ny,nx))
 T0 = 1*np.ones((ny,nx))
 y = np.reshape(T0,(nv,1),order='F')  #T0/y0
 Temp[:,[0]] = y
+
+y_l,A_l=imex_latent(y)
+
 
 plt.imshow(T0,cmap=plt.get_cmap('hot'))
 
@@ -87,15 +103,21 @@ bU[0:-1:ny] = U
 
 #======================time evolusion=======================
 
-for i in range(1000):
+for i in range(200):
     
     # obtain right hand side
-    b = y + C*bU            # b_n-1 from T_n-1 and U_n-1
+    b = y + lat*y_l + C*bU            # b_n-1 from T_n-1 and U_n-1
     
-    # solve linear system Ay=b AT_n = T_n-1 + CU_n-1, A is constant matrix here
+      
+    # solve linear system Ay=b AT_n = T_n-1 + CU_n-1, A is NOT constant matrix here
+    A = A + lat*A_l
+    
+    lu = la.splu(A)
     y = lu.solve(b)        # T_n
     
-   # Sample from T
+    # latent heat
+    y_l,A_l=imex_latent(y)
+    # up boundary condition
     Tu = y[0:-1:ny]
     U = Up_boundary(t,h,Tu)   # U_n
     #plug in right hand
@@ -112,7 +134,7 @@ Tf = np.reshape(y,(ny,nx),order='F')
 #plot
 plt.imshow(Tf,cmap=plt.get_cmap('hsv'))
 
-save('temperature.mat',{'Temp': Temp})
+save('temp_lat.mat',{'Templ': Temp})
 
 
 
