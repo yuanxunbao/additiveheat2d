@@ -36,7 +36,9 @@ def imex_latent(y):
     A_l = sp.diags(ind,format='csc')
     
     return y_l,A_l
-    
+
+
+
 #====================parameters==========================
 
 p = parameters()
@@ -60,7 +62,7 @@ lat = p.Lm/dt/(p.Tl-p.Ts)
 
 #save('para.mat',{'nx': nx})
 
-#=====================Generate matrix========================
+#=====================Generate matrix/solver========================
 
 I = sp.eye(nx*ny,format='csc')
 
@@ -73,13 +75,15 @@ Dyy[0,1]=2; Dyy[-1,-2]=2
 
 L = sp.kronsum(Dyy,Dxx,format='csc')
 
-A = I - C*L
-Aarr = A.toarray()
+A0 = I - C*L
+#Aarr = A.toarray()
 
 #pd =is_pos_def(A.toarray())   #check if A matrix is positive definite 
 # LU decomposition Pr*A*Pc = LU
-# lu = la.splu(A)
+lu = la.splu(A0)
 
+LU_x = lambda x: lu.solve(x)
+pvec = la.LinearOperator((nv, nv), LU_x)
 
 ##====================Initial condition=========================
 Temp = np.zeros((nv,6))
@@ -93,7 +97,7 @@ Temp[:,[0]] = y
 y_l,A_l=imex_latent(y)
 
 
-plt.imshow(T0,cmap=plt.get_cmap('hot'))
+#plt.imshow(T0,cmap=plt.get_cmap('hot'))
 
 Tu = y[0:-1:ny]
 U = Up_boundary(t,h,Tu)          # U0
@@ -103,18 +107,20 @@ bU[0:-1:ny] = U
 
 #======================time evolusion=======================
 
-for i in range(200):
+for i in range(1000):
     
     # obtain right hand side
     b = y + lat*y_l + C*bU            # b_n-1 from T_n-1 and U_n-1
     
       
     # solve linear system Ay=b AT_n = T_n-1 + CU_n-1, A is NOT constant matrix here
-    A = A + lat*A_l
+    A = A0 + lat*A_l
     
-    lu = la.splu(A)
-    y = lu.solve(b)        # T_n
-    
+    A_x = lambda x: A@x
+    mvec = la.LinearOperator((nv, nv), A_x)
+   
+    y,indix = la.gmres(mvec,b,tol=1e-7,M=pvec)        # T_n
+    y=np.reshape(y,((nv,1)))
     # latent heat
     y_l,A_l=imex_latent(y)
     # up boundary condition
@@ -134,7 +140,7 @@ Tf = np.reshape(y,(ny,nx),order='F')
 #plot
 plt.imshow(Tf,cmap=plt.get_cmap('hsv'))
 
-save('temp_lat.mat',{'Templ': Temp})
+save('temp_lat_gmres.mat',{'Templ': Temp})
 
 
 
