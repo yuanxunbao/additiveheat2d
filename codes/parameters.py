@@ -29,9 +29,9 @@ class parameters:
         Te = 0       # environmental temperature
         
         #latent heat
-        L = 0.001
+        L =  40
         Lm = L/Cp
         Ts = 200
-        Tl = 400
+        Tl = 450
      
  
