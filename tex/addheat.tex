@@ -7,6 +7,8 @@
 \renewcommand{\figurename}{Fig.}
 \renewcommand*{\figureautorefname}{Fig.}
 \usepackage{graphicx}
+
+\graphicspath{[./images/]}
 \usepackage{float}
 \usepackage{multirow}
 \usepackage{placeins}
@@ -57,25 +59,19 @@
 \section{Macroscopic model}
 
 We model the macroscopic heat transfer in the rectangular domain $\Omega$
-\begin{equation}
-\frac{\partial T}{ \partial t} = \div{} ( K \grad{} T) + L_m \frac{\partial f_l(T)}{\partial t} \quad \text{in }  \Omega
-\end{equation}
-\ygq{1. From one paper you gave me, I think the equation is following, could you check? I am not sure about the sign of $f_l$}
+
 \begin{equation}
 \frac{\partial \rho c_{p} T}{ \partial t} = \div{} ( K \grad{} T) -\frac{\partial \rho L  f_l(T)}{\partial t} \quad \text{in }  \Omega
 \end{equation}
 \begin{equation}
 \frac{\partial T}{ \partial t} = \alpha \Delta T - \frac{L}{c_p}\frac{\partial   f_l(T)}{\partial t} \quad \text{in }  \Omega
 \end{equation}
-where $\alpha$ is thermal diffusivity
-
 with boundary conditions 
 \begin{align}
-(-K \grad{} T) \cdot \hat{n} = q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
-\ygq{2. negative\ sign\ of \ qs}(-K \grad{} T) \cdot \hat{n} = - q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\ 
+(-K \grad{} T) \cdot \hat{n} = -q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
 (-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
 \end{align}
-where $K$ is the heat conductivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
+where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
 \begin{equation}
 f_l(T) =
 \left\{
@@ -94,7 +90,7 @@ q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} 
 where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
 
 \section{Discretization}
-\ygq{3. Do we need higher order discretization of time?}\\
+
 We discretize the domain $\Omega$ using $(N+1) \times (M+1)$ grid with meshwidth $h$. Lx = Nh, x = ih.
 Let $T_{ij}^n=T(ih, jh, t_n )$ for $i=0,\dots,N$ and $j = 0, \dots, M$.
 
@@ -109,7 +105,7 @@ At the top boundary $(j=0)$, we treat the convection and radiation term explicit
 \begin{equation}
 T_{i, -1}^n = T_{i,1}^n -\frac{2h}{K}\left(-q_s (ih, t_n) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right)=T_{i,1}^n+U_i^{n-1}, \ i = 0 , \dots , N
 \end{equation}
-Bottom boundaries:
+Other boundaries:
 \begin{align}
 T_{i, M+1}^n =T_{i,M-1}^n, \ i = 0 , \dots , N\\
 T_{-1, j}^n =T_{1,j}^n, \ j = 0 , \dots ,M\\
@@ -118,7 +114,7 @@ T_{N-1, j}^n =T_{N+1,j}^n, \ j = 0 , \dots ,M
 
 Eventually, the linear system of equation should look like 
 \begin{equation}
-(\B{I} - C\B{L} ) \B{T}^n - \B{N} (\B{T}^n) = \B{T}^{n-1} + \text{BC terms}
+(\B{I} - C\B{L} ) \B{T}^n + \B{N} (\B{T}^n) = \B{T}^{n-1} +\B{N} (\B{T}^{n-1})+ \text{BC terms}
 \end{equation}
 where C is CFL number, $\B{L}$ is the discrete 2D laplacian with Neumann BCs and $\B{N}$ is a nonlinear function due the implicit treatment of latent heat term. If we treat the latent heat term explicitly, we need two starting values initially. 
 
@@ -142,11 +138,112 @@ for top boundary (j=0)
  \text{BC terms}=CU_i^{n-1},\ \  j=0,  \ i = 0 , \dots , N
 \end{equation}
 \begin{equation}
-U_i^{n-1}=-\frac{2h}{K}\left(-q_s (ih, t_n) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right), \ i = 0 , \dots , N
+U_i^{n-1}=-\frac{2h}{K}\left(-q_s (ih, t_n) + h_c (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right), \ i = 0 , \dots , N
 \end{equation}
-\subsection{Explicit latent heat term }
 
-\subsection{Implicit latent heat term }
+\begin{equation}
+q_s (ih, t_n) =q_0\exp \left( -\frac{ 2(ih-V_s t_n)^2}{ r_b^2} \right)= q_0\exp \left( -\frac{ 2(i-{V_s}^{'} t_n)^2}{{ r_b}^{'2}} \right) , \ i = 0 , \dots , N
+\end{equation}
+\\
+\subsubsection{Test 1}
+Parameters: K = 0.01, $\rho$ = 1.0, $C_p$ = 1.0, Q = 3, $\eta$ = 1, $r_b$ = 0.2, $V_s$ = 0.075. \\
+Up boundary cooling parameters: $h_c$= 0.005, $\epsilon$ = 0.005, $\sigma$ = 5.67E-8, $T_e$ = 0.\\
+Computation domain: $L_x$ = 8, $L_y$ = 2.
+
+
+
+\begin{figure}[!ht]
+     \subfloat[no surface cooling $h_c$= 0, $\epsilon$ = 0\label{subfig-1:nlatnrad}]{%
+       \includegraphics[width=0.45\textwidth]{temp_nlat_nrad.png}
+     }
+     \hfill
+     \subfloat[$h_c$= 0.005, $\epsilon$ = 0.005\label{subfig-2:nlatwrad}]{%
+       \includegraphics[width=0.45\textwidth]{temp_nlat_wrad.png}
+     }
+     \caption{Temperature distribution without latent heat.}
+     \label{fig:nolatent}
+   \end{figure}
+
+\subsubsection{Self Convergence Study (with convection and radiation)}
+
+Ground truth: dt = 0.00625, h = $ L_x/2048 $\\
+Trial: dt = 0.025, 0.1, 0.4, 1.6; h =  $ L_x/1024, L_x/512, L_x/256, L_x/128 $
+
+\begin{figure}[!ht]
+     \subfloat[error \label{subfig-1:dummy}]{%
+       \includegraphics[width=0.45\textwidth]{self_convergence.png}
+     }
+     \hfill
+     \subfloat[convergence order 2.076\label{subfig-2:dummy}]{%
+       \includegraphics[width=0.45\textwidth]{Convergence_order.png}
+     }
+     \caption{Self convergence. }
+     \label{fig:nolat_convergence}
+   \end{figure}
+
+
+\subsection{Latent heat term implicit-explicit}
+Implicit: 
+\begin{equation}
+\frac{\partial   f_l(T)}{\partial t} = \frac{f_l^{n}(T)-f_l^{n-1}(T)}{\Delta t} 
+\end{equation}
+Explicit: 
+\begin{equation}
+f_l^{n}(T) =
+\left\{
+\begin{array}{cc}
+1 & T^{n-1}>T_l \\
+\frac{T^n-T_s}{T_l - T_s} & T_s \leq T^{n-1} \leq T_l \\
+0 & T^{n-1} < T_s
+\end{array}
+\right.
+\end{equation}
+
+\begin{equation}
+f_l^{n-1}(T) =
+\left\{
+\begin{array}{cc}
+1 & T^{n-1}>T_l \\
+\frac{T^{n-1}-T_s}{T_l - T_s} & T_s \leq T^{n-1} \leq T_l \\
+0 & T^{n-1} < T_s
+\end{array}
+\right.
+\end{equation}
+
+
+\begin{equation}
+\text{Latent heat term}=
+\left\{
+\begin{array}{cc}
+0 & T^{n-1}>T_l \\
+-\frac{L_m}{\Delta t}\frac{T^{n}-T^{n-1}}{T_l - T_s} & T_s \leq T^{n-1} \leq T_l \\
+0 & T^{n-1} < T_s
+\end{array}
+\right.
+\end{equation}
+\\
+Test2:\\
+Parameters: $L$=20, $T_s$=40, $T_l$=110
+
+\begin{figure}[!ht]
+     \subfloat[Without latent heat\label{subfig-1:nlat}]{%
+       \includegraphics[width=0.45\textwidth]{temp_nlat_wrad.png}
+     }
+     \hfill
+     \subfloat[With latent heat \label{subfig-2:lat}]{%
+       \includegraphics[width=0.45\textwidth]{latentheat.png}
+     }
+     \caption{Temperature distribution with and without latent heat. Surface cooling is included.}
+     \label{fig:temp}
+   \end{figure}
+
+
+
+
+
+
+
+
 % \bibliographystyle{unsrt}
 % \bibliography{../library.bib}
 
