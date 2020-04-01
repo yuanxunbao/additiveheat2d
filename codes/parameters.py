@@ -10,28 +10,28 @@ class parameters:
    
     
         #bulk condudtion
-        K = 0.007
+        K = 0.01
         rho = 1.0
         Cp = 1.0
         alpha = K/(rho*Cp)
         
         #boundary condition
         #radiation
-        Q = 5        #power    
+        Q = 3        #power    
         eta = 1      # abosorption coefficient
-        rb = 0.15       #radius of heat source
-        Vs = 0.1      #scanning speed
+        rb = 0.2       #radius of heat source
+        Vs = 0.075      #scanning speed
         q0 = 2*Q*eta/(pi*rb**2)   # heat intensity
         
-        hc = 0       # convective heat transfer coefficient
-        epsilon = 1  # thermal radiation coeffcient
-        sigma = 0   # stefan-boltzmann constant
+        hc = 0.005       # convective heat transfer coefficient
+        epsilon = 0.005  # thermal radiation coeffcient
+        sigma = 5.67e-8   # stefan-boltzmann constant
         Te = 0       # environmental temperature
         
         #latent heat
-        L =  40
+        L =  200
         Lm = L/Cp
-        Ts = 200
-        Tl = 450
+        Ts = 40
+        Tl = 110
      
  
