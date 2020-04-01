@@ -170,7 +170,7 @@ Ground truth: dt = 0.00625, h = $ L_x/2048 $\\
 Trial: dt = 0.025, 0.1, 0.4, 1.6; h =  $ L_x/1024, L_x/512, L_x/256, L_x/128 $
 
 \begin{figure}[!ht]
-     \subfloat[error \label{subfig-1:dummy}]{%
+     \subfloat[$L^2$ error \label{subfig-1:dummy}]{%
        \includegraphics[width=0.45\textwidth]{self_convergence.png}
      }
      \hfill
@@ -222,8 +222,8 @@ f_l^{n-1}(T) =
 \right.
 \end{equation}
 \\
-Test2:\\
-Parameters: $L$=20, $T_s$=40, $T_l$=110
+\subsubsection{Test2}
+Parameters: $L$=200, $T_s$=40, $T_l$=110\\
 
 \begin{figure}[!ht]
      \subfloat[Without latent heat\label{subfig-1:nlat}]{%
@@ -238,10 +238,21 @@ Parameters: $L$=20, $T_s$=40, $T_l$=110
    \end{figure}
 
 
-
-
-
-
+\begin{figure}[!ht]
+     \subfloat[$L^2$ error \label{subfig-1:dummy}]{%
+       \includegraphics[width=0.45\textwidth]{self_lat.png}
+     }
+     \hfill
+     \subfloat[convergence order\label{subfig-2:dummy}]{%
+       \includegraphics[width=0.45\textwidth]{convergence_lat.png}
+     }
+     \caption{Self convergence. }
+     \label{fig:nolat_convergence}
+   \end{figure}
+GMRES solver (Tol = 1e-9):\\
+For mesh width h =  $ L_x/1024, L_x/512, L_x/256, L_x/128 $\\
+Iterations per time step without precondtioner: 58, 54, 48, 49, 50\\
+Iterations per time step with precondtioner: 20, 17, 16,...      \ \        but took longer time to run
 
 
 % \bibliographystyle{unsrt}
