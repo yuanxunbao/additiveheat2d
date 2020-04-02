@@ -1,41 +1,42 @@
 set(0,'defaultaxesfontsize',16);
 set(0,'defaultlinelinewidth',2);
 
+odir = '../tex/figures/';
 
 load para.mat;
 
-load latdt0.00625xgrids2049.mat;
-%load nolatnoraddt0.00625xgrids2049.mat;
-%load nolatdt0.00625xgrids2049.mat;
+load latdt0.00625xgrids2049.mat; fname = 'temp_wlat_wrad'; tname = 'w. latent heat/rad/convec';
+% load nolatdt0.00625xgrids2049.mat; fname = 'temp_nlat_wrad'; tname = 'wo. latent heat, w. rad/convec';
+% load nolatnoraddt0.00625xgrids2049.mat; fname = 'temp_nlat_nrad'; tname = 'wo. latent heat/rad/convec';
+
+temp = temp2049;
 
 lx= cast(lx,'double');nxs= cast(nxs,'double');nys= cast(nys,'double');
 x = linspace(0,lx,nxs);
 y = linspace(0,-ly,nys);
 [xx,yy] = meshgrid(x,y);
 
+frames = [11,21, 31, 41, 51];
 
-figure(1)
-subplot(5,1,1);
-surf(xx,yy, reshape(temp2049(:,11),[nys,nxs])); shading interp; colormap gray; 
-view(2); axis equal; axis tight; set(gca,'visible','off')
-c1 = colorbar; c1.Limits = [0 400];
-subplot(5,1,2);
-surf(xx,yy, reshape(temp2049(:,21),[nys,nxs])); shading interp; colormap gray; 
-view(2); axis equal; axis tight; set(gca,'visible','off')
-c2 = colorbar; c2.Limits = [0 400];
-subplot(5,1,3);
-surf(xx,yy, reshape(temp2049(:,31),[nys,nxs])); shading interp; colormap gray; 
-view(2); axis equal; axis tight; set(gca,'visible','off')
-c3 = colorbar; c3.Limits = [0 400];
-subplot(5,1,4);
-surf(xx,yy, reshape(temp2049(:,41),[nys,nxs])); shading interp; colormap gray; 
-view(2); axis equal; axis tight; set(gca,'visible','off')
-c4 = colorbar; c4.Limits = [0 400];
-subplot(5,1,5);
-surf(xx,yy, reshape(temp2049(:,51),[nys,nxs])); shading interp; colormap gray; 
-view(2); axis equal; axis tight; set(gca,'visible','off')
-c5 = colorbar; c5.Limits = [0 400];
+cmin = 0;
+cmax = 400;
 
+for k = 1:length(frames)
+    
+    figure(1)
+    set(gcf,'position',[100,100,600,900])
+    subplot(length(frames),1,k);
+    surf(xx,yy, reshape(temp(:,frames(k)),[nys,nxs])); shading interp; colormap(hot); 
+    view(2); axis equal; axis tight; axis off;
+    caxis([cmin,cmax]);
+    if k==1, title(sprintf('Temperature (%s)',tname)); end
+    c1 = colorbar; c1.Limits = [cmin,cmax];
+    
+    
+end
+
+% figure(1);
+% print('-dpng',sprintf('%s/%s.png',odir,fname));
 
 
 
