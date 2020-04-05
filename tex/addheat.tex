@@ -410,8 +410,8 @@ Once we discretize \cref{eq:aniso_surf2}, the rest is straightforward. Please fi
 
 \item we need the following terms at $(i+1/2,j)$ and $(i,j+1/2)$
 \begin{align}
-[(1-\phi) U_x]_{i+1/2,j} = ? \\
-[(1-\phi) U_y]_{i,j+1/2} = ?
+& [(1-\phi) U_x]_{i+1/2,j} = \left( 1- \frac{\phi_{i+1,j} + \phi_{i,j}}{2} \right) \frac{U_{i+1,j}-U_{i,j}}{\Delta x}\\
+& [(1-\phi) U_z]_{i,j+1/2} = ?
 \end{align}
 
 \item Similarly, for the anti-trapping flux $\vec{j}_{at}$, we need
