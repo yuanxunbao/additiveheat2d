@@ -23,6 +23,8 @@
 \Crefname{equation}{Eq.}{Eqs.}
 \crefname{figure}{fig.}{figs.}
 \Crefname{Figure}{Fig.}{Figs.}
+\usepackage{booktabs} % For prettier tables
+
 
 
 %\usepackage{cmbright}
@@ -89,7 +91,46 @@ q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} 
 \end{equation}
 where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
 
-\section{Discretization}
+\section{Updated Macroscopic Model}
+We use the model 
+\begin{align}
+    \rho c_p^* \frac{\partial \mathcal{T}}{\partial t} = K \nabla^2 \mathcal{T} \label{one_way_heat_eqn}
+\end{align}
+
+Here, $c_p^*$ is a modified specific heat capacity to account for the latent heat. It is defined as:
+\begin{align}
+c_p^* =  \alpha(\mathcal{T}) c_{p, liquid} + [1-\alpha(\mathcal{T})] c_{p, solid} + L \frac{d\alpha}{d\mathcal{T}}
+\end{align}
+with $\alpha(\mathcal{T})$ being a piecewise smooth function that describes the fraction of liquid at temperature $\mathcal{T}$:
+\begin{align}
+\alpha &= 0,~&\mathcal{T}<T_s \\
+\alpha &=   \frac{1- \cos[\pi (\mathcal{T}-T_s) (T_l-T_s)]}{2},~&T_s < \mathcal{T} < T_l \\
+\alpha &= 1,~&\mathcal{T}>T_l
+\end{align}
+
+A heat flux is added to the top surface of $Y$ to mimic the effect of an incident laser:
+\begin{align}
+    (-K\nabla \mathcal{T}) \cdot \hat{n} = q_s(Y,t) + h(\mathcal{T}-\mathcal{T}_e)+\epsilon_{rad} \sigma_{SB} (\mathcal{T}^4-\mathcal{T}_e^4)
+\end{align}
+where $q_s(Y,t)$ is the surface heat flux due to the laser, $h$ is a convective heat transfer coefficient, $\mathcal{T}_e$ is the ambient air temperature, $\epsilon_{rad}$ is the thermal radiation coefficient, and $\sigma_{SB}$ is the Stefan-Boltzmann constant.
+
+If the laser is assumed to have a Gaussian profile, $q_s$ takes the form:
+\begin{align}
+    q_s = \frac{2AP}{\pi r_b^2} \exp \left(\frac{-2(v_l t - Y_0)^2}{r_b^2} \right)
+\end{align}
+
+Adiabatic boundary conditions are applied on the remaining boundaries:
+\begin{align}
+    (-K\nabla \mathcal{T}) \cdot \hat{n} = 0
+\end{align}
+
+The microscopic model in Variant 1 is coupled to the macroscopic model through the temperature field, where:
+\begin{align}
+    &G = ||\nabla \mathcal{T}||_2 \\
+    &R = \frac{1}{G}\frac{\partial \mathcal{T}}{\partial t}
+\end{align}
+
+\section{Macro model discretization}
 
 We discretize the domain $\Omega$ using $(N+1) \times (M+1)$ grid with meshwidth $h$. Lx = Nh, x = ih.
 Let $T_{ij}^n=T(ih, jh, t_n )$ for $i=0,\dots,N$ and $j = 0, \dots, M$.
@@ -118,11 +159,10 @@ Eventually, the linear system of equation should look like
 \end{equation}
 where C is CFL number, $\B{L}$ is the discrete 2D laplacian with Neumann BCs and $\B{N}$ is a nonlinear function due the implicit treatment of latent heat term. If we treat the latent heat term explicitly, we need two starting values initially. 
 
-\yxb{3. Can you find out what $\B{L}$, $\B{N}$ and BC terms are?}
+% \yxb{3. Can you find out what $\B{L}$, $\B{N}$ and BC terms are?}
+% \yxb{4. I am afraid we have to solve nonlinear system of equation due to the latent heat term.}
 
-\yxb{4. I am afraid we have to solve nonlinear system of equation due to the latent heat term.}
-
-\section{Numerical Tests}
+\section{Macro model numerical tests}
 
 \subsection{No latent heat term}
 
@@ -240,11 +280,11 @@ Parameters: $L$=200, $T_s$=40, $T_l$=110\\
 
 \begin{figure}[!ht]
      \subfloat[$L^2$ error \label{subfig-1:dummy}]{%
-       \includegraphics[width=0.45\textwidth]{self_lat.png}
+       \includegraphics[width=0.45\textwidth]{./figures/self_lat.png}
      }
      \hfill
      \subfloat[convergence order\label{subfig-2:dummy}]{%
-       \includegraphics[width=0.45\textwidth]{convergence_lat.png}
+       \includegraphics[width=0.45\textwidth]{./figures/convergence_lat.png}
      }
      \caption{Self convergence. }
      \label{fig:nolat_convergence}
@@ -254,10 +294,142 @@ For mesh width h =  $ L_x/1024, L_x/512, L_x/256, L_x/128 $\\
 Iterations per time step without precondtioner: 58, 54, 48, 49, 50\\
 Iterations per time step with precondtioner: 20, 17, 16,...      \ \        but took longer time to run
 
+\newpage
 
-% \bibliographystyle{unsrt}
-% \bibliography{../library.bib}
+\section{Microscopic model}
 
+This model also makes the frozen temperature approximation \cite{Tourret2015,Echebarria2010,Plapp2007,Echebarria2004}:
+\begin{align}
+    & T(z,t) = T_0 + G(z-Rt),
+\end{align}
+where $T_0 = T_m - |m|c_{\infty}/k$. 
+
+The compute set of phase-field equations are 
+\begin{align}
+\tau_{\phi} (\hat{n},z) \frac{\partial \phi}{\partial t} &= W^2_0 \left\{ \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
+\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right)  \right \}  \nonumber \\
+& \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-R t}{ l_T} \right),  \label{eq:micro_phi}\\
+\tau_U \frac{\partial U}{\partial t} &= \div{} [D_l d(\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1}{2}  \frac{\partial \phi}{\partial t}, \label{eq:micro_U}
+\end{align}
+where 
+\begin{align}
+U = \frac{1}{1-k} \left[ \frac{c/(c_{\infty}/k)}{(1-\phi)/2 + k(1+\phi)/2} \right], \quad d(\phi) = (1-\phi)/2 .
+\end{align}
+Other parameters and terms are defined as
+\begin{align}
+    & \tau_{\phi}(\hat{n},z) = \tau_0(a_s(\hat{n}))^2 \left[1-(1-k) \frac{(z-Rt)}{ l_T} \right] \\
+	& \tau_U = \frac{1+k}{2} - \frac{1-k}{2}\phi \\
+	& \vec{j}_{at} =  \frac{1}{2\sqrt{2}} W_0 [1+(1-k)U] \frac{\nabla \phi}{|\nabla \phi|} \frac{\partial \phi}{\partial t} \\
+	& a_{s}(\hat{n}) = (1-3\delta)\left\{1+\frac{4 \delta}{1-3\delta}(\hat{n}_x^4 + \hat{n}_z^4) \right\} \\
+    & \hat{n} =  \frac{\nabla \phi}{|\nabla \phi|} \\
+    & l_T = \frac{|m|c_{\infty}(1/k-1)}{G} \\
+    & \lambda =  \frac{5\sqrt{2}}{8}  \frac{W_0}{d_0} \\
+    & d_0 = \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
+    & \tau_0 =  \frac{0.6267\lambda W_0^2}{D_l}
+\end{align}
+
+\begin{table}
+\centering
+\begin{tabular}{l l c c }
+\toprule
+symbol & meaning & units & values\\
+\midrule
+$c$ & solute concentration &  & \\
+$c_{\infty}$ & alloy composition at $z = +\infty$ &  & \\
+$k$ & interface solute partition coefficient &  &\\
+$T_0$ & reference solidus temperature &  &\\
+$|m|$ & the magnitude of the slope of the liquidus line &  &\\
+$T_m$ & melting temperature of pure material $A$ &  &\\
+$l_T$ & thermal length &  &\\
+$\gamma$ &  average surface tension &  & \\
+$\delta$ & strength of the surface tension anisotropy  &  &\\
+$d_0$ & capillary length &  & \\
+$G$ & thermal gradient &  & \\
+$R$ & pulling speed &  & \\
+$D_l$ & solute diffusion coefficient &  & \\
+$L$ & latent heat &  & \\
+$W_0$ & interface thickness  &  & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsection{Micro model discretization}
+\subsubsection{$\phi$-equation}
+We first discretize the $\phi$-equation in \cref{eq:micro_phi}. The challenge is to discretize the anisotropic surface tension term. We will make a few simplications. First, note the anisotropic surface tension can be parametrized by $\theta \equiv \arctan(\phi_y / \phi_x)$, i.e., 
+\begin{align}
+& a_s(\theta)=  1 + \delta \cos(4 \theta) \\
+& a_s'(\theta) = -4 \delta \sin(4\theta) 
+\end{align}
+By using some trigonometric identities (check), and $\cos(\theta) = \phi_x / |\grad{} \phi|$ and  $\sin(\theta) = \phi_y / |\grad{} \phi|$, we have
+\begin{align}
+& \cos(4\theta) = 1-8\cos^2(\theta) \sin^2(\theta) = 1- 8 \frac{ \phi_x^2 \phi_z^2 }{|\grad{} \phi|^4} \\
+& \sin(4\theta) = 4 \sin(\theta) \cos(\theta) ( \cos^2(\theta) - \sin^2(\theta)) = 4 \frac{(\phi_x^3 \phi_z - \phi_x \phi_z^3 )}{|\grad{} \phi|^4}.
+\end{align}
+We can also write (see Appendix B of \cite{Tourret2015})
+\begin{align}
+& \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right) = \partial_x (-a'_s(\theta) a_s(\theta) \partial_z \phi ) \\
+& \partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) = 
+\partial_z (a'_s(\theta) a_s(\theta) \partial_x \phi).
+\end{align}
+Therefore,
+\begin{align}
+ & \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
+\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) \nonumber \\
+= &  \  \partial_x  \underbrace{ \left[ a_s^2(\theta) \partial_x \phi - a'_s(\theta) a_s(\theta) \partial_z \phi \right]}_{=: F} + 
+\partial_z \underbrace{ \left[ a_s^2(\theta) \partial_z \phi + a'_s(\theta) a_s(\theta) \partial_x \phi \right]}_{=: J}  
+\label{eq:aniso_surf2}
+\end{align}
+
+We define $\phi(i,j)$ on the cell nodes. Therefore, \cref{eq:aniso_surf2} is discretized as
+\begin{equation}
+\frac{F(i+1/2, j) - F(i-1/2,j)}{\Delta x} + \frac{J(i,j+1/2)-J(i,j-1/2)}{\Delta z}
+\end{equation}
+Note $F,J$ are defined on cell edges. For example, to evaluate $F(i+\frac{1}{2},j)$, we need to evaluate
+\begin{align}
+& a_s(\theta) \bigg|_{i+1/2,j} = \left( 1-3\delta + 4\delta  \frac{\phi_x^4 +  \phi_z^4}{|\grad{} \phi|^4} \right)\bigg|_{i+1/2,j} \\
+& a'_s(\theta) \bigg|_{i+1/2,j} = -16\delta  \frac{(\phi_x^3 \phi_z- \phi_x \phi_z^3 )}{|\grad{} \phi|^4} \bigg|_{i+1/2,j}\\
+& \partial_x \phi \bigg|_{i+1/2,j} = \frac{\phi_{i+1,j}-\phi_{i,j}}{\Delta x} \\
+& \partial_z \phi \bigg|_{i+1/2,j}  = \frac{1}{4} \left( \frac{\phi_{i,j+1}-\phi_{i,j}}{\Delta z} +  \frac{\phi_{i+1,j+1}-\phi_{i+1,j}}{\Delta z} +  \frac{\phi_{i,j}-\phi_{i,j-1}}{\Delta z}  +  \frac{\phi_{i+1,j}-\phi_{i+1,j}}{\Delta z} \right)
+\end{align}
+Note evaluating $\partial_z \phi |_{i+1/2,j}$ requires averaging nearby cells.  Please work out the details for $F(i-1/2,j)$, $J(i,j+1/2)$ and $J(i,j-1/2)$. Many of them are redundant. I think you only need 
+$\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
+
+
+\yxb{I suggest you go over page 65 of \cite{Provatas2010}.}
+
+Once we discretize \cref{eq:aniso_surf2}, the rest is straightforward. Please fill in the details.
+
+
+\subsubsection{$U$-equation}
+\begin{itemize}
+\item A routine that takes in edge-centered vector data and outputs the divergence at cell nodes, i.e.,
+\begin{equation}
+\div{} \B{u} = \frac{u_{i+1/2,j} - u_{i-1/2,j}}{\Delta x} +  \frac{v_{i, j+1/2} - v_{i,j-1/2}}{\Delta z}
+\end{equation}
+
+\item we need the following terms at $(i+1/2,j)$ and $(i,j+1/2)$
+\begin{align}
+[(1-\phi) U_x]_{i+1/2,j} = ? \\
+[(1-\phi) U_y]_{i,j+1/2} = ?
+\end{align}
+
+\item Similarly, for the anti-trapping flux $\vec{j}_{at}$, we need
+\begin{align}
+\left[ [1+(1-k)U]  \frac{\phi_x}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i+1/2,j} = ? \\
+\left[ [1+(1-k)U]  \frac{\phi_y}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i,j+1/2} = ? \\
+\end{align}
+\end{itemize}
+
+\yxb{The bottom line with finite difference is that: whenever the quantity is not defined on the target grid points, you just average nearby cell data.}
+
+\yxb{I strongly recommend you read the appendices of \cite{Tourret2015}, and page 65, page 101-102 of \cite{Provatas2010}. }
+
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{Directional-Solidification.bib}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
