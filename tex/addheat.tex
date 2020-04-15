@@ -58,77 +58,116 @@
 \maketitle
 
 
+
 \section{Macroscopic model}
-
-We model the macroscopic heat transfer in the rectangular domain $\Omega$
-
+We consider the following macroscopic heat transfer model
 \begin{equation}
-\frac{\partial \rho c_{p} T}{ \partial t} = \div{} ( K \grad{} T) -\frac{\partial \rho L  f_l(T)}{\partial t} \quad \text{in }  \Omega
+\rho C_p(T) \frac{\partial T}{\partial t} = K \grad{}^2 T,
 \end{equation}
+where $C_p(T)$ is the heat capacity which can be modeled as
 \begin{equation}
-\frac{\partial T}{ \partial t} = \alpha \Delta T - \frac{L}{c_p}\frac{\partial   f_l(T)}{\partial t} \quad \text{in }  \Omega
+C_p(T) = C_{p,solid} ( 1-\alpha(T)) + C_{p,liquid} \alpha(T) + L_{s\rightarrow l} \frac{d \alpha}{ dT},
+\end{equation}
+where $\alpha(T)$ is the phase transition function
+\begin{equation}
+\alpha(T) = 
+\left\{
+\begin{array}{lr}
+0 & T < T_s, \\
+\frac{1}{2}( 1 - \cos(\pi (T-T_s)/ (T_l-T_s))) & T_s \leq T \leq T_l, \\
+1 &  T > T_l.
+\end{array}
+\right.
 \end{equation}
 with boundary conditions 
 \begin{align}
 (-K \grad{} T) \cdot \hat{n} = -q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
 (-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
 \end{align}
-where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
-\begin{equation}
-f_l(T) =
-\left\{
-\begin{array}{cc}
-1 & T>T_l \\
-\frac{T-T_s}{T_l - T_s} & T_s \leq T \leq T_l \\
-0 & T < T_s
-\end{array}
-\right.
-\end{equation}
-where $T_l$ and $T_s$ are the liquidus and solidus temperature, respectively.
+where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L_{s\rightarrow l}$ is the latent heat. 
+
 The heat source $q_S$ is modeled as a moving Gaussian
 \begin{equation}
 q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} \right),
 \end{equation}
 where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
 
-\section{Updated Macroscopic Model}
-We use the model 
+The microscopic model  is coupled to the macroscopic model through the temperature field, where:
 \begin{align}
-    \rho c_p^* \frac{\partial \mathcal{T}}{\partial t} = K \nabla^2 \mathcal{T} \label{one_way_heat_eqn}
+    &G = ||\nabla {T}||_2 \\
+    &R = \frac{1}{G}\frac{\partial {T}}{\partial t}
 \end{align}
 
-Here, $c_p^*$ is a modified specific heat capacity to account for the latent heat. It is defined as:
-\begin{align}
-c_p^* =  \alpha(\mathcal{T}) c_{p, liquid} + [1-\alpha(\mathcal{T})] c_{p, solid} + L \frac{d\alpha}{d\mathcal{T}}
-\end{align}
-with $\alpha(\mathcal{T})$ being a piecewise smooth function that describes the fraction of liquid at temperature $\mathcal{T}$:
-\begin{align}
-\alpha &= 0,~&\mathcal{T}<T_s \\
-\alpha &=   \frac{1- \cos[\pi (\mathcal{T}-T_s) (T_l-T_s)]}{2},~&T_s < \mathcal{T} < T_l \\
-\alpha &= 1,~&\mathcal{T}>T_l
-\end{align}
 
-A heat flux is added to the top surface of $Y$ to mimic the effect of an incident laser:
-\begin{align}
-    (-K\nabla \mathcal{T}) \cdot \hat{n} = q_s(Y,t) + h(\mathcal{T}-\mathcal{T}_e)+\epsilon_{rad} \sigma_{SB} (\mathcal{T}^4-\mathcal{T}_e^4)
-\end{align}
-where $q_s(Y,t)$ is the surface heat flux due to the laser, $h$ is a convective heat transfer coefficient, $\mathcal{T}_e$ is the ambient air temperature, $\epsilon_{rad}$ is the thermal radiation coefficient, and $\sigma_{SB}$ is the Stefan-Boltzmann constant.
-
-If the laser is assumed to have a Gaussian profile, $q_s$ takes the form:
-\begin{align}
-    q_s = \frac{2AP}{\pi r_b^2} \exp \left(\frac{-2(v_l t - Y_0)^2}{r_b^2} \right)
-\end{align}
-
-Adiabatic boundary conditions are applied on the remaining boundaries:
-\begin{align}
-    (-K\nabla \mathcal{T}) \cdot \hat{n} = 0
-\end{align}
-
-The microscopic model in Variant 1 is coupled to the macroscopic model through the temperature field, where:
-\begin{align}
-    &G = ||\nabla \mathcal{T}||_2 \\
-    &R = \frac{1}{G}\frac{\partial \mathcal{T}}{\partial t}
-\end{align}
+%We model the macroscopic heat transfer in the rectangular domain $\Omega$
+%
+%\begin{equation}
+%\frac{\partial \rho c_{p} T}{ \partial t} = \div{} ( K \grad{} T) -\frac{\partial \rho L  f_l(T)}{\partial t} \quad \text{in }  \Omega
+%\end{equation}
+%\begin{equation}
+%\frac{\partial T}{ \partial t} = \alpha \Delta T - \frac{L}{c_p}\frac{\partial   f_l(T)}{\partial t} \quad \text{in }  \Omega
+%\end{equation}
+%with boundary conditions 
+%\begin{align}
+%(-K \grad{} T) \cdot \hat{n} = -q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
+%(-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
+%\end{align}
+%where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
+%\begin{equation}
+%f_l(T) =
+%\left\{
+%\begin{array}{cc}
+%1 & T>T_l \\
+%\frac{T-T_s}{T_l - T_s} & T_s \leq T \leq T_l \\
+%0 & T < T_s
+%\end{array}
+%\right.
+%\end{equation}
+%where $T_l$ and $T_s$ are the liquidus and solidus temperature, respectively.
+%The heat source $q_S$ is modeled as a moving Gaussian
+%\begin{equation}
+%q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} \right),
+%\end{equation}
+%where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
+%
+%\section{Updated Macroscopic Model}
+%We use the model 
+%\begin{align}
+%    \rho c_p^* \frac{\partial \mathcal{T}}{\partial t} = K \nabla^2 \mathcal{T} \label{one_way_heat_eqn}
+%\end{align}
+%
+%Here, $c_p^*$ is a modified specific heat capacity to account for the latent heat. It is defined as:
+%\begin{align}
+%c_p^* =  \alpha(\mathcal{T}) c_{p, liquid} + [1-\alpha(\mathcal{T})] c_{p, solid} + L \frac{d\alpha}{d\mathcal{T}}
+%\end{align}
+%with $\alpha(\mathcal{T})$ being a piecewise smooth function that describes the fraction of liquid at temperature $\mathcal{T}$:
+%\begin{align}
+%\alpha &= 0,~&\mathcal{T}<T_s \\
+%\alpha &=   \frac{1- \cos[\pi (\mathcal{T}-T_s) (T_l-T_s)]}{2},~&T_s < \mathcal{T} < T_l \\
+%\alpha &= 1,~&\mathcal{T}>T_l
+%\end{align}
+%
+%A heat flux is added to the top surface of $Y$ to mimic the effect of an incident laser:
+%\begin{align}
+%    (-K\nabla \mathcal{T}) \cdot \hat{n} = q_s(Y,t) + h(\mathcal{T}-\mathcal{T}_e)+\epsilon_{rad} \sigma_{SB} (\mathcal{T}^4-\mathcal{T}_e^4)
+%\end{align}
+%where $q_s(Y,t)$ is the surface heat flux due to the laser, $h$ is a convective heat transfer coefficient, $\mathcal{T}_e$ is the ambient air temperature, $\epsilon_{rad}$ is the thermal radiation coefficient, and $\sigma_{SB}$ is the Stefan-Boltzmann constant.
+%
+%If the laser is assumed to have a Gaussian profile, $q_s$ takes the form:
+%\begin{align}
+%    q_s = \frac{2AP}{\pi r_b^2} \exp \left(\frac{-2(v_l t - Y_0)^2}{r_b^2} \right)
+%\end{align}
+%
+%Adiabatic boundary conditions are applied on the remaining boundaries:
+%\begin{align}
+%    (-K\nabla \mathcal{T}) \cdot \hat{n} = 0
+%\end{align}
+%
+%The microscopic model in Variant 1 is coupled to the macroscopic model through the temperature field, where:
+%\begin{align}
+%    &G = ||\nabla \mathcal{T}||_2 \\
+%    &R = \frac{1}{G}\frac{\partial \mathcal{T}}{\partial t}
+%\end{align}
 
 \section{Macro model discretization}
 
@@ -324,7 +363,7 @@ Other parameters and terms are defined as
     & \hat{n} =  \frac{\nabla \phi}{|\nabla \phi|} \\
     & l_T = \frac{|m|c_{\infty}(1/k-1)}{G} \\
     & \lambda =  \frac{5\sqrt{2}}{8}  \frac{W_0}{d_0} \\
-    & d_0 = \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
+    & d_0 = \frac{\Gamma}{|m|c_{\infty}(1/k-1)} = \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
     & \tau_0 =  \frac{0.6267\lambda W_0^2}{D_l}
 \end{align}
 
@@ -332,23 +371,23 @@ Other parameters and terms are defined as
 \centering
 \begin{tabular}{l l c c }
 \toprule
-symbol & meaning & units & values\\
+symbol & meaning & values & units \\
 \midrule
-$c$ & solute concentration &  & \\
-$c_{\infty}$ & alloy composition at $z = +\infty$ &  & \\
-$k$ & interface solute partition coefficient &  &\\
+$c_{\infty}|m|$ & shift in melting temperature &  1.0-2.0 & K \\
+$k$ & interface solute partition coefficient & 0.1-0.3 &\\
 $T_0$ & reference solidus temperature &  &\\
-$|m|$ & the magnitude of the slope of the liquidus line &  &\\
 $T_m$ & melting temperature of pure material $A$ &  &\\
-$l_T$ & thermal length &  &\\
+$l_T$ & thermal length &  & mm \\
 $\gamma$ &  average surface tension &  & \\
-$\delta$ & strength of the surface tension anisotropy  &  &\\
-$d_0$ & capillary length &  & \\
-$G$ & thermal gradient &  & \\
-$R$ & pulling speed &  & \\
-$D_l$ & solute diffusion coefficient &  & \\
+$\delta$ & strength of the surface tension anisotropy  &  0.007 or 0.011 &\\
+$\Gamma$ & Gibbs-Thompson coefficient & $6.4\times 10^{-8}$ & Km \\
+$d_0$ & capillary length & $\approx 10^{-3}$  & $\mu$m \\
+$G$ & thermal gradient & 10-300 & $\text{K} / \text{cm}$ \\
+$R$ & pulling speed &  8-32 & $\mu \text{m} / \text{s}$ \\
+$D_l$ & solute diffusion coefficient &$10^{-9}$ &  $\text{m}^2/\text{s}$ \\
 $L$ & latent heat &  & \\
-$W_0$ & interface thickness  &  & \\
+$W_0$ & interface thickness  & 40-90  & $d_0$ \\
+$\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -398,9 +437,22 @@ Note evaluating $\partial_z \phi |_{i+1/2,j}$ requires averaging nearby cells.  
 $\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
 
 
-\yxb{I suggest you go over page 65 of \cite{Provatas2010}.}
+\yxb{Note that you need both $a_s(\grad{}\phi_{i\pm 1/2, j\pm 1/2} )$ for $a_s(\hat{n})$ on the right-hand-side and $a_s(\grad{}\phi_{i, j} )$ for $\tau_{\phi}(\hat{n},z)$ on the left-hand-side.}
 
 Once we discretize \cref{eq:aniso_surf2}, the rest is straightforward. Please fill in the details.
+
+
+\subsubsection{Divide-by-zero in anisotropy}
+There are two ways to treat the numerical issue of divide-by-zero in computing $a_s(\theta)$.
+\begin{enumerate}
+\item On page 66 of \cite{Provatas2010}, when $|\grad{}\phi(i,j)|^{4} \leq \epsilon $, say $\epsilon = 10^{-8}$,
+\begin{align*}
+a_s(\hat{n}) &= 1-3\delta, \\
+a'_s(\hat{n}) &= 0.
+\end{align*}
+
+\item We can also regularize 
+\end{enumerate}
 
 
 \subsubsection{$U$-equation}
