@@ -57,7 +57,41 @@
 
 \maketitle
 
+
 \section{Macroscopic model}
+
+We model the macroscopic heat transfer in the rectangular domain $\Omega$
+
+\begin{equation}
+\frac{\partial \rho c_{p} T}{ \partial t} = \div{} ( K \grad{} T) -\frac{\partial \rho L  f_l(T)}{\partial t} \quad \text{in }  \Omega
+\end{equation}
+\begin{equation}
+\frac{\partial T}{ \partial t} = \alpha \Delta T - \frac{L}{c_p}\frac{\partial   f_l(T)}{\partial t} \quad \text{in }  \Omega
+\end{equation}
+with boundary conditions 
+\begin{align}
+(-K \grad{} T) \cdot \hat{n} = -q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
+(-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
+\end{align}
+where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
+\begin{equation}
+f_l(T) =
+\left\{
+\begin{array}{cc}
+1 & T>T_l \\
+\frac{T-T_s}{T_l - T_s} & T_s \leq T \leq T_l \\
+0 & T < T_s
+\end{array}
+\right.
+\end{equation}
+where $T_l$ and $T_s$ are the liquidus and solidus temperature, respectively.
+The heat source $q_S$ is modeled as a moving Gaussian
+\begin{equation}
+q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} \right),
+\end{equation}
+where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
+
+\section{Macroscopic model 2}
 We consider the following macroscopic heat transfer model
 \begin{equation}
 \rho C_p(T) \frac{\partial T}{\partial t} = K \grad{}^2 T,
@@ -96,79 +130,8 @@ The microscopic model  is coupled to the macroscopic model through the temperatu
     &R = \frac{1}{G}\frac{\partial {T}}{\partial t}
 \end{align}
 
-
-%We model the macroscopic heat transfer in the rectangular domain $\Omega$
-%
-%\begin{equation}
-%\frac{\partial \rho c_{p} T}{ \partial t} = \div{} ( K \grad{} T) -\frac{\partial \rho L  f_l(T)}{\partial t} \quad \text{in }  \Omega
-%\end{equation}
-%\begin{equation}
-%\frac{\partial T}{ \partial t} = \alpha \Delta T - \frac{L}{c_p}\frac{\partial   f_l(T)}{\partial t} \quad \text{in }  \Omega
-%\end{equation}
-%with boundary conditions 
-%\begin{align}
-%(-K \grad{} T) \cdot \hat{n} = -q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
-%(-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
-%\end{align}
-%where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
-%\begin{equation}
-%f_l(T) =
-%\left\{
-%\begin{array}{cc}
-%1 & T>T_l \\
-%\frac{T-T_s}{T_l - T_s} & T_s \leq T \leq T_l \\
-%0 & T < T_s
-%\end{array}
-%\right.
-%\end{equation}
-%where $T_l$ and $T_s$ are the liquidus and solidus temperature, respectively.
-%The heat source $q_S$ is modeled as a moving Gaussian
-%\begin{equation}
-%q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} \right),
-%\end{equation}
-%where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
-%
-%\section{Updated Macroscopic Model}
-%We use the model 
-%\begin{align}
-%    \rho c_p^* \frac{\partial \mathcal{T}}{\partial t} = K \nabla^2 \mathcal{T} \label{one_way_heat_eqn}
-%\end{align}
-%
-%Here, $c_p^*$ is a modified specific heat capacity to account for the latent heat. It is defined as:
-%\begin{align}
-%c_p^* =  \alpha(\mathcal{T}) c_{p, liquid} + [1-\alpha(\mathcal{T})] c_{p, solid} + L \frac{d\alpha}{d\mathcal{T}}
-%\end{align}
-%with $\alpha(\mathcal{T})$ being a piecewise smooth function that describes the fraction of liquid at temperature $\mathcal{T}$:
-%\begin{align}
-%\alpha &= 0,~&\mathcal{T}<T_s \\
-%\alpha &=   \frac{1- \cos[\pi (\mathcal{T}-T_s) (T_l-T_s)]}{2},~&T_s < \mathcal{T} < T_l \\
-%\alpha &= 1,~&\mathcal{T}>T_l
-%\end{align}
-%
-%A heat flux is added to the top surface of $Y$ to mimic the effect of an incident laser:
-%\begin{align}
-%    (-K\nabla \mathcal{T}) \cdot \hat{n} = q_s(Y,t) + h(\mathcal{T}-\mathcal{T}_e)+\epsilon_{rad} \sigma_{SB} (\mathcal{T}^4-\mathcal{T}_e^4)
-%\end{align}
-%where $q_s(Y,t)$ is the surface heat flux due to the laser, $h$ is a convective heat transfer coefficient, $\mathcal{T}_e$ is the ambient air temperature, $\epsilon_{rad}$ is the thermal radiation coefficient, and $\sigma_{SB}$ is the Stefan-Boltzmann constant.
-%
-%If the laser is assumed to have a Gaussian profile, $q_s$ takes the form:
-%\begin{align}
-%    q_s = \frac{2AP}{\pi r_b^2} \exp \left(\frac{-2(v_l t - Y_0)^2}{r_b^2} \right)
-%\end{align}
-%
-%Adiabatic boundary conditions are applied on the remaining boundaries:
-%\begin{align}
-%    (-K\nabla \mathcal{T}) \cdot \hat{n} = 0
-%\end{align}
-%
-%The microscopic model in Variant 1 is coupled to the macroscopic model through the temperature field, where:
-%\begin{align}
-%    &G = ||\nabla \mathcal{T}||_2 \\
-%    &R = \frac{1}{G}\frac{\partial \mathcal{T}}{\partial t}
-%\end{align}
-
 \section{Macro model discretization}
-
+\subsection{Forward Euler scheme}
 We discretize the domain $\Omega$ using $(N+1) \times (M+1)$ grid with meshwidth $h$. Lx = Nh, x = ih.
 Let $T_{ij}^n=T(ih, jh, t_n )$ for $i=0,\dots,N$ and $j = 0, \dots, M$.
 
@@ -177,11 +140,11 @@ Let $T_{ij}^n=T(ih, jh, t_n )$ for $i=0,\dots,N$ and $j = 0, \dots, M$.
 \end{equation}
 At the top boundary $(j=0)$, we treat the convection and radiation term explicitly,
 \begin{equation}
--K \frac{T_{i, -1}^n - T_{i,1}^n}{2h} = -q_s (ih, t_n) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4), \ i = 0 , \dots , N
+-K \frac{T_{i, -1}^n - T_{i,1}^n}{2h} = -q_s (ih, t_{n-1}) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4), \ i = 0 , \dots , N
 \end{equation}
 
 \begin{equation}
-T_{i, -1}^n = T_{i,1}^n -\frac{2h}{K}\left(-q_s (ih, t_n) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right)=T_{i,1}^n+U_i^{n-1}, \ i = 0 , \dots , N
+T_{i, -1}^n = T_{i,1}^n -\frac{2h}{K}\left(-q_s (ih, t_{n-1}) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right)=T_{i,1}^n+U_i^{n-1}, \ i = 0 , \dots , N
 \end{equation}
 Other boundaries:
 \begin{align}
@@ -199,6 +162,32 @@ where C is CFL number, $\B{L}$ is the discrete 2D laplacian with Neumann BCs and
 % \yxb{3. Can you find out what $\B{L}$, $\B{N}$ and BC terms are?}
 % \yxb{4. I am afraid we have to solve nonlinear system of equation due to the latent heat term.}
 
+\subsection{Crank-Nicolson}
+
+First, we absorb the latent heat to the left hand side, rewrite the equation in Crank-Nicolson scheme:
+\begin{equation}
+\B{La}(T_{i,j}^{n-1})\left({T_{i,j}^n - T_{i,j}^{n-1}} \right)= \frac{C}{2}\left( T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n \right)+\frac{C}{2}\left( T_{i,j+1}^{n-1} + T_{i,j-1}^{n-1} + T_{i-1,j}^{n-1} + T_{i+1,j}^{n-1} - 4 T_{i,j}^{n-1} \right)
+\end{equation}
+
+\begin{equation}
+\B{La}(\B{T}^{n-1})\left({\B{T}^{n} - \B{T}^{n-1}} \right)= \frac{C}{2}\B{L}(\B{T}^{n})+\frac{C}{2}\B{L}(\B{T}^{n-1})
+\end{equation}
+Add boundary condition (check if the convergence is right)
+\begin{equation}
+(\B{La}(\B{T}^{n-1})-\frac{C}{2}\B{L})\B{T}^{n} = (\B{La}(\B{T}^{n-1})+\frac{C}{2}\B{L})\B{T}^{n-1}+ \text{BC terms}
+\end{equation}
+
+If there is no latent heat, $\B{La}=\B{I}$
+
+\subsection{Symmetrization}
+
+$\B{La}(\B{T}^{n-1})$is diagonal, in order to make the system symmetric, pre-multiply a matrix Q.
+
+\begin{equation}
+Q\left((\B{La}(\B{T}^{n-1})-\frac{C}{2}\B{L})\B{T}^{n} \right)= Q\left((\B{La}(\B{T}^{n-1})+\frac{C}{2}\B{L})\B{T}^{n-1}+ \text{BC terms}\right)
+\end{equation}
+
+
 \section{Macro model numerical tests}
 
 \subsection{No latent heat term}
@@ -215,7 +204,7 @@ for top boundary (j=0)
  \text{BC terms}=CU_i^{n-1},\ \  j=0,  \ i = 0 , \dots , N
 \end{equation}
 \begin{equation}
-U_i^{n-1}=-\frac{2h}{K}\left(-q_s (ih, t_n) + h_c (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right), \ i = 0 , \dots , N
+U_i^{n-1}=-\frac{2h}{K}\left(-q_s (ih, t_{n-1}) + h_c (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right), \ i = 0 , \dots , N
 \end{equation}
 
 \begin{equation}
@@ -335,6 +324,7 @@ Iterations per time step with precondtioner: 20, 17, 16,...      \ \        but 
 
 \section{Microscopic model}
 
+
 This model also makes the frozen temperature approximation \cite{Tourret2015,Echebarria2010,Plapp2007,Echebarria2004}:
 \begin{align}
     & T(z,t) = T_0 + G(z-Rt),
@@ -361,7 +351,7 @@ Other parameters and terms are defined as
     & \hat{n} =  \frac{\nabla \phi}{|\nabla \phi|} \\
     & l_T = \frac{|m|c_{\infty}(1/k-1)}{G} \\
     & \lambda =  \frac{5\sqrt{2}}{8}  \frac{W_0}{d_0} \\
-    & d_0 = \frac{\Gamma}{|m|c_{\infty}(1/k-1)} = \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
+    & d_0 = \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
     & \tau_0 =  \frac{0.6267\lambda W_0^2}{D_l}
 \end{align}
 
@@ -389,7 +379,6 @@ $\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-
 
 The boundary conditions are periodic in the $x$-direction and no-flux in the $z$-direction.
 
@@ -430,7 +419,7 @@ Note $F,J$ are defined on cell edges. For example, to evaluate $F(i+\frac{1}{2},
 & a_s(\theta) \bigg|_{i+1/2,j} = \left( 1-3\delta + 4\delta  \frac{\phi_x^4 +  \phi_z^4}{|\grad{} \phi|^4} \right)\bigg|_{i+1/2,j} \\
 & a'_s(\theta) \bigg|_{i+1/2,j} = -16\delta  \frac{(\phi_x^3 \phi_z- \phi_x \phi_z^3 )}{|\grad{} \phi|^4} \bigg|_{i+1/2,j}\\
 & \partial_x \phi \bigg|_{i+1/2,j} = \frac{\phi_{i+1,j}-\phi_{i,j}}{\Delta x} \\
-& \partial_z \phi \bigg|_{i+1/2,j}  = \frac{1}{4} \left( \frac{\phi_{i,j+1}-\phi_{i,j}}{\Delta z} +  \frac{\phi_{i+1,j+1}-\phi_{i+1,j}}{\Delta z} +  \frac{\phi_{i,j}-\phi_{i,j-1}}{\Delta z}  +  \frac{\phi_{i+1,j}-\phi_{i+1,j}}{\Delta z} \right)
+& \partial_z \phi \bigg|_{i+1/2,j}  = \frac{\phi_{i,j+1}+\phi_{i+1,j+1}-\phi_{i,j-1}-\phi_{i+1,j-1}}{4\Delta z} 
 \end{align}
 Note evaluating $\partial_z \phi |_{i+1/2,j}$ requires averaging nearby cells.  Please work out the details for $F(i-1/2,j)$, $J(i,j+1/2)$ and $J(i,j-1/2)$. Many of them are redundant. I think you only need 
 $\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
@@ -438,35 +427,16 @@ $\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
 
 \yxb{Note that you need both $a_s(\grad{}\phi_{i\pm 1/2, j\pm 1/2} )$ for $a_s(\hat{n})$ on the right-hand-side and $a_s(\grad{}\phi_{i, j} )$ for $\tau_{\phi}(\hat{n},z)$ on the left-hand-side.}
 
-
 Once we discretize \cref{eq:aniso_surf2}, the rest is straightforward. Please fill in the details.
 
+
 \subsubsection{Divide-by-zero in anisotropy}
-There are two ways to treat the numerical issue of divide-by-zero in computing $a_s(\theta)$.
-\begin{enumerate}
-\item On page 66 of \cite{Provatas2010}, when $|\grad{}\phi(i,j)|^{4} \leq \epsilon $, say $\epsilon = 10^{-8}$,
+On page 66 of \cite{Provatas2010}, whenever $|\grad{}\phi(i,j)|^{4} \leq \epsilon $, say $\epsilon = 10^{-8}$, we just set
 \begin{align*}
 a_s(\hat{n}) &= 1-3\delta, \\
 a'_s(\hat{n}) &= 0.
 \end{align*}
-
-\item We can also regularize 
-\end{enumerate}
-
-
-
-
-\subsubsection{Divide-by-zero in anisotropy}
-There are two ways to treat the numerical issue of divide-by-zero in computing $a_s(\theta)$.
-\begin{enumerate}
-\item On page 66 of \cite{Provatas2010}, when $|\grad{}\phi(i,j)|^{4} \leq \epsilon $, say $\epsilon = 10^{-8}$,
-\begin{align*}
-a_s(\hat{n}) &= 1-3\delta, \\
-a'_s(\hat{n}) &= 0.
-\end{align*}
-
-\item We can also regularize 
-\end{enumerate}
+In \cite{Karma1998}, Karma explained the need for $a_s(\hat{n})$ in the definition $\tau_{\phi}$ on the LHS of \cref{eq:micro_phi} because it is related to the correct kinetics in the Stefan problem. Fortunately this term is never zero so it is safe to divide. 
 
 
 \subsubsection{$U$-equation}
@@ -479,13 +449,13 @@ a'_s(\hat{n}) &= 0.
 \item we need the following terms at $(i+1/2,j)$ and $(i,j+1/2)$
 \begin{align}
 & [(1-\phi) U_x]_{i+1/2,j} = \left( 1- \frac{\phi_{i+1,j} + \phi_{i,j}}{2} \right) \frac{U_{i+1,j}-U_{i,j}}{\Delta x}\\
-& [(1-\phi) U_z]_{i,j+1/2} = ?
+& [(1-\phi) U_z]_{i,j+1/2} = \left( 1- \frac{\phi_{i,j+1} + \phi_{i,j}}{2} \right) \frac{U_{i,j+1}-U_{i,j}}{\Delta z}\\
 \end{align}
 
 \item Similarly, for the anti-trapping flux $\vec{j}_{at}$, we need
 \begin{align}
-\left[ [1+(1-k)U]  \frac{\phi_x}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i+1/2,j} = ? \\
-\left[ [1+(1-k)U]  \frac{\phi_y}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i,j+1/2} = ? \\
+\left[ [1+(1-k)U]  \frac{\phi_x}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i+1/2,j} = \frac{1}{2}\left[[1+(1-k)U_{i+1,j}]\partial_t\phi_{i+1,j}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i+1/2,j} \\
+\left[ [1+(1-k)U]  \frac{\phi_y}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i,j+1/2} = \frac{1}{2}\left[[1+(1-k)U_{i,j+1}]\partial_t\phi_{i,j+1}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i,+1/2j}  \\
 \end{align}
 \end{itemize}
 
