@@ -340,7 +340,7 @@ The compute set of phase-field equations are
 \end{align}
 where 
 \begin{align}
-U = \frac{1}{1-k} \left( \frac{ c/c_l^0}{(1-\phi)/2 + k(1+\phi)/2} \right), \quad d(\phi) = (1-\phi)/2 .
+U = \frac{1}{1-k} \left( \frac{ c/c_l^0}{(1-\phi)/2 + k(1+\phi)/2} -1\right), \quad d(\phi) = (1-\phi)/2 .
 \end{align}
 Other parameters and terms are defined as
 \begin{align}
@@ -473,8 +473,10 @@ The initial condition is a planar interface perturbed with sinusoidal bumps:
 \end{equation}
 where $z_0$ is the initial height, $A_0$ is the amplitude to initial perturbation, and $n$ is the number of  sinusoidal bumps.  
 
-The initial condition for $U$ is $U(c_l^0, \phi_0)$ or $U(c_{\infty},\phi_0)$. 
-\yxb{I don't know which one is the correct one, will ask Steve.}
+The initial condition for $U$ is 
+\begin{equation}
+U(c_{\infty},\phi_0) = \frac{1}{1-k} \left( \frac{  c_{\infty}/  c_l^0  }{ (1-\phi_0)/2 + k(1+\phi_0) / 2} - 1\right) 
+\end{equation}
 
 \begin{figure}
 \centering
