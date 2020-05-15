@@ -442,6 +442,20 @@ $\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
 
 Once we discretize \cref{eq:aniso_surf2}, the rest is straightforward. Please fill in the details.
 
+\subsubsection{Misorientation}
+
+\begin{equation}
+\partial_{x^{\prime}} \phi=\cos \alpha_{0} \partial_{x} \phi+\sin \alpha_{0} \partial_{y} \phi
+\end{equation}
+
+\begin{equation}
+\partial_{z^{\prime}} \phi=-\sin \alpha_{0} \partial_{x} \phi+\cos\alpha_{0} \partial_{z} \phi
+\end{equation}
+
+\begin{align}
+& \cos(4(\theta-\alpha_0)) =  1- 8 \frac{ \phi_{x^{\prime}}^2 \phi_{z^{\prime}}^2 }{|\grad{} \phi|^4} \\
+& \sin(4(\theta-\alpha_0)) =  4 \frac{(\phi_{x^{\prime}}^3 \phi_{z^{\prime}} - \phi_{x^{\prime}} \phi_{z^{\prime}}^3 )}{|\grad{} \phi|^4}.
+\end{align}
 
 \subsubsection{Divide-by-zero in anisotropy}
 On page 66 of \cite{Provatas2010}, whenever $|\grad{}\phi(i,j)|^{2} \leq \epsilon $, say $\epsilon = 10^{-8}$, we just set
@@ -490,49 +504,80 @@ For the initial condition of $U$, we set $c_l = c_{\infty}, c_s = k c_l$ \cite{E
 
 \begin{figure}
 \centering
-\includegraphics[width=0.9\linewidth]{./figures/phi_initial.png}
-\caption{sample initial condition for $\phi$}
+\includegraphics[width=0.9\linewidth]{./figures/initial.png}
+\caption{sample initial condition for $\phi$ and U}
 \end{figure}
+
+
+\subsubsection{Noise}
 
 
 
 \begin{table}
 \centering
+\caption{Parameters for SCN.}
 \begin{tabular}{l l c c }
 \toprule
 symbol & meaning & values & units \\
 \midrule
-$c_{\infty}|m|$ & shift in melting temperature &  1.2 & T \\
+$c_{\infty}m$ & nominal solute concentration &  2 & K \\
+$c_l^0$ & equilibrium concentration & $c_{\infty}/k$ & wt.\% \\
 $k$ & interface solute partition coefficient & 0.3 &\\
-$T_0$ & reference solidus temperature &  &\\
-$T_m$ & melting temperature of pure material $A$ &  &\\
-$l_T$ & thermal length &  & L \\
-$\gamma$ &  average surface tension &  & \\
-$\delta$ & strength of the surface tension anisotropy  &  0.011 &\\
-$\Gamma$ & Gibbs-Thompson coefficient & $6.4\times 10^{-8}$ & Km \\
-$d_0$ & capillary length & $ 3.75\times10^{-4}$  & L \\
-$G$ & thermal gradient & 0.003 & $\text{T} / \text{L}$ \\
-$R$ & pulling speed &  20 & $ \text{L} / \text{t}$ \\
-$D_l$ & solute diffusion coefficient &$10^{3}$ &  $\text{L}^2/\text{t}$ \\
-$L$ & latent heat &  & \\
-$W_0$ & interface thickness  & 40  & $d_0$ \\
-$\Delta x$ & mesh size & 1.3 & $W_0$ \\
+$\delta$ & strength of the surface tension anisotropy  &  0.007  &\\
+$\Gamma$ & Gibbs-Thompson coefficient & $6.48\times 10^{-8}$ & Km \\
+$d_0$ & capillary length & $ 1.3\times10^{-2}$  & $\mu$m \\
+$G$ & thermal gradient & 140 & $\text{K} / \text{cm}$ \\
+$R$ & pulling speed &  32 & $\mu \text{m} / \text{s}$ \\
+$D_l$ & solute diffusion coefficient &$10^{3}$ &  ${\mu\text{m}}^2/\text{s}$ \\
+$W_0$ & interface thickness  & 40-90  & $d_0$ \\
+$\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-% T=1K, L=1$\mu $m, t=1s, non-dimensional parameters
-
-\begin{figure}
+\begin{table}
 \centering
-\includegraphics[width=0.9\linewidth]{./figures/full.png}
-\caption{Timeshots for $\phi$}
-\end{figure}
+\caption{Simulation parameters}
+\begin{tabular}{l l c c }
+\toprule
+symbol & meaning & values & units \\
+\midrule
+$\epsilon$ & divide-by-zero  & 1e-4  &\\
+$\Delta x$ & mesh size & 0.8 & $W_0$ \\
+$\Delta t$ & time step size& 0.0005& $\tau_0$ \\
+$\Lambda$ & primary spacing & 22.5 & $\mu m$ \\
+$A_p$ & amplitude of initial perturbation& 0.2 & $W_0$\\
+$L_x$ & length of computation domain  &  1  & $\Lambda$\\
+$M_t$ & time steps& 120000 & \\
 
 
+\bottomrule
+\end{tabular}
+\end{table}
+\subsection{Simulation results}
+\begin{figure}[!ht]
+     \subfloat[$\phi$\label{subfig-1:phi}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_phi.png}
+     }
+     \hfill
+     \subfloat[$c/c_{\infty}$\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_c.png}
+     }
+     \caption{phase field and concentration for SCN.}
+     \label{fig:Ech}
+   \end{figure}
 
-
-
+\begin{figure}[!ht]
+     \subfloat[results\label{subfig-1:resu}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_tip.png}
+     }
+     \hfill
+     \subfloat[reference\label{subfig-2:ref}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_shape.png}
+     }
+     \caption{phase field shape}
+     \label{fig:Ech}
+   \end{figure}
 
 
 \bibliographystyle{unsrt}
