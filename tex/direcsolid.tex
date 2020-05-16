@@ -1,0 +1,344 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{subfig}
+\renewcommand{\figurename}{Fig.}
+\renewcommand*{\figureautorefname}{Fig.}
+\usepackage{graphicx}
+
+\graphicspath{[./images/]}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{placeins}
+\usepackage{color}
+\usepackage{array}
+\usepackage{cancel}
+\usepackage[margin=1in]{geometry}
+%\usepackage[left=1.5in, right=1.5in]{geometry}
+
+\usepackage[nameinlink,noabbrev]{cleveref}
+\crefname{equation}{eq.}{eqs.} % force abbreviated forms for equation "names"
+\Crefname{equation}{Eq.}{Eqs.}
+\crefname{figure}{fig.}{figs.}
+\Crefname{Figure}{Fig.}{Figs.}
+\usepackage{booktabs} % For prettier tables
+
+
+
+%\usepackage{cmbright}
+%\renewcommand{\familydefault}{\sfdefault}
+
+\newcommand{\diff}{\mathrm{d}}
+\newcommand{\V}[1]{\boldsymbol{#1}}
+\newcommand{\B}[1]{\mathbf{#1}}
+\newcommand{\myhat}[2]{\hat{#1}_{#2}}
+\renewcommand*\arraystretch{1.5}
+\renewcommand{\div}[1]{\nabla_{#1} \cdot}
+\newcommand{\lapl}{\nabla^2}
+\newcommand{\grad}[1]{\nabla_{#1}}
+\newcommand{\curl}{\nabla \times}
+\newcommand{\Tr}{\mathrm{Tr}}
+\newcommand{\op}[1]{\mathcal{#1}}
+
+\newcommand{\yxb}[1]{  {\bf \color{red}{ Bao: #1}} }
+\newcommand{\ygq}[1]{  {\bf \color{blue}{ Qin: #1}} }
+
+\DeclareMathAlphabet\mathbfcal{OMS}{cmsy}{b}{n}
+
+
+\title{Directional Solidification Model for Additive Manufacturing Testbed Problem}
+\author{Yigong Qin and Yuanxun Bao}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+
+
+
+\section{Microscopic model}
+
+
+This model also makes the frozen temperature approximation \cite{Tourret2015,Echebarria2010,Plapp2007,Echebarria2004}:
+\begin{align}
+    & T(z,t) = T_0 + G(z-Rt),
+\end{align}
+where $T_0 = T_m - |m|c_l^0$ and $c_l^0 = c_{\infty}/ k$. 
+
+The compute set of phase-field equations are 
+\begin{align}
+\tau_{\phi} (\hat{n},z) \frac{\partial \phi}{\partial t} &= W^2_0 \left\{ \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
+\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right)  \right \}  \nonumber \\
+& \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-R t}{ l_T} \right),  \label{eq:micro_phi}\\
+\tau_U \frac{\partial U}{\partial t} &= \div{} [D_l d(\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1}{2}  \frac{\partial \phi}{\partial t}, \label{eq:micro_U}
+\end{align}
+where 
+\begin{align}
+U = \frac{1}{1-k} \left( \frac{ c/c_l^0}{(1-\phi)/2 + k(1+\phi)/2} -1\right), \quad d(\phi) = (1-\phi)/2 .
+\end{align}
+Other parameters and terms are defined as
+\begin{align}
+    & \tau_{\phi}(\hat{n},z) = \tau_0(a_s(\hat{n}))^2 \left[1-(1-k) \frac{(z-Rt)}{ l_T} \right] \\
+	& \tau_U = \frac{1+k}{2} - \frac{1-k}{2}\phi \\
+	& \vec{j}_{at} =  \frac{1}{2\sqrt{2}} W_0 [1+(1-k)U] \frac{\nabla \phi}{|\nabla \phi|} \frac{\partial \phi}{\partial t} \\
+	& a_{s}(\hat{n}) = (1-3\delta)\left\{1+\frac{4 \delta}{1-3\delta}(\hat{n}_x^4 + \hat{n}_z^4) \right\} \\
+    & \hat{n} =  \frac{\nabla \phi}{|\nabla \phi|} \\
+    & l_T = \frac{|m|c_{\infty}(1/k-1)}{G} \\
+    & \lambda =  \frac{5\sqrt{2}}{8}  \frac{W_0}{d_0} \\
+    & d_0 = \frac{\Gamma}{|m|c_{\infty}(1/k-1)} =   \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
+    & \tau_0 =  \frac{0.6267\lambda W_0^2}{D_l}
+\end{align}
+
+
+The boundary conditions are periodic in the $x$-direction and no-flux in the $z$-direction.
+
+\subsection{Non-dimensionalized equations}
+We use  the interfacial width $W_0$ as the length scale and $\tau_0$ as the time scale to non-dimensionalize the equations:
+\begin{align}
+ \left[1-(1-k) \frac{(z- \tilde{R} t)}{ \tilde{l}_T} \right] a_s(\hat{n}^2) \frac{\partial \phi}{\partial t} &= 
+  \div{} [a_s(\hat{n})^2 \grad{} \phi] + \nonumber  \\  
+ & \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  + 
+\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right)   \nonumber \\
+& \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-\tilde{R} t}{ \tilde{l}_T} \right) \\
+\left(\frac{1+k}{2}-\frac{1-k}{2}\phi \right) \frac{\partial U}{\partial t} &= \div{} [\tilde{D}_l d(\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1}{2}  \frac{\partial \phi}{\partial t},
+\end{align}
+where the non-dimensional parameters are  $\tilde{R} = R\tau_0 / W_0$, $\tilde{D_l} = D_l \tau_0 / W_0^2$ and $\tilde{l}_T = l_T / W_0$.
+
+
+
+\subsection{Noise}
+
+\section{Micro model discretization}
+\subsection{$\phi$-equation}
+We first discretize the $\phi$-equation in \cref{eq:micro_phi}. The challenge is to discretize the anisotropic surface tension term. We will make a few simplications. First, note the anisotropic surface tension can be parametrized by $\theta \equiv \arctan(\phi_y / \phi_x)$, i.e., 
+\begin{align}
+& a_s(\theta)=  1 + \delta \cos(4 \theta) \\
+& a_s'(\theta) = -4 \delta \sin(4\theta) 
+\end{align}
+By using some trigonometric identities (check), and $\cos(\theta) = \phi_x / |\grad{} \phi|$ and  $\sin(\theta) = \phi_y / |\grad{} \phi|$, we have
+\begin{align}
+& \cos(4\theta) = 1-8\cos^2(\theta) \sin^2(\theta) = 1- 8 \frac{ \phi_x^2 \phi_z^2 }{|\grad{} \phi|^4} \\
+& \sin(4\theta) = 4 \sin(\theta) \cos(\theta) ( \cos^2(\theta) - \sin^2(\theta)) = 4 \frac{(\phi_x^3 \phi_z - \phi_x \phi_z^3 )}{|\grad{} \phi|^4}.
+\end{align}
+We can also write (see Appendix B of \cite{Tourret2015})
+\begin{align}
+& \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right) = \partial_x (-a'_s(\theta) a_s(\theta) \partial_z \phi ) \\
+& \partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) = 
+\partial_z (a'_s(\theta) a_s(\theta) \partial_x \phi).
+\end{align}
+Therefore,
+\begin{align}
+ & \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
+\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) \nonumber \\
+= &  \  \partial_x  \underbrace{ \left[ a_s^2(\theta) \partial_x \phi - a'_s(\theta) a_s(\theta) \partial_z \phi \right]}_{=: F} + 
+\partial_z \underbrace{ \left[ a_s^2(\theta) \partial_z \phi + a'_s(\theta) a_s(\theta) \partial_x \phi \right]}_{=: J}  
+\label{eq:aniso_surf2}
+\end{align}
+
+We define $\phi(i,j)$ on the cell nodes. Therefore, \cref{eq:aniso_surf2} is discretized as
+\begin{equation}
+\frac{F(i+1/2, j) - F(i-1/2,j)}{\Delta x} + \frac{J(i,j+1/2)-J(i,j-1/2)}{\Delta z}
+\end{equation}
+Note $F,J$ are defined on cell edges. For example, to evaluate $F(i+\frac{1}{2},j)$, we need to evaluate
+\begin{align}
+& a_s(\theta) \bigg|_{i+1/2,j} = \left( 1-3\delta + 4\delta  \frac{\phi_x^4 +  \phi_z^4}{|\grad{} \phi|^4} \right)\bigg|_{i+1/2,j} \\
+& a'_s(\theta) \bigg|_{i+1/2,j} = -16\delta  \frac{(\phi_x^3 \phi_z- \phi_x \phi_z^3 )}{|\grad{} \phi|^4} \bigg|_{i+1/2,j}\\
+& \partial_x \phi \bigg|_{i+1/2,j} = \frac{\phi_{i+1,j}-\phi_{i,j}}{\Delta x} \\
+& \partial_z \phi \bigg|_{i+1/2,j}  = \frac{\phi_{i,j+1}+\phi_{i+1,j+1}-\phi_{i,j-1}-\phi_{i+1,j-1}}{4\Delta z} 
+\end{align}
+Note evaluating $\partial_z \phi |_{i+1/2,j}$ requires averaging nearby cells.  Please work out the details for $F(i-1/2,j)$, $J(i,j+1/2)$ and $J(i,j-1/2)$. Many of them are redundant. I think you only need 
+$\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
+
+
+
+\subsection{Divide-by-zero in anisotropy}
+On page 66 of \cite{Provatas2010}, whenever $|\grad{}\phi(i,j)|^{2} \leq \epsilon $, say $\epsilon = 10^{-8}$, we just set
+\begin{align*}
+a_s(\hat{n}) &= 1-3\delta, \\
+a'_s(\hat{n}) &= 0.
+\end{align*}
+In \cite{Karma1998}, Karma explained the need for $a_s(\hat{n})$ in the definition $\tau_{\phi}$ on the LHS of \cref{eq:micro_phi} because it is related to the correct kinetics in the Stefan problem. Fortunately this term is never zero so it is safe to divide. 
+
+\subsection{Misorientation}
+Introduce a misorientation angle $\alpha_0$
+\begin{align}
+&\phi_{x^{\prime}}=\cos \alpha_{0}\phi_x+\sin \alpha_{0}  \phi_y\\
+&\phi_{z^{\prime}}=-\sin \alpha_{0} \partial_{x} \phi+\cos\alpha_{0} \partial_{z} \phi\\
+& \cos(4(\theta-\alpha_0)) =  1- 8 \frac{ \phi_{x^{\prime}}^2 \phi_{z^{\prime}}^2 }{|\grad{} \phi|^4} \\
+& \sin(4(\theta-\alpha_0)) =  4 \frac{(\phi_{x^{\prime}}^3 \phi_{z^{\prime}} - \phi_{x^{\prime}} \phi_{z^{\prime}}^3 )}{|\grad{} \phi|^4}.\\
+& \tilde{a_s}(\theta)=  1 + \delta \cos(4(\theta-\alpha_0) )\\
+& \tilde{a_s'}(\theta) = -4 \delta \sin(4(\theta-\alpha_0) )
+\end{align}
+$\phi$ equation becomes
+\begin{align}
+ \left[1-(1-k) \frac{(z- \tilde{R} t)}{ \tilde{l}_T} \right] \tilde{a_s}(\hat{n})^2 \frac{\partial \phi}{\partial t} &= 
+  \div{} [\tilde{a_s}(\hat{n})^2 \grad{} \phi] + \nonumber  \\  
+ & \partial_x \left( |\grad{} \phi|^2 \tilde{a_s}(\hat{n}) \frac{\partial \tilde{a_s}(\hat{n})}{\partial (\partial_x \phi)}  \right)  + 
+\partial_z \left( |\grad{} \phi|^2 \tilde{a_s}(\hat{n}) \frac{\partial \tilde{a_s}(\hat{n})}{\partial (\partial_z \phi)}  \right)   \nonumber \\
+& \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-\tilde{R} t}{ \tilde{l}_T} \right) \\
+\end{align}
+When calculating the right hand side, substitute $\tilde{a_s}(\theta)$ and $\tilde{a_s'}(\theta) $ in equation \eqref{eq:aniso_surf2}
+
+\subsection{$U$-equation}
+\begin{itemize}
+\item A routine that takes in edge-centered vector data and outputs the divergence at cell nodes, i.e.,
+\begin{equation}
+\div{} \B{u} = \frac{u_{i+1/2,j} - u_{i-1/2,j}}{\Delta x} +  \frac{v_{i, j+1/2} - v_{i,j-1/2}}{\Delta z}
+\end{equation}
+
+\item we need the following terms at $(i+1/2,j)$ and $(i,j+1/2)$
+\begin{align}
+& [(1-\phi) U_x]_{i+1/2,j} = \left( 1- \frac{\phi_{i+1,j} + \phi_{i,j}}{2} \right) \frac{U_{i+1,j}-U_{i,j}}{\Delta x}\\
+& [(1-\phi) U_z]_{i,j+1/2} = \left( 1- \frac{\phi_{i,j+1} + \phi_{i,j}}{2} \right) \frac{U_{i,j+1}-U_{i,j}}{\Delta z}\\
+\end{align}
+
+\item Similarly, for the anti-trapping flux $\vec{j}_{at}$, we need
+\begin{align}
+& \left[ [1+(1-k)U]  \frac{\phi_x}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i+1/2,j} = \nonumber \\
+&  \frac{1}{2}\left[[1+(1-k)U_{i+1,j}]\partial_t\phi_{i+1,j}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i+1/2,j}  \\
+& \left[ [1+(1-k)U]  \frac{\phi_y}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i,j+1/2} = \nonumber \\ 
+& \frac{1}{2}\left[[1+(1-k)U_{i,j+1}]\partial_t\phi_{i,j+1}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i,+1/2j}  
+\end{align}
+\end{itemize}
+
+
+
+\subsection{Initial condition}
+The initial condition is a planar interface perturbed with sinusoidal bumps:
+\begin{equation}
+\phi(x,z,t=0) = - \tanh \left( \frac{z - z_0 - A_0\sin(2n\pi x /L_x  ) }{W_0}  \right),
+\end{equation}
+where $z_0$ is the initial height, $A_0$ is the amplitude to initial perturbation, and $n$ is the number of  sinusoidal bumps.  
+
+For the initial condition of $U$, we set $c_l = c_{\infty}, c_s = k c_l$ \cite{Echebarria2004}, which with the definition of $c_l^0 = c_{\infty} /k $, corresponds to $U \equiv -1$ in the whole system!
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\linewidth]{./figures/initial.png}
+\caption{sample initial condition for $\phi$ and U}
+\end{figure}
+
+
+
+
+
+
+\begin{table}
+\centering
+\caption{Parameters for SCN.}
+\begin{tabular}{l l c c }
+\toprule
+symbol & meaning & values & units \\
+\midrule
+$c_{\infty}m$ & nominal solute concentration &  2 & K \\
+$k$ & interface solute partition coefficient & 0.3 &\\
+$\delta$ & strength of the surface tension anisotropy  &  0.007  &\\
+$\Gamma$ & Gibbs-Thompson coefficient & $6.48\times 10^{-8}$ & Km \\
+$d_0$ & capillary length & $ 1.3\times10^{-2}$  & $\mu$m \\
+$G$ & thermal gradient & 140 & $\text{K} / \text{cm}$ \\
+$R$ & pulling speed &  32 & $\mu \text{m} / \text{s}$ \\
+$D_l$ & solute diffusion coefficient &$10^{3}$ &  ${\mu\text{m}}^2/\text{s}$ \\
+$W_0$ & interface thickness  & 40-90  & $d_0$ \\
+$\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
+\bottomrule
+\end{tabular}\label{tab:SCN}
+
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Parameters forAl-Cu.}
+\begin{tabular}{l l c c }
+\toprule
+symbol & meaning & values & units \\
+\midrule
+$c_{\infty}m$ & nominal solute concentration &  7.8 & K \\
+$k$ & interface solute partition coefficient & 0.14 &\\
+$\delta$ & strength of the surface tension anisotropy  &  0.01  &\\
+$\Gamma$ & Gibbs-Thompson coefficient & $2.4\times 10^{-7}$ & Km \\
+$d_0$ & capillary length & $ 5\times10^{-3}$  & $\mu$m \\
+$G$ & thermal gradient & 700 & $\text{K} / \text{cm}$ \\
+$R$ & pulling speed &  1000 & $\mu \text{m} / \text{s}$ \\
+$D_l$ & solute diffusion coefficient &$3000$ &  ${\mu\text{m}}^2/\text{s}$ \\
+$W_0$ & interface thickness  & 22.6  & $d_0$ \\
+$\Delta x$ & mesh size & 0.5 & $W_0$ \\
+\bottomrule
+\end{tabular}\label{tab:SCN}
+
+\end{table}
+
+
+\begin{table}
+\centering
+\caption{Simulation parameters}
+\begin{tabular}{l l c c }
+\toprule
+symbol & meaning & values & units \\
+\midrule
+$\epsilon$ & divide-by-zero  & 1e-4  &\\
+$\Delta x$ & mesh size & 0.8 & $W_0$ \\
+$\Delta t$ & time step size& 0.0005& $\tau_0$ \\
+$\Lambda$ & primary spacing & 22.5 & $\mu m$ \\
+$A_p$ & amplitude of initial perturbation& 0.2 & $W_0$\\
+$L_x$ & length of computation domain  &  1  & $\Lambda$\\
+$M_t$ & time steps& 120000 & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Simulation results}
+\subsection{$\alpha_0$=0, no noise}
+Use parameters in \cite{Echebarria2004}, ie. table \ref{tab:SCN}
+\begin{figure}[!ht]
+     \subfloat[$\phi$\label{subfig-1:phi}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_phi.png}
+     }
+     \hfill
+     \subfloat[$c/c_{\infty}$\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_c.png}
+     }
+     \caption{phase field and concentration for SCN. $W_0$ = 108.7$d_0$}
+     \label{fig:Ech}
+   \end{figure}
+
+\begin{figure}[!ht]
+     \subfloat[results\label{subfig-1:resu}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_tip.png}
+     }
+     \hfill
+     \subfloat[reference\label{subfig-2:ref}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_shape.png}
+     }
+     \caption{phase field shape convergence for different W0}
+     \label{fig:Ech}
+   \end{figure}
+\subsection{Convergence study on $\Delta$ x and $\Delta$ t}
+   
+\subsection{$\alpha_0$=30, no noise}
+
+\begin{figure}[!ht]
+     \subfloat[$\phi$\label{subfig-1:phi}]{%
+       \includegraphics[width=0.40\textwidth]{./figures/30phi.png}
+     }
+     \hfill
+     \subfloat[$c/c_{\infty}$\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.415\textwidth]{./figures/30c.png}
+     }
+     \caption{tilted growth of Al-Cu alloy at $\alpha_0$=30$^\circ$}
+     \label{fig:Ech}
+   \end{figure}
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{Directional-Solidification.bib}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
