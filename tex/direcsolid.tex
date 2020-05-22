@@ -341,7 +341,22 @@ Use parameters in \cite{Echebarria2004}, ie. table \ref{tab:SCN}
      \label{fig:Ech}
    \end{figure}
 \subsection{Convergence study on $\Delta$ x and $\Delta$ t}
-   
+ 
+\begin{figure}[!ht]
+     \subfloat[error\label{subfig-1:error}]{%
+       \includegraphics[width=0.35\textwidth]{./figures/error_ds_nx.png}
+     }
+     \hfill
+     \subfloat[convergence\label{subfig-2:conv}]{%
+       \includegraphics[width=0.35\textwidth]{./figures/conv_ds_nx.png}
+     }
+      \subfloat[shape\label{subfig-3:shape}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/t1_2Lx1nx_conv.png}
+     }
+     \caption{convergence}
+     \label{fig:conv_nx}
+   \end{figure}
+
 \subsection{$\alpha_0$=30, no noise}
 
 \begin{figure}[!ht]
@@ -355,6 +370,25 @@ Use parameters in \cite{Echebarria2004}, ie. table \ref{tab:SCN}
      \caption{tilted growth of Al-Cu alloy at $\alpha_0$=30$^\circ$}
      \label{fig:Ech}
    \end{figure}
+\subsection{$\alpha_0$=30, increase primary spacing}
+
+\begin{figure}[!ht]
+     \subfloat[$\phi$\label{subfig-1:phi}]{%
+       \includegraphics[width=1\columnwidth]{./figures/large30phi.png}
+     }
+     \hfill
+    
+     \caption{tilted growth of Al-Cu alloy at $\alpha_0$=30$^\circ$,larger spacing}
+     \label{fig:Ech}
+   \end{figure}
+   
+\subsection{Increase number of initial pertubations}   
+\begin{figure}
+ \centering
+  \includegraphics[width=0.6\textwidth]{./figures/nx20t2_4Lx_conv.png}
+  \caption{phase field for different Lx with same $\Lambda$}
+  \label{fig:Lx_conv}
+\end{figure}
 
 
 
