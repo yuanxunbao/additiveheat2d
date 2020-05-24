@@ -23,7 +23,7 @@ from math import pi
 import numpy as np
 from SCN import parameters 
 from fir_deri_FD import gradscalar, gradflux
-
+from scipy.integrate import solve_ivp as ivp
 import matplotlib.pyplot as plt
 from scipy.io import savemat as save
 from scipy.io import loadmat as load
@@ -54,9 +54,9 @@ def out_put():
        c_tilde = ( 1+ (1-p.k)*U )*( (1+phi)/2 + (1-phi)/(2*p.k) )
        yo[:,i] = np.reshape(np.vstack((np.reshape(phi,(nv,1),order='F'),np.reshape(c_tilde,(nv,1),order='F'))),(nv*2))
 
-    filename = 'a' + str(alpha0*180/pi)+'W0' + str(p.W0)+'lx'+ str(lx*p.W0)+'.mat'
+    filename = 'a' + str(int(alpha0*180/pi))+'W' + str(p.W0/p.d0)+'nx'+str(nx)+'lx'+ str(lx*p.W0)+'.mat'
 
-    save(filename,{'xx':xx*p.W0,'zz':zz*p.W0,'y':yo,'dt':dt*p.tau0,'nx':nx,'nz':nz,'t':t*p.tau0})
+    save(filename,{'nfev':sol.nfev,'tol':TOL,'xx':xx*p.W0,'zz':zz*p.W0,'y':yo,'dt':t_end/nts*p.tau0,'nx':nx,'nz':nz,'t':t_end*p.tau0})
     
     
     
@@ -96,24 +96,7 @@ def PF(phi_xx,phi_zx,phi_nx,phi_xz,phi_zz,phi_nz):
 
     return f.gradx( F_x ) + f.gradz( J_z )
 
-def Ff(phi_x, phi_z, phi_xr, phi_zr, phi_n):    # defined on x edges 
 
-    
-    a_s = 1 - 3*p.delta + mask_divi( 4*p.delta*( phi_xr**4 + phi_zr**4 ) , phi_n**4 , p.eps**4)
-           
-    aps = mask_divi( -16*p.delta*( phi_xr**3*phi_zr - phi_xr*phi_zr**3 ) , phi_n**4 , p.eps**4)
-    
-    return a_s**2*phi_x - aps*a_s*phi_z
-    
-def Jf(phi_x, phi_z, phi_xr, phi_zr, phi_n):
-
-    
-    a_s = 1 - 3*p.delta + mask_divi( 4*p.delta*( phi_xr**4 + phi_zr**4 ) , phi_n**4 , p.eps**4)
-    
-    aps = mask_divi( -16*p.delta*( phi_xr**3*phi_zr - phi_xr*phi_zr**3 ) , phi_n**4 , p.eps**4)
-    
-    
-    return a_s**2*phi_z + aps*a_s*phi_x
 
 
 def FU(phi_x, phi_n, phi, U, phi_t):
@@ -143,8 +126,9 @@ def a_s(phi_x, phi_z):
     return 1 - 3*p.delta + mask_divi( 4*p.delta*( phi_xc**4 + phi_zc**4 ) , phi_n**4 , p.eps**4)
 
 
-def rhs_plapp(y,t):
+def rhs_ds(t,y):
     
+    y = np.reshape(y,(2*nv,1))
     phi = np.reshape(y[:nv], (nz,nx))
     U = np.reshape(y[nv:], (nz,nx))
 
@@ -176,7 +160,8 @@ def rhs_plapp(y,t):
     phi_t = np.reshape(phi_t,(nv,1))
     U_t = np.reshape(U_t,(nv,1))
     
-    return np.vstack((phi_t,U_t))
+    rhs_phiU = np.vstack((phi_t,U_t))
+    return np.reshape(rhs_phiU,(2*nv))
 
 
 
@@ -188,7 +173,7 @@ def rhs_plapp(y,t):
 p = parameters()
 
 
-alpha0 = pi/180*30
+alpha0 = pi/180*0
 cosa = np.cos(alpha0)
 sina = np.sin(alpha0)
 
@@ -196,7 +181,7 @@ sina = np.sin(alpha0)
 lx_ex = 22.5
 lx = lx_ex/p.W0
 
-ratio = 32
+ratio = 12
 lz = ratio*lx
 
 
@@ -214,12 +199,16 @@ x = np.linspace(0,lx-dx,nx)
 z = np.linspace(0,lz,nz)
 
 xx, zz = np.meshgrid(x, z)
-dt = 0.0005
 
 
+t_end = 20
+print('time horizon is',t_end)
+nts = 50
+t_eva = np.linspace(0, t_end, nts+1)
 
-Mt = 120000
-t=0
+
+TOL = 1e-6
+
 
 
 
@@ -230,17 +219,16 @@ f = gradflux(dx, dz)
 
 
 # =================Sampling parameters==================
-nts = 50; #dts = Tscan/nts 
-kts = int( Mt/nts )
+#nts = 50; #dts = Tscan/nts 
+#kts = int( Mt/nts )
 
 ##====================Initial condition=========================
-Tishot = np.zeros((2*nv,nts+1))
+
 
 phi0,U0 = initial()
 
-y = np.vstack((np.reshape(phi0,(nv,1)), np.reshape(U0,(nv,1)) )) #T0/y0
-Tishot[:,[0]] = y
-
+y0 = np.vstack((np.reshape(phi0,(nv,1)), np.reshape(U0,(nv,1)) )) #T0/y0
+y0 = np.reshape(y0,(2*nv))
 
 fig0 =plt.figure()
 ax01 = fig0.add_subplot(121)
@@ -251,22 +239,12 @@ plt.title('U')
 plt.imshow(U0,cmap=plt.get_cmap('winter'),origin='lower')
 #======================time evolusion=======================
 
-for i in range(Mt): #Mt
-    
-    rhs= rhs_plapp(y,t)
-    
-    y = y + dt*rhs #forward euler
-    
-  
-    t += dt
-    if (i+1)%kts==0:     # data saving 
-       k = int(np.floor((i+1)/kts))
-       print('=================================')
-       print('now time is ',t)  
-       Tishot[:,[k]] = y
-       
-phif = np.reshape(y[:nv],(nz,nx))
-Uf = np.reshape(y[nv:],(nz,nx))
+sol = ivp( rhs_ds, (0, t_end), y0, method='RK45', t_eval=t_eva, rtol=TOL)      
+
+Tishot = sol.y
+
+phif = np.reshape(Tishot[:nv,nts],(nz,nx))
+Uf = np.reshape(Tishot[nv:,nts],(nz,nx))
 fig1 = plt.figure()
 # 
 ax11 = fig1.add_subplot(121)
