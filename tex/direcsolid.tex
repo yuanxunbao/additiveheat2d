@@ -114,7 +114,19 @@ where the non-dimensional parameters are  $\tilde{R} = R\tau_0 / W_0$, $\tilde{D
 
 
 \subsection{Noise}
+\subsubsection{Initial planar instability}
+Introduce noise on initial planar interface\cite{Yu2018,Xing2015}
+Random numbers generated with flat distribution
+\subsubsection{Noise added at every time step}
+At each grid point (i,j) and each time step we add a random perturbation $\eta\beta_{i,j}\sqrt{\Delta t}$ to the value of $\psi$ at the next time step \cite{Tourret2015}
+\begin{equation}
+\psi_{i, j}(t+\Delta t)=\psi_{i, j}(t)+\Delta t \frac{\partial \psi_{i, j}}{\partial t}+\eta \beta_{i, j} \sqrt{\Delta t}
+\end{equation}
 
+where $\beta_{i,j}$ is a random number generated with a flat distribution in the range [-0.5,0.5], $\Delta$t is the time step, and $\eta$ is the noise amplitude.
+
+
+\subsubsection{}
 \section{Micro model discretization}
 \subsection{$\phi$-equation}
 We first discretize the $\phi$-equation in \cref{eq:micro_phi}. The challenge is to discretize the anisotropic surface tension term. We will make a few simplications. First, note the anisotropic surface tension can be parametrized by $\theta \equiv \arctan(\phi_y / \phi_x)$, i.e., 
@@ -192,7 +204,7 @@ We denote $\alpha_0$ the misorientation angle, and introduce a rotated coordinat
 & \sin(4\T{\theta}) = \sin(4(\theta-\alpha_0)) =  4 \frac{(\phi_{\T{x}}^3 \phi_{\T{z}} - \phi_{\T{x}} \phi_{\T{z}}^3 )}{| \WT{\grad{}} \phi|^4} \\
 & a_s(\WT{\grad{}} \phi  ) = a_s(\T{\theta} )=  1 + \delta \cos(4(\theta-\alpha_0) ) \\
 \end{align}
- We replace $a_s(\grad{} \phi)$ in  \Cref{eq:aniso_surf2} by $a_s(\widetilde{\grad{}} \phi )$
+ We replace $a_s(\grad{} \phi)$ in  \Cref{eq:aniso_surf2} by $a_s(\widetilde{\grad{}} \phi )$\cite{Takaki2014}
  \begin{align}
  \left[1-(1-k) \frac{(z- \tilde{R} t)}{ \tilde{l}_T} \right] a_s(\WT{\grad{}} \phi)^2 \frac{\partial \phi}{\partial t} &= 
   \div{} [\tilde{a}_s(\WT{\grad{}} \phi)^2 \grad{} \phi] + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-\tilde{R} t}{ \tilde{l}_T} \right) \nonumber \\
@@ -298,18 +310,40 @@ $\Delta x$ & mesh size & 0.5 & $W_0$ \\
 
 \begin{table}
 \centering
-\caption{Simulation parameters}
+\caption{Simulation parameters SCN}
 \begin{tabular}{l l c c }
 \toprule
 symbol & meaning & values & units \\
 \midrule
 $\epsilon$ & divide-by-zero  & 1e-4  &\\
+$nx$ & mesh points in x direction& 20 &\\
+ratio & aspect ratio & 32 &\\
 $\Delta x$ & mesh size & 0.8 & $W_0$ \\
 $\Delta t$ & time step size& 0.0005& $\tau_0$ \\
 $\Lambda$ & primary spacing & 22.5 & $\mu m$ \\
 $A_p$ & amplitude of initial perturbation& 0.2 & $W_0$\\
 $L_x$ & length of computation domain  &  1  & $\Lambda$\\
 $M_t$ & time steps& 120000 & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{Simulation parameters Al-Cu}
+\begin{tabular}{l l c c }
+\toprule
+symbol & meaning & values & units \\
+\midrule
+$\epsilon$ & divide-by-zero  & 1e-4  &\\
+$nx$ & mesh points & 50 &\\
+ratio & aspect ratio & 24 &\\
+$\Delta x$ & mesh size & 0.53 & $W_0$ \\
+$\Delta t$ & time step size& 0.002& $\tau_0$ \\
+$\Lambda$ & primary spacing & 7.4 & $\mu m$ \\
+$A_p$ & amplitude of initial perturbation& 0.3 & $W_0$\\
+$L_x$ & length of computation domain  &  1  & $\Lambda$\\
+$M_t$ & time steps& 30000 & \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -370,6 +404,38 @@ Use parameters in \cite{Echebarria2004}, ie. table \ref{tab:SCN}
      \caption{Growth of Al-Cu alloy with and without misorientation angle. Parameters are in table \ref{tab:AlCu}}
      \label{fig:Ech}
    \end{figure}
+   
+  \begin{figure}[!ht]
+     \subfloat[$\Delta x$=0.53W,$\Delta t$=0.002\label{subfig-1:phi}]{%
+       \includegraphics[width=0.40\textwidth]{./figures/AlCua0lx7.png}
+     }
+     \hfill
+     \subfloat[$\Delta x$=0.27W,$\Delta t$=0.0005\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.40\textwidth]{./figures/fine_AlCu.png}
+     }
+     \caption{Growth of Al-Cu alloy with different mesh size and time step size}
+     \label{fig:Ech}
+   \end{figure} 
+   
+ \begin{figure}[!ht]
+     \subfloat[$\Gamma$=$2.4\times 10^{-7}$\label{subfig-1:phi}]{%
+       \includegraphics[width=0.40\textwidth]{./figures/AlCua0lx7.png}
+     }
+     \hfill
+     \subfloat[$\Gamma$=$1.2\times 10^{-6}$\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.40\textwidth]{./figures/large_cm.png}
+     }
+      \hfill
+     \subfloat[$\Gamma$=$2.4\times 10^{-8}$\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.40\textwidth]{./figures/small_cm.png}
+     }
+     \caption{Growth of Al-Cu alloy with different Gibbs-Thompson coefficients $\Gamma$. $\Gamma$ is changed by varying $c_{\infty}m$.  }
+     \label{fig:Ech}
+   \end{figure}
+ 
+   
+   
+   
 \subsection{$\alpha_0$=30, increase primary spacing}
 
 \begin{figure}[!ht]
