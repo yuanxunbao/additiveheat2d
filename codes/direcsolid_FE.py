@@ -24,7 +24,7 @@ import numpy as np
 from SCN import parameters 
 from fir_deri_FD import gradscalar, gradflux
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from scipy.io import savemat as save
 from scipy.io import loadmat as load
 
@@ -225,13 +225,15 @@ y = np.vstack((np.reshape(phi0,(nv,1)), np.reshape(U0,(nv,1)) )) #T0/y0
 Tishot[:,[0]] = y
 
 
-fig0 =plt.figure()
-ax01 = fig0.add_subplot(121)
-plt.title('phi')
-plt.imshow(phi0,cmap=plt.get_cmap('winter'),origin='lower')
-ax02 = fig0.add_subplot(122)
-plt.title('U')
-plt.imshow(U0,cmap=plt.get_cmap('winter'),origin='lower')
+# =============================================================================
+# fig0 =plt.figure()
+# ax01 = fig0.add_subplot(121)
+# plt.title('phi')
+# plt.imshow(phi0,cmap=plt.get_cmap('winter'),origin='lower')
+# ax02 = fig0.add_subplot(122)
+# plt.title('U')
+# plt.imshow(U0,cmap=plt.get_cmap('winter'),origin='lower')
+# =============================================================================
 #======================time evolusion=======================
 
 for i in range(Mt): #Mt
@@ -250,14 +252,16 @@ for i in range(Mt): #Mt
        
 phif = np.reshape(y[:nv],(nz,nx))
 Uf = np.reshape(y[nv:],(nz,nx))
-fig1 = plt.figure()
-# 
-ax11 = fig1.add_subplot(121)
-plt.title('phi')
-plt.imshow(phif,cmap=plt.get_cmap('winter'),origin='lower')
-ax12 = fig1.add_subplot(122)
-plt.title('U')
-plt.imshow(Uf,cmap=plt.get_cmap('winter'),origin='lower')
+# =============================================================================
+# fig1 = plt.figure()
+# # 
+# ax11 = fig1.add_subplot(121)
+# plt.title('phi')
+# plt.imshow(phif,cmap=plt.get_cmap('winter'),origin='lower')
+# ax12 = fig1.add_subplot(122)
+# plt.title('U')
+# plt.imshow(Uf,cmap=plt.get_cmap('winter'),origin='lower')
+# =============================================================================
 # #Tfc = np.reshape(y[ins],(nys,nxs),order='F')
 
 #Tfc = np.reshape(y[ins],(nys,nxs),order='F')
