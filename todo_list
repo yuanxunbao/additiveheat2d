@@ -1,0 +1,3 @@
+* modify code to allow input file, e.g. python ph_dir_solid.py -i input
+* add noise to phi using Tourret 2015 approach
+
