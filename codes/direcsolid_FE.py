@@ -171,7 +171,7 @@ def rhs_plapp(y,t):
 p = parameters()
 
 
-alpha0 = -pi/180*0
+alpha0 = -pi/180*30
 cosa = np.cos(alpha0)
 sina = np.sin(alpha0)
 

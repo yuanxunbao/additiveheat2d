@@ -1,4 +1,4 @@
-load random-29W42.5531914893617nx180lx20.0.mat
+load a0W01.4131lx22.5.mat
 
 xx3=xx;zz3=zz;
 
