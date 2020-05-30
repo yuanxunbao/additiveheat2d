@@ -32,4 +32,4 @@
 #SBATCH --mail-user=yxbao@utexas.edu
 
 # Launch serial code...
-./direcsolid_FE.py -i input1         # Do not use ibrun or any other MPI launcher
+./direcsolid_FE.py          # Do not use ibrun or any other MPI launcher

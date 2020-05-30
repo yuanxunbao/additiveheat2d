@@ -1,66 +1,57 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr  6 17:47:26 2020
-
-@author: yigongqin
-"""
-
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
 Created on Mon Mar  9 10:45:21 2020
 
 @author: yigongqin
 """
-# horizontal periodic/vertical no flux N*(M+1)
-# Finite difference spatial second order
-# Time rk45
-# grids x*y N*(M+1) matix (m+1)*n
+#=========================================================
+
+# The model and equations are taken from echebarria2004
+# BC: horizontal periodic/vertical no flux
+# Spatial: Finite difference (2nd order). NEED TO LOAD fir_deri_FD.py for operators
+# Grids: x*y N*(M+1) matix (m+1)*n
+#=========================================================
+
 
 from math import pi
 import numpy as np
-from SCN import parameters 
+from ds_input import phy_parameter, simu_parameter
 from fir_deri_FD import gradscalar, gradflux
 
-#import matplotlib.pyplot as plt
 from scipy.io import savemat as save
-from scipy.io import loadmat as load
 
 # the equations are divergence of fluxs, having the form F_x + J_z 
+def noise():
+   
+    beta  = np.random.rand(nz,nx) - 0.5
+    
+    noi = n.eta*np.sqrt(dt)*beta
+    noi = np.reshape(noi,(nv,1))
+    return np.vstack((noi, np.zeros((nv,1))))
+
 def initial(): # properties/parameters of interests
   
-    z0 = lx*0.1
-    nw = 1
-    mag = 0.2
-
-   
+    z0 = n.z0
+    nw = n.nw
+    mag = n.mag
     
     phi0 = -np.tanh( ( zz-z0-mag*np.cos(2*pi/lx*xx*nw) ))
    
-
-    #U0 = 1/(1-p.k) * ( p.k/((1-phi0)/2+p.k*(1+phi0)/2) - 1)
     U0 = 0*phi0 - 1
     
     return phi0,U0
 
-def out_put():
-    yo = np.zeros((2*nv,nts+1))
-    for i in range(nts+1):
-    
-       phi = np.reshape(Tishot[:nv,i],(nz,nx))
-       U = np.reshape(Tishot[nv:,i],(nz,nx))  
-       c_tilde = ( 1+ (1-p.k)*U )*( (1+phi)/2 + (1-phi)/(2*p.k) )
-       yo[:,i] = np.reshape(np.vstack((np.reshape(phi,(nv,1),order='F'),np.reshape(c_tilde,(nv,1),order='F'))),(nv*2))
+def reshape_data(y):
+    yo = np.zeros((2*nv,1))
 
-    filename = 'a' + str(int(alpha0*180/pi))+'W0' + str(p.W0)+'lx'+ str(lx*p.W0)+'.mat'
+    phi = np.reshape(y[:nv,0],(nz,nx))
+    U = np.reshape(y[nv:,0],(nz,nx))  
+    c_tilde = ( 1+ (1-p.k)*U )*( (1+phi)/2 + (1-phi)/(2*p.k) )
+    yo = np.vstack((np.reshape(phi,(nv,1),order='F'),np.reshape(c_tilde,(nv,1),order='F')))
+     
+    return yo
 
-    save(filename,{'xx':xx*p.W0,'zz':zz*p.W0,'y':yo,'dt':dt*p.tau0,'nx':nx,'nz':nz,'t':t*p.tau0})
-    
-    
-    
-    return
 
 def misorien(phi_x, phi_z):
     
@@ -97,8 +88,6 @@ def PF(phi_xx,phi_zx,phi_nx,phi_xz,phi_zz,phi_nz):
     return f.gradx( F_x ) + f.gradz( J_z )
 
 
-
-
 def FU(phi_x, phi_n, phi, U, phi_t):
     
     diffx = p.Dl_tilde/2*( 1 - s.avgx(phi) )*s.gradxx(U) 
@@ -121,8 +110,7 @@ def a_s(phi_x, phi_z):
     phi_n = np.sqrt( phi_xc**2 + phi_zc**2 )
     #print(phi_n)
     phi_xc,phi_zc = misorien(phi_xc,phi_zc)
-    #phi_n1 = np.sqrt( phi_xc**2 + phi_zc**2 )
-    #print(phi_n1)
+
     return 1 - 3*p.delta + mask_divi( 4*p.delta*( phi_xc**4 + phi_zc**4 ) , phi_n**4 , p.eps**4)
 
 
@@ -162,29 +150,26 @@ def rhs_plapp(y,t):
     return np.vstack((phi_t,U_t))
 
 
-
-
 #====================parameters/operators==========================
-#y = load('W00.2lx6.0.mat')['y']
-#t = load('plapp.mat')['t']
-
-p = parameters()
 
 
-alpha0 = -pi/180*30
+p = phy_parameter()
+n = simu_parameter()
+
+alpha0 = -pi/180*n.alpha0
 cosa = np.cos(alpha0)
 sina = np.sin(alpha0)
 
 
-lx_ex = 22.5
+lx_ex = n.lx
 lx = lx_ex/p.W0
 
-ratio = 32
+ratio = n.aratio
 lz = ratio*lx
 
 
-nx = 20
-nz = ratio*nx+1
+nx = n.nx
+nz = int(ratio*nx+1)
 
 nv= nz*nx #number of variables
 
@@ -197,13 +182,11 @@ x = np.linspace(0,lx-dx,nx)
 z = np.linspace(0,lz,nz)
 
 xx, zz = np.meshgrid(x, z)
-dt = 0.0005
+dt = n.dt
 
 
-
-Mt = 120000
+Mt = n.Mt
 t=0
-
 
 
 s = gradscalar(dx, dz, 'P', 'R')
@@ -211,9 +194,8 @@ s = gradscalar(dx, dz, 'P', 'R')
 f = gradflux(dx, dz)
 
 
-
 # =================Sampling parameters==================
-nts = 50; #dts = Tscan/nts 
+nts = n.nts; #dts = Tscan/nts 
 kts = int( Mt/nts )
 
 ##====================Initial condition=========================
@@ -222,54 +204,28 @@ Tishot = np.zeros((2*nv,nts+1))
 phi0,U0 = initial()
 
 y = np.vstack((np.reshape(phi0,(nv,1)), np.reshape(U0,(nv,1)) )) #T0/y0
-Tishot[:,[0]] = y
+Tishot[:,[0]] = reshape_data(y)
 
 
-# =============================================================================
-# fig0 =plt.figure()
-# ax01 = fig0.add_subplot(121)
-# plt.title('phi')
-# plt.imshow(phi0,cmap=plt.get_cmap('winter'),origin='lower')
-# ax02 = fig0.add_subplot(122)
-# plt.title('U')
-# plt.imshow(U0,cmap=plt.get_cmap('winter'),origin='lower')
-# =============================================================================
 #======================time evolusion=======================
 
 for i in range(Mt): #Mt
     
     rhs= rhs_plapp(y,t)
     
-    y = y + dt*rhs #forward euler
-    
-  
+    y = y + dt*rhs + noise() #forward euler
+     
     t += dt
     if (i+1)%kts==0:     # data saving 
        k = int(np.floor((i+1)/kts))
        print('=================================')
-       print('now time is ',t)  
-       Tishot[:,[k]] = y
+       print('now time is ',t)
+       Tishot[:,[k]] = reshape_data(y)
        
-phif = np.reshape(y[:nv],(nz,nx))
-Uf = np.reshape(y[nv:],(nz,nx))
-# =============================================================================
-# fig1 = plt.figure()
-# # 
-# ax11 = fig1.add_subplot(121)
-# plt.title('phi')
-# plt.imshow(phif,cmap=plt.get_cmap('winter'),origin='lower')
-# ax12 = fig1.add_subplot(122)
-# plt.title('U')
-# plt.imshow(Uf,cmap=plt.get_cmap('winter'),origin='lower')
-# =============================================================================
-# #Tfc = np.reshape(y[ins],(nys,nxs),order='F')
 
-#Tfc = np.reshape(y[ins],(nys,nxs),order='F')
-#plot
-#plt.imshow(Tfc,cmap=plt.get_cmap('hsv'))
+filename = n.filename
 
-
-out_put()
+save(filename,{'xx':xx*p.W0,'zz':zz*p.W0,'y':Tishot,'dt':dt*p.tau0,'nx':nx,'nz':nz,'t':t*p.tau0})
 
 
 
