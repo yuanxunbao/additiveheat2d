@@ -26,8 +26,9 @@ def noise():
    
     beta  = np.random.rand(nz,nx) - 0.5
     
-    noi = n.eta*np.sqrt(dt)*beta
+    noi = n.eta*np.sqrt(n.dt)*beta
     noi = np.reshape(noi,(nv,1))
+    #print(noi)
     return np.vstack((noi, np.zeros((nv,1))))
 
 def initial(): # properties/parameters of interests

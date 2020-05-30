@@ -43,19 +43,19 @@ def simu_parameter():
     
     alpha0 = 0                    # misorientation angle in degree
     
-    lx = 22.5*8                     # horizontal length in micron
-    aratio = 4                   # aspect ratio
-    nx = 20*8                       # number of grids in x   nx*aratio must be int
-    dt = 0.0005                   # time step size for forward euler
-    Mt = 120000
+    lx = 22.5                     # horizontal length in micron
+    aratio = 4*8                   # aspect ratio
+    nx = 20                       # number of grids in x   nx*aratio must be int
+    dt = 0.0025                   # time step size for forward euler
+    Mt = 24000
     nts = 50                      # number of samples in time   Mt/nts must be int
 
     z0 = lx/p.W0*0.1              # initial location of interface in W0
     nw = 1                        # number of perturbations Lx= nw*Lambda
-    mag = 0.2                     # magnitude of sin perturbation  in W0
+    mag = z0*0.15                 # magnitude of sin perturbation  in W0
     
-    eta = 0.01                    # magnitude of noise
-    filename = 'a' + str(int(alpha0*180/pi))+'W0' + str(p.W0)+'lx'+ str(lx*p.W0)+'.mat'
+    eta = 0.0001                    # magnitude of noise
+    filename = 'another' + str(int(alpha0*180/pi))+'W0' + str(p.W0)+'lx'+ str(lx*p.W0)+'.mat'
     
    return simu_para
 
