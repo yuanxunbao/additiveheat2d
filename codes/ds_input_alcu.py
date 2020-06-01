@@ -56,7 +56,8 @@ def simu_parameter():
     mag = z0*0.15                 # magnitude of sin perturbation  in W0
     
     eta = 0.0                    # magnitude of noise
-    filename = '$WORK/data/ds_alcu'+'noi' + str('%5.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lx)+'nx'+str(nx)+'W'+str('%5.2f'%p.W0)+'.mat'
+    direc = '/work/07428/ygqin/frontera/data'
+    filename = 'ds_scn'+'noi' + str('%4.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lx)+'nx'+str(nx)+'W'+str('%4.2f'%p.W0)+'.mat'
     
    return simu_para
 

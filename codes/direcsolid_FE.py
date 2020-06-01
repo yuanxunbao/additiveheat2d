@@ -5,18 +5,19 @@ Created on Mon Mar  9 10:45:21 2020
 
 @author: yigongqin
 """
-#=========================================================
+'''
 
 # The model and equations are taken from echebarria2004
 # BC: horizontal periodic/vertical no flux
 # Spatial: Finite difference (2nd order). NEED TO LOAD fir_deri_FD.py for operators
 # Grids: x*y N*(M+1) matix (m+1)*n
-#=========================================================
+'''
 
 import sys
+import os
 from math import pi
 import numpy as np
-from ds_input import phy_parameter, simu_parameter
+from ds_input_scn import phy_parameter, simu_parameter
 from fir_deri_FD import gradscalar, gradflux
 import time
 from scipy.io import savemat as save
@@ -233,7 +234,7 @@ for i in range(Mt): #Mt
 end = time.time()
 filename = n.filename
 
-save(filename,{'xx':xx*p.W0,'zz':zz*p.W0,'y':Tishot,'dt':dt*p.tau0,'nx':nx,'nz':nz,'t':t*p.tau0,'mach_time':end-start,'input_file':sys.argv[1]})
+save(os.path.join(n.direc,filename),{'xx':xx*p.W0,'zz':zz*p.W0,'y':Tishot,'dt':dt*p.tau0,'nx':nx,'nz':nz,'t':t*p.tau0,'mach_time':end-start,'input_file':sys.argv[1]})
 
 
 
