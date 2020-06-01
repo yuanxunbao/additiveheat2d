@@ -27,9 +27,10 @@
 #SBATCH -p normal          # Queue (partition) name
 #SBATCH -N 1               # Total # of nodes (must be 1 for serial)
 #SBATCH -n 1               # Total # of mpi tasks (should be 1 for serial)
-#SBATCH -t 00:30:00        # Run time (hh:mm:ss)
+#SBATCH -t 00:15:00        # Run time (hh:mm:ss)
 #SBATCH --mail-type=all    # Send email at begin and end of job
-#SBATCH --mail-user=yxbao@utexas.edu
+#SBATCH --mail-user=ygqin@utexas.edu
 
 # Launch serial code...
-./direcsolid_FE.py          # Do not use ibrun or any other MPI launcher
+cp ds_input_scn.py ds_input.py
+./direcsolid_FE.py  ds_input_scn      # Do not use ibrun or any other MPI launcher

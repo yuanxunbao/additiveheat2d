@@ -13,22 +13,26 @@ Created on Mon Mar  9 10:45:21 2020
 # Grids: x*y N*(M+1) matix (m+1)*n
 #=========================================================
 
-
+import sys
 from math import pi
 import numpy as np
 from ds_input import phy_parameter, simu_parameter
 from fir_deri_FD import gradscalar, gradflux
-
+import time
 from scipy.io import savemat as save
 
 # the equations are divergence of fluxs, having the form F_x + J_z 
-def noise():
-   
-    beta  = np.random.rand(nz,nx) - 0.5
+
+
+
+def noise(y):
+    phi = y[:nv]  
+    mask1 = 1*(phi<0.5)
+    mask2 = 1*(phi>-0.5)    
+    beta  = np.random.rand(nv,1) - 0.5
     
-    noi = n.eta*np.sqrt(n.dt)*beta
-    noi = np.reshape(noi,(nv,1))
-    #print(noi)
+    noi = n.eta*np.sqrt(n.dt)*beta*mask1*mask2
+
     return np.vstack((noi, np.zeros((nv,1))))
 
 def initial(): # properties/parameters of interests
@@ -37,7 +41,7 @@ def initial(): # properties/parameters of interests
     nw = n.nw
     mag = n.mag
     
-    phi0 = -np.tanh( ( zz-z0-mag*np.cos(2*pi/lx*xx*nw) ))
+    phi0 = -np.tanh( ( zz-z0+mag*np.cos(2*pi/lx*xx*nw) ))
    
     U0 = 0*phi0 - 1
     
@@ -205,28 +209,31 @@ Tishot = np.zeros((2*nv,nts+1))
 phi0,U0 = initial()
 
 y = np.vstack((np.reshape(phi0,(nv,1)), np.reshape(U0,(nv,1)) )) #T0/y0
-Tishot[:,[0]] = reshape_data(y)
+np.random.seed(0)
+y = y + noise(y)
+Tishot[:,[0]] = reshape_data(y)   #save initial condition
 
 
 #======================time evolusion=======================
+start = time.time()
 
 for i in range(Mt): #Mt
     
     rhs= rhs_plapp(y,t)
     
-    y = y + dt*rhs + noise() #forward euler
-     
+    y = y + dt*rhs + noise(y) #forward euler
+
     t += dt
     if (i+1)%kts==0:     # data saving 
        k = int(np.floor((i+1)/kts))
        print('=================================')
        print('now time is ',t)
-       Tishot[:,[k]] = reshape_data(y)
+       Tishot[:,[k]] = reshape_data(y)   #save different time
        
-
+end = time.time()
 filename = n.filename
 
-save(filename,{'xx':xx*p.W0,'zz':zz*p.W0,'y':Tishot,'dt':dt*p.tau0,'nx':nx,'nz':nz,'t':t*p.tau0})
+save(filename,{'xx':xx*p.W0,'zz':zz*p.W0,'y':Tishot,'dt':dt*p.tau0,'nx':nx,'nz':nz,'t':t*p.tau0,'mach_time':end-start,'input_file':sys.argv[1]})
 
 
 
