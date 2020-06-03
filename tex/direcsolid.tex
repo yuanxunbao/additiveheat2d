@@ -111,6 +111,48 @@ We use  the interfacial width $W_0$ as the length scale and $\tau_0$ as the time
 \end{align}
 where the non-dimensional parameters are  $\tilde{R} = R\tau_0 / W_0$, $\tilde{D_l} = D_l \tau_0 / W_0^2$ and $\tilde{l}_T = l_T / W_0$.
 
+\subsection{Non-dimensional microscopic model in the textbook}
+\begin{align}
+ a_s^2(\theta) \frac{\partial \phi}{\partial t} &= \div{} [a_s(\hat{n})^2 \grad{} \phi] -  \partial_x \left( a_s(\theta) a_s'(\theta) \partial_z \phi   \right)  +
+\partial_z \left( a_s(\theta) a_s'(\theta) \partial_x \phi \right)    \nonumber \\
+& \quad + \phi - \phi^3 - \frac{\lambda}{1-k} (e^u-1) (1-\phi^2)^2 ,  \\
+\frac{\partial c}{\partial t} &= \div{} [ \bar{D} Q(\phi) c \grad{} u ] + \div{} \left( \frac{1}{2\sqrt{2}} (1-k) e^u \frac{\nabla \phi}{|\nabla \phi|} \frac{\partial \phi}{\partial t}  \right) , \\
+e^u &= \frac{2c}{ (1+k) - (1-k) \phi }, \\
+Q(\phi) &= \frac{1-\phi}{1+k-(1-k )\phi}, \\
+a_s(\theta) &= (1-3\delta) \left(    1 + \frac{4\delta}{1-3\delta}   \frac{\phi_x^4 + \phi_z^4}{|\grad{} \phi|^4} \right).
+\end{align}
+
+no-flux BCs for $\phi$, $c$ and $e^u$.
+
+initial conditions:
+\begin{align}
+\phi(x,y,t=0) &= -\tanh(r(x,y)/\sqrt{2}), \\
+r(x,y) &= \sqrt{ (x-x_0)^2 + (y-y_0)^2} - 10, \\
+e^u(t=0) & =1  - (1-k) \Omega,\\
+c(x,y,t=0) &= 0.5 ( (1+k) - (1-k)\phi )e^u
+\end{align}
+
+\begin{table}
+\centering
+\caption{simulation parameters for the textbook example}
+\begin{tabular}{c c  }
+\toprule
+symbol & value \\
+\midrule
+$\Delta x$ & 0.4 \\
+$\Delta t $ & 0.008 \\
+$N_x,N_z$ & 400 \\
+$\lambda$ & 3.19 \\
+$k$ & 0.15 \\
+$\delta$ & 0.05 \\
+$\bar{D}$ & $0.6267\lambda$  \\
+$\Omega$ & 0.55 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+
 
 
 \subsection{Noise}
