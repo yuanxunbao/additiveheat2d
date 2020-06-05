@@ -498,7 +498,65 @@ Use parameters in \cite{Echebarria2004}, ie. table \ref{tab:SCN}
   \label{fig:Lx_conv}
 \end{figure}
 
+\begin{figure}[!ht]
+     \subfloat[results\label{subfig-1:resu}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/t50000_f.png}
+     }
+     \hfill
+     \subfloat[compare with reference\label{subfig-2:ref}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/consistency.png}
+     }
+     \caption{Free dendrite growth. Comparison with code in the book.}
+     \label{fig:Ech}
+   \end{figure}
 
+\begin{figure}[!ht]
+     \subfloat[Xing et al\label{subfig-1:resu}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Xing.png}
+     }
+     \hfill
+     \subfloat[my result for W=55.6d0 \label{subfig-2:ref}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/W55.png}
+     }
+     \caption{Growth of Al-Cu with misorientation angle $\alpha=30$. No noise. Parameters are in Table 3.}
+     \label{fig:Ech}
+   \end{figure}
+
+\begin{figure}[!ht]
+     \subfloat[$\alpha$=0\label{subfig-1:phi}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/Ech_phi.png}
+     }
+     \hfill
+     \subfloat[$\alpha$=30\label{subfig-1:phi}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/30ech.png}
+     }
+      \caption{Growth of SCN alloy with and without misorientation angle. No noise. The inclined growth is not obvious.}
+     \label{fig:Ech}
+   \end{figure}
+
+  \begin{figure}[!ht]
+     \subfloat[$\Delta x$=0.8W,$\Delta t$=0.002\label{subfig-1:phi}]{%
+       \includegraphics[width=0.40\textwidth]{./figures/W0p8.png}
+     }
+     \hfill
+     \subfloat[$\Delta x$=0.4W,$\Delta t$=0.0005\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.40\textwidth]{./figures/W0p4.png}
+     }
+     \caption{Growth of SCN alloy when increasing primary spacing from 22.5$\mu$m to 105$\mu m$. $\alpha$=0, no noise.}
+     \label{fig:Ech}
+   \end{figure} 
+
+  \begin{figure}[!ht]
+     \subfloat[no noise\label{subfig-1:phi}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/without_noise.png}
+     }
+     \hfill
+     \subfloat[noise amplitude 0.01\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.45\textwidth]{./figures/noise_phi.png}
+     }
+     \caption{Growth of SCN alloy with and without noise. $\alpha$=0. Primary spacing is 105$\mu m$.}
+     \label{fig:Ech}
+   \end{figure} 
 
 \bibliographystyle{unsrt}
 \bibliography{Directional-Solidification.bib}
