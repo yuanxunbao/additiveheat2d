@@ -91,9 +91,9 @@ Other parameters and terms are defined as
 	& a_{s}(\hat{n}) = (1-3\delta)\left\{1+\frac{4 \delta}{1-3\delta}(\hat{n}_x^4 + \hat{n}_z^4) \right\} \\
     & \hat{n} =  \frac{\nabla \phi}{|\nabla \phi|} \\
     & l_T = \frac{|m|c_{\infty}(1/k-1)}{G} \\
-    & \lambda =  \frac{5\sqrt{2}}{8}  \frac{W_0}{d_0} \\
+    & \lambda =  \frac{5\sqrt{2}}{8}  \frac{W_0}{d_0} = a_{1} \frac{W_0}{d_0} \\
     & d_0 = \frac{\Gamma}{|m|c_{\infty}(1/k-1)} =   \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
-    & \tau_0 =  \frac{0.6267\lambda W_0^2}{D_l}
+    & \tau_0 =  \frac{0.6267\lambda W_0^2}{D_l} =  \frac{a_{2}\lambda W_0^2}{D_l}
 \end{align}
 
 
@@ -109,57 +109,34 @@ We use  the interfacial width $W_0$ as the length scale and $\tau_0$ as the time
 & \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-\tilde{R} t}{ \tilde{l}_T} \right) \\
 \left(\frac{1+k}{2}-\frac{1-k}{2}\phi \right) \frac{\partial U}{\partial t} &= \div{} [\tilde{D}_l d(\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1}{2}  \frac{\partial \phi}{\partial t},
 \end{align}
-where the non-dimensional parameters are  $\tilde{R} = R\tau_0 / W_0$, $\tilde{D_l} = D_l \tau_0 / W_0^2$ and $\tilde{l}_T = l_T / W_0$.
+where the non-dimensional parameters are  $\tilde{R} = R\tau_0 / W_0$, $\tilde{D_l} = D_l \tau_0 / W_0^2 = a_{2}\lambda$ and $\tilde{l}_T = l_T / W_0$.
 
-\subsection{Non-dimensional microscopic model in the textbook}
+\subsection{Non-linear preconditioned transformation of equations}
+
+\begin{equation}
+\varphi(x, y, t)=\tanh \left\{\frac{\psi(x, y, t)}{\sqrt{2}}\right\}
+\end{equation}
+
 \begin{align}
- a_s^2(\theta) \frac{\partial \phi}{\partial t} &= \div{} [a_s(\hat{n})^2 \grad{} \phi] -  \partial_x \left( a_s(\theta) a_s'(\theta) \partial_z \phi   \right)  +
-\partial_z \left( a_s(\theta) a_s'(\theta) \partial_x \phi \right)    \nonumber \\
-& \quad + \phi - \phi^3 - \frac{\lambda}{1-k} (e^u-1) (1-\phi^2)^2 ,  \\
-\frac{\partial c}{\partial t} &= \div{} [ \bar{D} Q(\phi) c \grad{} u ] + \div{} \left( \frac{1}{2\sqrt{2}} (1-k) e^u \frac{\nabla \phi}{|\nabla \phi|} \frac{\partial \phi}{\partial t}  \right) , \\
-e^u &= \frac{2c}{ (1+k) - (1-k) \phi }, \\
-Q(\phi) &= \frac{1-\phi}{1+k-(1-k )\phi}, \\
-a_s(\theta) &= (1-3\delta) \left(    1 + \frac{4\delta}{1-3\delta}   \frac{\phi_x^4 + \phi_z^4}{|\grad{} \phi|^4} \right).
+ \left[1-(1-k) \frac{(z- \tilde{R} t)}{ \tilde{l}_T} \right] a_s(\hat{n})^2 \frac{\partial \psi}{\partial t} &= 
+  \div{} [a_s(\hat{n})^2 \grad{} \psi] - \sqrt{2}a_s(\hat{n})^2\phi|\grad{} \psi|^2 + \nonumber  \\  
+ & \partial_x \left( |\grad{} \psi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \psi)}  \right)  + 
+\partial_z \left( |\grad{} \psi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \psi)}  \right)   \nonumber \\
+& \quad + \phi \sqrt{2} - \lambda (1-\phi^2)\sqrt{2} \left(U + \frac{z-\tilde{R} t}{ \tilde{l}_T} \right) \\
+\left(1+k-(1-k)\phi \right) \frac{\partial U}{\partial t} &= \div{} [\tilde{D}_l (1-\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1-\phi^{2}}{\sqrt{2}}  \frac{\partial \psi}{\partial t},
 \end{align}
 
-no-flux BCs for $\phi$, $c$ and $e^u$.
-
-initial conditions:
 \begin{align}
-\phi(x,y,t=0) &= -\tanh(r(x,y)/\sqrt{2}), \\
-r(x,y) &= \sqrt{ (x-x_0)^2 + (y-y_0)^2} - 10, \\
-e^u(t=0) & =1  - (1-k) \Omega,\\
-c(x,y,t=0) &= 0.5 ( (1+k) - (1-k)\phi )e^u
+	& \vec{j}_{at} =  [1+(1-k)U]\frac{1-\phi^{2}}{{2}}  \frac{\nabla \phi}{|\nabla \phi|} \frac{\partial \psi}{\partial t} \\
+	& a_{s}(\hat{n}) = (1-3\delta)\left\{1+\frac{4 \delta}{1-3\delta}(\hat{n}_x^4 + \hat{n}_z^4) \right\} \\
+        & \hat{n} =  \frac{\nabla \phi}{|\nabla \phi|} 
 \end{align}
-
-\begin{table}
-\centering
-\caption{simulation parameters for the textbook example}
-\begin{tabular}{c c  }
-\toprule
-symbol & value \\
-\midrule
-$\Delta x$ & 0.4 \\
-$\Delta t $ & 0.008 \\
-$N_x,N_z$ & 400 \\
-$\lambda$ & 3.19 \\
-$k$ & 0.15 \\
-$\delta$ & 0.05 \\
-$\bar{D}$ & $0.6267\lambda$  \\
-$\Omega$ & 0.55 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
 
 
 
 \subsection{Noise}
-\subsubsection{Initial planar instability}
-Introduce noise on initial planar interface\cite{Yu2018,Xing2015}
-Random numbers generated with flat distribution
-\subsubsection{Noise added at every time step}
+
+\subsubsection{Noise added at every time step in $\psi$ equation}
 At each grid point (i,j) and each time step we add a random perturbation $\eta\beta_{i,j}\sqrt{\Delta t}$ to the value of $\psi$ at the next time step \cite{Tourret2015}
 \begin{equation}
 \psi_{i, j}(t+\Delta t)=\psi_{i, j}(t)+\Delta t \frac{\partial \psi_{i, j}}{\partial t}+\eta \beta_{i, j} \sqrt{\Delta t}
@@ -168,7 +145,6 @@ At each grid point (i,j) and each time step we add a random perturbation $\eta\b
 where $\beta_{i,j}$ is a random number generated with a flat distribution in the range [-0.5,0.5], $\Delta$t is the time step, and $\eta$ is the noise amplitude.
 
 
-\subsubsection{}
 \section{Micro model discretization}
 \subsection{$\phi$-equation}
 We first discretize the $\phi$-equation in \cref{eq:micro_phi}. The challenge is to discretize the anisotropic surface tension term. We will make a few simplications. First, note the anisotropic surface tension can be parametrized by $\theta \equiv \arctan(\phi_y / \phi_x)$, i.e., 
@@ -183,16 +159,16 @@ By using some trigonometric identities (check), and $\cos(\theta) = \phi_x / |\g
 \end{align}
 We can also write (see Appendix B of \cite{Tourret2015})
 \begin{align}
-& \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right) = \partial_x (-a'_s(\theta) a_s(\theta) \partial_z \phi ) \\
-& \partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) = 
-\partial_z (a'_s(\theta) a_s(\theta) \partial_x \phi).
+& \partial_x \left( |\grad{} \psi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \psi)}  \right) = \partial_x (-a'_s(\theta) a_s(\theta) \partial_z \psi ) \\
+& \partial_z \left( |\grad{} \psi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \psi)}  \right) = 
+\partial_z (a'_s(\theta) a_s(\theta) \partial_x \psi).
 \end{align}
 Therefore,
 \begin{align}
- & \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
-\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) \nonumber \\
-= &  \  \partial_x  \underbrace{ \left[ a_s^2(\theta) \partial_x \phi - a'_s(\theta) a_s(\theta) \partial_z \phi \right]}_{=: F} + 
-\partial_z \underbrace{ \left[ a_s^2(\theta) \partial_z \phi + a'_s(\theta) a_s(\theta) \partial_x \phi \right]}_{=: J}  
+ & \div{} [a_s(\hat{n})^2 \grad{} \psi] +  \partial_x \left( |\grad{} \psi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \psi)}  \right)  +
+\partial_z \left( |\grad{} \psi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \psi)}  \right) \nonumber \\
+= &  \  \partial_x  \underbrace{ \left[ a_s^2(\theta) \partial_x \psi - a'_s(\theta) a_s(\theta) \partial_z \psi \right]}_{=: F} + 
+\partial_z \underbrace{ \left[ a_s^2(\theta) \partial_z \psi + a'_s(\theta) a_s(\theta) \partial_x \psi \right]}_{=: J}  
 \label{eq:aniso_surf2}
 \end{align}
 
@@ -212,13 +188,6 @@ $\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
 
 
 
-\subsection{Divide-by-zero in anisotropy}
-On page 66 of \cite{Provatas2010}, whenever $|\grad{}\phi(i,j)|^{2} \leq \epsilon $, say $\epsilon = 10^{-8}$, we just set
-\begin{align*}
-a_s(\hat{n}) &= 1-3\delta, \\
-a'_s(\hat{n}) &= 0.
-\end{align*}
-In \cite{Karma1998}, Karma explained the need for $a_s(\hat{n})$ in the definition $\tau_{\phi}$ on the LHS of \cref{eq:micro_phi} because it is related to the correct kinetics in the Stefan problem. Fortunately this term is never zero so it is safe to divide. 
 
 \subsection{Misorientation}
 We denote $\alpha_0$ the misorientation angle, and introduce a rotated coordinate $(\T{x},\T{z})$,
@@ -275,13 +244,23 @@ We denote $\alpha_0$ the misorientation angle, and introduce a rotated coordinat
 
 \item Similarly, for the anti-trapping flux $\vec{j}_{at}$, we need
 \begin{align}
-& \left[ [1+(1-k)U]  \frac{\phi_x}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i+1/2,j} = \nonumber \\
-&  \frac{1}{2}\left[[1+(1-k)U_{i+1,j}]\partial_t\phi_{i+1,j}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i+1/2,j}  \\
-& \left[ [1+(1-k)U]  \frac{\phi_y}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i,j+1/2} = \nonumber \\ 
-& \frac{1}{2}\left[[1+(1-k)U_{i,j+1}]\partial_t\phi_{i,j+1}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i,+1/2j}  
+& \left[ [1+(1-k)U]  \frac{\phi_x}{ |\grad{} \phi | } \frac{\partial \psi}{\partial t}  \right]_{i+1/2,j} = \nonumber \\
+&  \frac{1}{2}\left[[1+(1-k)U_{i+1,j}]\partial_t\psi_{i+1,j}+[1+(1-k)U_{i,j}]\partial_t\psi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i+1/2,j}  \\
+& \left[ [1+(1-k)U]  \frac{\phi_y}{ |\grad{} \phi | } \frac{\partial \psi}{\partial t}  \right]_{i,j+1/2} = \nonumber \\ 
+& \frac{1}{2}\left[[1+(1-k)U_{i,j+1}]\partial_t\psi_{i,j+1}+[1+(1-k)U_{i,j}]\partial_t\psi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i,+1/2j}  
 \end{align}
 \end{itemize}
 
+\section{Implementation}
+
+
+\subsection{Divide-by-zero treatment}
+On page 66 of \cite{Provatas2010}, whenever $|\grad{}\phi(i,j)|^{2} \leq \epsilon $, say $\epsilon = 10^{-8}$, we just set
+\begin{align*}
+a_s(\hat{n}) &= 1-3\delta, \\
+a'_s(\hat{n}) &= 0.
+\end{align*}
+In \cite{Karma1998}, Karma explained the need for $a_s(\hat{n})$ in the definition $\tau_{\phi}$ on the LHS of \cref{eq:micro_phi} because it is related to the correct kinetics in the Stefan problem. Fortunately this term is never zero so it is safe to divide. 
 
 
 \subsection{Initial condition}
@@ -293,270 +272,45 @@ where $z_0$ is the initial height, $A_0$ is the amplitude to initial perturbatio
 
 For the initial condition of $U$, we set $c_l = c_{\infty}, c_s = k c_l$ \cite{Echebarria2004}, which with the definition of $c_l^0 = c_{\infty} /k $, corresponds to $U \equiv -1$ in the whole system!
 
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{./figures/initial.png}
-\caption{sample initial condition for $\phi$ and U}
-\end{figure}
-
-
+\subsection{Moving domain}
 
 
 
 
 \begin{table}
 \centering
-\caption{Parameters for SCN.}
+\caption{Physical and simulation parameters for SCN \cite{Tourret2015}.}
 \begin{tabular}{l l c c }
 \toprule
 symbol & meaning & values & units \\
 \midrule
-$c_{\infty}m$ & nominal solute concentration &  2 & K \\
-$k$ & interface solute partition coefficient & 0.3 &\\
+$c_{\infty}$ & nominal solute concentration &  0.4 & K \\
+$m$ &liquidus slope &  -3.02 & K \\
+$k$ & interface solute partition coefficient & 0.1 &\\
+$D_l$ & solute diffusion coefficient &  $1.27\times 10^{3}$  & ${\mu\text{m}}^2/\text{s}$ \\
 $\delta$ & strength of the surface tension anisotropy  &  0.007  &\\
-$\Gamma$ & Gibbs-Thompson coefficient & $6.48\times 10^{-8}$ & Km \\
-$d_0$ & capillary length & $ 1.3\times10^{-2}$  & $\mu$m \\
-$G$ & thermal gradient & 140 & $\text{K} / \text{cm}$ \\
-$R$ & pulling speed &  32 & $\mu \text{m} / \text{s}$ \\
-$D_l$ & solute diffusion coefficient &$10^{3}$ &  ${\mu\text{m}}^2/\text{s}$ \\
-$W_0$ & interface thickness  & 40-90  & $d_0$ \\
-$\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
+$\Gamma$ & Gibbs-Thompson coefficient & $6.4\times 10^{-8}$ & Km \\
+$G$ & thermal gradient & 100-300 & $\text{K} / \text{cm}$ \\
+$R$ & pulling speed &  25 & $\mu \text{m} / \text{s}$ \\
+$l_T$ & thermal length &  0.362-10.9  & mm \\
+$l_D$ & length &  50.8  & $\mu$m \\
+$d_0$ & capillary length & $ 5.89\times10^{-3}$  & $\mu$m \\
+$W_0$ & interface thickness  & 113.25 & $d_0$ \\
+$\Delta x$ & mesh size & 1.5 & $W_0$ \\
 \bottomrule
 \end{tabular}\label{tab:SCN}
 
 \end{table}
 
 
-\begin{table}
-\centering
-\caption{Parameters forAl-Cu.}
-\begin{tabular}{l l c c }
-\toprule
-symbol & meaning & values & units \\
-\midrule
-$c_{\infty}m$ & nominal solute concentration &  7.8 & K \\
-$k$ & interface solute partition coefficient & 0.14 &\\
-$\delta$ & strength of the surface tension anisotropy  &  0.01  &\\
-$\Gamma$ & Gibbs-Thompson coefficient & $2.4\times 10^{-7}$ & Km \\
-$d_0$ & capillary length & $ 5\times10^{-3}$  & $\mu$m \\
-$G$ & thermal gradient & 700 & $\text{K} / \text{cm}$ \\
-$R$ & pulling speed &  500 & $\mu \text{m} / \text{s}$ \\
-$D_l$ & solute diffusion coefficient &$3000$ &  ${\mu\text{m}}^2/\text{s}$ \\
-$W_0$ & interface thickness  & 55.6  & $d_0$ \\
-$\Delta x$ & mesh size & 0.5 & $W_0$ \\
-\bottomrule
-\end{tabular}\label{tab:AlCu}
-
-\end{table}
-
-
-\begin{table}
-\centering
-\caption{Simulation parameters SCN}
-\begin{tabular}{l l c c }
-\toprule
-symbol & meaning & values & units \\
-\midrule
-$\epsilon$ & divide-by-zero  & 1e-4  &\\
-$nx$ & mesh points in x direction& 20 &\\
-ratio & aspect ratio & 32 &\\
-$\Delta x$ & mesh size & 0.8 & $W_0$ \\
-$\Delta t$ & time step size& 0.0005& $\tau_0$ \\
-$\Lambda$ & primary spacing & 22.5 & $\mu m$ \\
-$A_p$ & amplitude of initial perturbation& 0.2 & $W_0$\\
-$L_x$ & length of computation domain  &  1  & $\Lambda$\\
-$M_t$ & time steps& 120000 & \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}
-\centering
-\caption{Simulation parameters Al-Cu}
-\begin{tabular}{l l c c }
-\toprule
-symbol & meaning & values & units \\
-\midrule
-$\epsilon$ & divide-by-zero  & 1e-4  &\\
-$nx$ & mesh points & 50 &\\
-ratio & aspect ratio & 24 &\\
-$\Delta x$ & mesh size & 0.53 & $W_0$ \\
-$\Delta t$ & time step size& 0.002& $\tau_0$ \\
-$\Lambda$ & primary spacing & 7.4 & $\mu m$ \\
-$A_p$ & amplitude of initial perturbation& 0.3 & $W_0$\\
-$L_x$ & length of computation domain  &  1  & $\Lambda$\\
-$M_t$ & time steps& 30000 & \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 \section{Simulation results}
-\subsection{$\alpha_0$=0, no noise}
-Use parameters in \cite{Echebarria2004}, ie. table \ref{tab:SCN}
-\begin{figure}[!ht]
-     \subfloat[$\phi$\label{subfig-1:phi}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_phi.png}
-     }
-     \hfill
-     \subfloat[$c/c_{\infty}$\label{subfig-2:c/cinf}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_c.png}
-     }
-     \caption{phase field and concentration for SCN. $W_0$ = 108.7$d_0$}
-     \label{fig:Ech}
-   \end{figure}
 
-\begin{figure}[!ht]
-     \subfloat[results\label{subfig-1:resu}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_tip.png}
-     }
-     \hfill
-     \subfloat[reference\label{subfig-2:ref}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_shape.png}
-     }
-     \caption{phase field shape convergence for different W0}
-     \label{fig:Ech}
-   \end{figure}
-\subsection{Convergence study on $\Delta$ x and $\Delta$ t}
- 
-\begin{figure}[!ht]
-     \subfloat[error\label{subfig-1:error}]{%
-       \includegraphics[width=0.35\textwidth]{./figures/error_ds_nx.png}
-     }
-     \hfill
-     \subfloat[convergence\label{subfig-2:conv}]{%
-       \includegraphics[width=0.35\textwidth]{./figures/conv_ds_nx.png}
-     }
-      \subfloat[shape\label{subfig-3:shape}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/t1_2Lx1nx_conv.png}
-     }
-     \caption{convergence}
-     \label{fig:conv_nx}
-   \end{figure}
-
-\subsection{$\alpha_0$=30, no noise}
-
-\begin{figure}[!ht]
-     \subfloat[$\alpha$=0\label{subfig-1:phi}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/AlCua0lx7.png}
-     }
-     \hfill
-     \subfloat[$\alpha$=30\label{subfig-2:c/cinf}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/AlCua30lx7.png}
-     }
-     \caption{Growth of Al-Cu alloy with and without misorientation angle. Pe=1.23. Parameters are in table \ref{tab:AlCu}}
-     \label{fig:Ech}
-   \end{figure}
-   
-  \begin{figure}[!ht]
-     \subfloat[$\Delta x$=0.53W,$\Delta t$=0.002\label{subfig-1:phi}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/AlCua0lx7.png}
-     }
-     \hfill
-     \subfloat[$\Delta x$=0.27W,$\Delta t$=0.0005\label{subfig-2:c/cinf}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/fine_AlCu.png}
-     }
-     \caption{Growth of Al-Cu alloy with different mesh size and time step size}
-     \label{fig:Ech}
-   \end{figure} 
-   
- \begin{figure}[!ht]
-     \subfloat[$\Gamma$=$2.4\times 10^{-7}$\label{subfig-1:phi}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/AlCua0lx7.png}
-     }
-     \hfill
-     \subfloat[$\Gamma$=$1.2\times 10^{-6}$\label{subfig-2:c/cinf}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/large_cm.png}
-     }
-      \hfill
-     \subfloat[$\Gamma$=$2.4\times 10^{-8}$\label{subfig-2:c/cinf}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/small_cm.png}
-     }
-     \caption{Growth of Al-Cu alloy with different Gibbs-Thompson coefficients $\Gamma$. $\Gamma$ is changed by varying $c_{\infty}m$.  }
-     \label{fig:Ech}
-   \end{figure}
- 
    
    
    
-\subsection{$\alpha_0$=30, increase primary spacing}
 
-\begin{figure}[!ht]
-     \subfloat[$\phi$\label{subfig-1:phi}]{%
-       \includegraphics[width=1\columnwidth]{./figures/large30phi.png}
-     }
-     \hfill
-    
-     \caption{tilted growth of Al-Cu alloy at $\alpha_0$=30$^\circ$,larger spacing}
-     \label{fig:Ech}
-   \end{figure}
-   
-\subsection{Increase number of initial pertubations}   
-\begin{figure}
- \centering
-  \includegraphics[width=0.6\textwidth]{./figures/nx20t2_4Lx_conv.png}
-  \caption{phase field of SCN for different Lx with same $\Lambda$}
-  \label{fig:Lx_conv}
-\end{figure}
 
-\begin{figure}[!ht]
-     \subfloat[results\label{subfig-1:resu}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/t50000_f.png}
-     }
-     \hfill
-     \subfloat[compare with reference\label{subfig-2:ref}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/consistency.png}
-     }
-     \caption{Free dendrite growth. Comparison with code in the book.}
-     \label{fig:Ech}
-   \end{figure}
-
-\begin{figure}[!ht]
-     \subfloat[Xing et al\label{subfig-1:resu}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Xing.png}
-     }
-     \hfill
-     \subfloat[my result for W=55.6d0 \label{subfig-2:ref}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/W55.png}
-     }
-     \caption{Growth of Al-Cu with misorientation angle $\alpha=30$. No noise. Parameters are in Table 3.}
-     \label{fig:Ech}
-   \end{figure}
-
-\begin{figure}[!ht]
-     \subfloat[$\alpha$=0\label{subfig-1:phi}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_phi.png}
-     }
-     \hfill
-     \subfloat[$\alpha$=30\label{subfig-1:phi}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/30ech.png}
-     }
-      \caption{Growth of SCN alloy with and without misorientation angle. No noise. Pe=0.72. W=108.7d0. The inclined growth is not obvious.}
-     \label{fig:Ech}
-   \end{figure}
-
-  \begin{figure}[!ht]
-     \subfloat[$\Delta x$=0.8W,$\Delta t$=0.002\label{subfig-1:phi}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/W0p8.png}
-     }
-     \hfill
-     \subfloat[$\Delta x$=0.4W,$\Delta t$=0.0005\label{subfig-2:c/cinf}]{%
-       \includegraphics[width=0.40\textwidth]{./figures/W0p4.png}
-     }
-     \caption{Growth of SCN alloy when increasing primary spacing from 22.5$\mu$m to 105$\mu m$. $\alpha$=0, no noise.}
-     \label{fig:Ech}
-   \end{figure} 
-
-  \begin{figure}[!ht]
-     \subfloat[no noise\label{subfig-1:phi}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/without_noise.png}
-     }
-     \hfill
-     \subfloat[noise amplitude 0.01\label{subfig-2:c/cinf}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/noise_phi.png}
-     }
-     \caption{Growth of SCN alloy with and without noise. $\alpha$=0. Primary spacing is 105$\mu m$.}
-     \label{fig:Ech}
-   \end{figure} 
 
 \bibliographystyle{unsrt}
 \bibliography{Directional-Solidification.bib}

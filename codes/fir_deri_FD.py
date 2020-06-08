@@ -20,97 +20,55 @@ Created on Sun Apr 12 11:17:45 2020
 # please note the positive direction
 
 import numpy as np
-from numpy import shape
+
 
 class gradscalar(object):
-    def __init__(self, dx, dy, BCx, BCy):
+    def __init__(self, dx, dy):
     
-        self.dx = dx
-        self.dy = dy
-        self.BCx = BCx    # x BC of u
-        self.BCy = BCy
-       
+
+        self.dx_in = 1.0/dx
+        self.dy_in = 1.0/dy       
         
-    def add_BCs(self,u):
+
+            
+    def gradxx(self,v):
         
-        m,n = u.shape
-        ub = np.zeros((m+2,n+2))
-        
-        ub[1:-1,1:-1] = u
-        
-        if self.BCx == 'P':
-                     
-            ub[:,0] = ub[:,-2] 
-            ub[:,-1] = ub[:,1]
-            
-            
-        if self.BCy == 'P':
-            
-            ub[0,:] = ub[-2,:]
-            ub[-1,:] = ub[1,:]
-                
-       
-        if self.BCx == 'R':  # here just no flux, make the code more general
-            
-            ub[:,0] = ub[:,2]
-            ub[:,-1] = ub[:,-3]        
-            
-        if self.BCy == 'R':
-            
-            ub[0,:] = ub[2,:]
-            ub[-1,:] = ub[-3,:]
-        
-        
-        #print(ub)
-        return ub
-            
-    def gradxx(self,u):
-        
-        v = self.add_BCs(u)
-        return ( v[1:-1,1:] - v[1:-1,:-1] )/self.dx
+        return  self.dx_in*( v[1:-1,1:] - v[1:-1,:-1] )
     
 
     
-    def gradzx(self,u):
+    def gradzx(self,v):
         
-        v = self.add_BCs(u)
-        return ( v[2:,:-1] + v[2:,1:] - v[:-2,:-1] - v[:-2,1:] )/(4*self.dy)
+        return  0.25*self.dy_in* ( v[2:,:-1] + v[2:,1:] - v[:-2,:-1] - v[:-2,1:] )
 
 
-    def gradxz(self,u):
+    def gradxz(self,v):
         
-        v = self.add_BCs(u)
-        return ( v[:-1,2:] + v[1:,2:] - v[:-1,:-2] - v[1:,:-2] )/(4*self.dx)
-
+        return  0.25*self.dx_in* ( v[:-1,2:] + v[1:,2:] - v[:-1,:-2] - v[1:,:-2] )
 
    
-    def gradzz(self,u):
+    def gradzz(self,v):
         
-        v = self.add_BCs(u)
-        return ( v[1:,1:-1] - v[:-1,1:-1] )/self.dy
+        return  self.dy_in*( v[1:,1:-1] - v[:-1,1:-1] )
 
 
-    def avgx(self,u):
+    def avgx(self,v):
         
-        v = self.add_BCs(u)
-        return ( v[1:-1,1:] + v[1:-1,:-1] )/2    
+        return  0.5*( v[1:-1,1:] + v[1:-1,:-1] )   
     
     
-    def avgz(self,u):
+    def avgz(self,v):
         
-        v = self.add_BCs(u)
-        return ( v[:-1,1:-1] + v[1:,1:-1] )/2      
+        return  0.5*( v[:-1,1:-1] + v[1:,1:-1] )      
 
 
-    def gradxc(self,u):
+    def gradxc(self,v):
         
-        v = self.add_BCs(u)
-        return ( v[1:-1,2:] - v[1:-1,:-2] )/(2*self.dx)        
+        return  0.5*self.dx_in* ( v[1:-1,2:] - v[1:-1,:-2] )        
 
-    def gradzc(self,u):
+    def gradzc(self,v):
         
-        v = self.add_BCs(u)
-        return ( v[2:,1:-1] - v[:-2,1:-1] )/(2*self.dy)   
+        return  0.5*self.dy_in* ( v[2:,1:-1] - v[:-2,1:-1] )   
 
         
     
@@ -118,26 +76,26 @@ class gradflux(object):
     
     def __init__(self, dx, dy):
         
-        self.dx = dx
-        self.dy = dy
+        self.dx_in = 1.0/dx
+        self.dy_in = 1.0/dy
         
     def gradx(self, f):     # f is a m+1 *n matrix
         
-        return ( f[:,1:] - f[:,:-1] )/self.dx
+        return  self.dx_in*( f[:,1:] - f[:,:-1] )
     
     
     def gradz(self, f):     # f is a m* n+1 matrix
         
-        return ( f[1:,:] - f[:-1,:] )/self.dy  
+        return  self.dy_in*( f[1:,:] - f[:-1,:] )  
     
     
     def avx(self,f):
         
-        return ( f[:,1:] + f[:,:-1] )/2    
+        return  0.5*( f[:,1:] + f[:,:-1] )    
     
     def avz(self,f):
         
-        return ( f[1:,:] + f[:-1,:] )/2    
+        return  0.5*( f[1:,:] + f[:-1,:] )    
     
     
     
