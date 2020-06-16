@@ -26,7 +26,6 @@ from numpy.random import rand
 from ds_input_Takaki import phy_parameter, simu_parameter
 from fir_deri_FD import gradscalar, gradflux
 
-import matplotlib.pyplot as plt
 from scipy.io import savemat as save
 from scipy.io import loadmat as load
 from numpy import shape
@@ -285,15 +284,7 @@ y = np.vstack((np.reshape(psi0,(nv,1)), np.reshape(U0,(nv,1)) )) #
 Tishot[:,[0]] = reshape_data(y)
 
 
-# =============================================================================
-fig0 =plt.figure()
-ax01 = fig0.add_subplot(121)
-plt.title('phi')
-plt.imshow(np.tanh(psi0),cmap=plt.get_cmap('winter'),origin='lower')
-ax02 = fig0.add_subplot(122)
-plt.title('U')
-plt.imshow(U0,cmap=plt.get_cmap('winter'),origin='lower')
-# =============================================================================
+
 #======================time evolusion=======================
 start = time.time()
 
@@ -311,16 +302,7 @@ for i in range(Mt): #Mt
        print('now time is ',t)  
        Tishot[:,[k]] = reshape_data(y)
        
-phif = np.tanh(np.reshape(y[:nv],(nz,nx))/sqrt2)
-Uf = np.reshape(y[nv:],(nz,nx))
-fig1 = plt.figure()
-# 
-ax11 = fig1.add_subplot(121)
-plt.title('phi')
-plt.imshow(phif,cmap=plt.get_cmap('winter'),origin='lower')
-ax12 = fig1.add_subplot(122)
-plt.title('U')
-plt.imshow(Uf,cmap=plt.get_cmap('winter'),origin='lower')
+
 
 
 end = time.time()
