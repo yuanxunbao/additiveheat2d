@@ -14,20 +14,19 @@ def phy_parameter():
    class phy_para:
     
     # NOTE: for numbers entered here, if having units: length in micron, time in second, temperature in K.
-    G = 0.2                  # thermal gradient  
-    R = 200                        # pulling speed
-    delta = 0.012                 # strength of the surface tension anisotropy        
+    G = 0.02                  # thermal gradient  
+    R = 50                        # pulling speed
+    delta = 0.02                 # strength of the surface tension anisotropy        
     k = 0.14                       # interface solute partition coefficient
-    c_infm = 10.4                    # shift in melting temperature
+    c_infm = 1.519                    # shift in melting temperature
     Dl = 3000                     # solute diffusion coefficient
-    d0 = 3.76e-3                   # capillary length -- associated with GT coefficient
-    W0 = 0.16                 # interface thickness  
+    d0 = 0.02572                   # capillary length -- associated with GT coefficient
+    W0 = 0.9375                 # interface thickness  
     
     lT = c_infm*( 1.0/k-1 )/G     # thermal length
     lamd = 5*np.sqrt(2)/8*W0/d0   # coupling constant
     tau0 = 0.6267*lamd*W0**2/Dl   # time scale
 
-    alpha = 1.0/(2*np.sqrt(2.0))  # constant in anti-trapping term
     eps = 1e-4                    #divide-by-zero treatment
     # non-dimensionalized parameters based on W0 and tau0
     
@@ -43,21 +42,24 @@ def simu_parameter():
     
     alpha0 = 0                    # misorientation angle in degree
     
-    lx = 20                     # horizontal length in micron
+    
+    lx = 230                     # horizontal length in micron
     aratio = 4                   # aspect ratio
-    nx = 180                       # number of grids in x   nx*aratio must be int
-    dt = 0.005                   # time step size for forward euler
-    Mt = 15000
+    nx = 160                       # number of grids in x   nx*aratio must be int
+    dx = lx/nx/p.W0
+    dt = (dx/p.W0)**2/(5*p.Dl_tilde)                   # time step size for forward euler
+    Mt = 120000
     Tt = 60
-    nts = 50                      # number of samples in time   Mt/nts must be int
+    nts = 20                      # number of samples in time   Mt/nts must be int
 
     z0 = lx/p.W0*0.1              # initial location of interface in W0
+    r0 = 0.5625/p.W0
     nw = 1                        # number of perturbations Lx= nw*Lambda
-    mag = 0                 # magnitude of sin perturbation  in W0
+    mag = z0*0.05                 # magnitude of sin perturbation  in W0
     
-    eta = 0.0                    # magnitude of noise
-    direc = '/work/07428/ygqin/frontera/data'
-    filename = 'ds_alcu'+'noi' + str('%4.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lx)+'nx'+str(nx)+'W'+str('%4.2f'%p.W0)+'.mat'
+    eta = 0.00                    # magnitude of noise
+    direc = '.'
+    filename = 'U0.3ds_scn'+'noi' + str('%4.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lx)+'nx'+str(nx)+'W'+str('%4.2f'%p.W0)+'.mat'
     
    return simu_para
 
