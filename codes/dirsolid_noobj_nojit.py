@@ -24,7 +24,7 @@ from math import pi
 import numpy as np
 from numpy.random import rand
 from dsinput_Takaki import phys_para, simu_para, IO_para
-from grad_routine import gradxx,gradzx,gradxz,gradzz,gradxc,gradzc,avgx,avgz,fgradx,fgradz,norm2d
+from grad_routine_nojit import gradxx,gradzx,gradxz,gradzz,gradxc,gradzc,avgx,avgz,fgradx,fgradz,norm2d
 #from ds_routine import atheta,misorien,mask_divi,normal,Phase_div,U_div,rhs_dirsolid
 #from ds_routine import add_BCs,initial,noise,tau_psi_mask,reshape_data
 from numba import njit
@@ -33,12 +33,12 @@ from scipy.io import savemat as save
 
 pflag = False
 
-@njit(parallel=pflag)
+# @njit(parallel=pflag)
 def atheta(nx2, nz2):
     
     return 1 - 3*delta + 4*delta*( nx2**2 + nz2**2 )  
     
-@njit(parallel=pflag)
+# @njit(parallel=pflag)
 def add_BCs(u,BCx,BCy):
         
         m,n = u.shape
@@ -92,7 +92,7 @@ def reshape_data(y):
      
     return yo
 
-@njit(parallel=pflag)
+# @njit(parallel=pflag)
 def misorien(phi_x, phi_z):
     
 
@@ -101,7 +101,7 @@ def misorien(phi_x, phi_z):
     
     return phi_xr,phi_zr
 
-@njit(parallel=pflag)
+# @njit(parallel=pflag)
 def noise(y):
 
     beta  = rand(nv,1) - 0.5
@@ -110,14 +110,14 @@ def noise(y):
 
     return np.vstack((noi, np.zeros((nv,1))))
 
-@njit(parallel=pflag)
+# @njit(parallel=pflag)
 def mask_divi(A,B,eps):  # this routine should be able to solve a/b
     
     mask = 1*(B>eps)
     
     return mask*A/( B + (1-mask)*eps )
 
-@njit(parallel=pflag)
+# @njit(parallel=pflag)
 def tau_psi_mask(tau_psi):
     mask = 1*(tau_psi>k)
     return mask*tau_psi + (1-mask)*k
@@ -145,7 +145,7 @@ def normal(phi):
     return nxxr, nzxr, nxzr, nzzr, nxcr, nzcr, nxx, nzz
 
 
-@njit(parallel=pflag)
+# @njit(parallel=pflag)
 def Phase_div(nxx, nzx, nxz, nzz, psi_xx, psi_zx, psi_xz, psi_zz):
 
     nxx2 = nxx**2; nzx2 = nzx**2;
@@ -165,7 +165,7 @@ def Phase_div(nxx, nzx, nxz, nzz, psi_xx, psi_zx, psi_xz, psi_zz):
 
 
 
-@njit(parallel=pflag)
+# @njit(parallel=pflag)
 def U_div(phi, U, jat, nxx, nzz):
     
     U =  add_BCs(U, 'P', 'R') 

@@ -37,17 +37,17 @@ def phys_para():
 
 
 def simu_para(W0,Dl_tilde):
-
+    
     eps = 1e-4                      #divide-by-zero treatment
     alpha0 = 0                    # misorientation angle in degree
     
     
     lxd = 200                     # horizontal length in micron
     aratio = 2                   # aspect ratio
-    nx = 200                       # number of grids in x   nx*aratio must be int
+    nx = 1000                       # number of grids in x   nx*aratio must be int
     dx = lxd/nx/W0
     dt = (dx/W0)**2/(5*Dl_tilde)                   # time step size for forward euler
-    Mt = 10000
+    Mt = 10
     Tt = 60
 
     eta = 0.00                    # magnitude of noise
@@ -61,7 +61,7 @@ def IO_para(W0,lxd):
     r0 = 0.5625/W0
     nw = 1                        # number of perturbations Lx= nw*Lambda
     mag = z0*0.05                 # magnitude of sin perturbation  in W0
-    nts = 20                      # number of samples in time   Mt/nts must be int
+    nts = 2                      # number of samples in time   Mt/nts must be int
     direc = '.'
     
 
