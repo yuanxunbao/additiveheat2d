@@ -264,13 +264,29 @@ In \cite{Karma1998}, Karma explained the need for $a_s(\hat{n})$ in the definiti
 
 
 \subsection{Initial condition}
-The initial condition is a planar interface perturbed with sinusoidal bumps:
+\subsubsection{Initial condition for $\phi$}
+Planar interface perturbed with sinusoidal bumps:
 \begin{equation}
 \phi(x,z,t=0) = - \tanh \left( \frac{z - z_0 - A_0\sin(2n\pi x /L_x  ) }{W_0}  \right),
 \end{equation}
 where $z_0$ is the initial height, $A_0$ is the amplitude to initial perturbation, and $n$ is the number of  sinusoidal bumps.  
+\subsubsection{Initial condition for U}
+As suggested in \cite{Takaki2014}, to avoid confusion, the frozen temperature approximation is:
+\begin{align}
+    & T(z,t) = T^e + G(z-Rt),
+\end{align}
+where $T^e$ is the temperature at z=0 and y=0.
+And the dimensionless supersaturation, U, is defined as
 
-For the initial condition of $U$, we set $c_l = c_{\infty}, c_s = k c_l$ \cite{Echebarria2004}, which with the definition of $c_l^0 = c_{\infty} /k $, corresponds to $U \equiv -1$ in the whole system!
+\begin{equation}
+U=\frac{c_{l}-c_{l}^{e}}{c_{l}^{e}-c_{s}^{e}}=\frac{1}{1-k} \left( \frac{ c/c_l^e}{(1-\phi)/2 + k(1+\phi)/2} -1\right)
+\end{equation}
+$c_l^e$ and $c_s^e$ are the equilibrium concentrations of the liquid and solid at $T^e$, respectively. $c_s^e=kc_l^e$.
+The relation between $T^e$ and $c_l^e$ is:
+\begin{equation}
+c_l^e = \frac{T_m-T^{e}}{m}
+\end{equation}
+$T_m$ is the melting temperature of the pure material.
 
 \subsection{Moving domain}
 
@@ -298,7 +314,7 @@ $d_0$ & capillary length & $ 5.89\times10^{-3}$  & $\mu$m \\
 $W_0$ & interface thickness  & 113.25 & $d_0$ \\
 $\Delta x$ & mesh size & 1.5 & $W_0$ \\
 \bottomrule
-\end{tabular}\label{tab:SCN}
+\end{tabular}\label{tab:Tourret}
 
 \end{table}
 
@@ -328,15 +344,55 @@ $\Delta x$ & mesh size & 1.5 & $W_0$ \\
      \label{fig:Ech}
    \end{figure}
 
+\subsection{convergence}
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.5\linewidth]{./figures/preconditioner.png}
 \caption{Average error with and without preconditioner}
 \end{figure}
    
+\subsection{noise model}
 
+\begin{table}
+\centering
+\caption{Physical parameters for Al-Cu \cite{Takaki2014}.}
+\begin{tabular}{l l c c }
+\toprule
+symbol & meaning & values & units \\
+\midrule
+$T_m$ & melting temperature of pure Al & 933.25  & K \\
+$T^e$ & reference temperature at z=0 and t=0 & 931.20  & K \\
+$c_l^e$ & reference equilibrium liquid concentration at $T^e$ & 0.00331  & at. frac. \\
+$U_0$ & initial value of U & -0.3  &\\
+$c_{\infty}$ & nominal solute concentration &  0.00245 & at. frac. \\
+$m$ &liquidus slope &  -620 & K/at. frac. \\
+$k$ & interface solute partition coefficient & 0.14 &\\
+$D_l$ & solute diffusion coefficient &  $3\times 10^{3}$  & ${\mu\text{m}}^2/\text{s}$ \\
+$\delta$ & strength of the surface tension anisotropy  &  0.02  &\\
+$\Gamma$ & Gibbs-Thompson coefficient & $2.4\times 10^{-7}$ & Km \\
+$G$ & thermal gradient & 200 & $\text{K} / \text{cm}$ \\
+$R$ & pulling speed &  50 & $\mu \text{m} / \text{s}$ \\
+$d_0$ & capillary length & $ 2.572\times10^{-2}$  & $\mu$m \\
+$W_0$ & interface thickness  & 36.45 & $d_0$ \\
+$\Delta x$ & mesh size & 1.5 & $W_0$ \\
+\bottomrule
+\end{tabular}\label{tab:Takaki}
 
+\end{table}
 
+ \begin{figure}[!ht]
+ \centering
+     \subfloat[My result\label{subfig-1:phi}]{%
+       \includegraphics[width=1\textwidth]{./figures/Takaki_noise_level.png}
+     }
+     \hfill
+     \subfloat[Fig. 3(a) of the reference \cite{Takaki2014}\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=0.7\textwidth]{./figures/TakakiFig3a.png}
+     }     
+     
+     \caption{(a) Dendrite morphologies and concentration distributions with different misorientation angle $\alpha_0$ and noise level $\eta$. Use the same physical parameters of Al-Cu in \cite{Takaki2014}(b) Comparison with the reference \cite{Takaki2014}}
+     \label{fig:Ech}
+   \end{figure}
 \bibliographystyle{unsrt}
 \bibliography{Directional-Solidification.bib}
 
