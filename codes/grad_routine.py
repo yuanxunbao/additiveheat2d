@@ -21,7 +21,7 @@ Created on Sun Apr 12 11:17:45 2020
 import numpy as np
 from numba import njit
 
-pflag = False
+pflag = True
             
 @njit(parallel=pflag)
 def gradxx(h_in,v):

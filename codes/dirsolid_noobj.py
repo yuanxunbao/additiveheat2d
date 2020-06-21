@@ -28,10 +28,10 @@ from grad_routine import gradxx,gradzx,gradxz,gradzz,gradxc,gradzc,avgx,avgz,fgr
 #from ds_routine import atheta,misorien,mask_divi,normal,Phase_div,U_div,rhs_dirsolid
 #from ds_routine import add_BCs,initial,noise,tau_psi_mask,reshape_data
 from numba import njit
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from scipy.io import savemat as save
 
-pflag = False
+pflag = True
 
 @njit(parallel=pflag)
 def atheta(nx2, nz2):
@@ -288,13 +288,13 @@ Tishot[:,[0]] = reshape_data(y)
 
 
 # =============================================================================
-fig0 =plt.figure()
-ax01 = fig0.add_subplot(121)
-plt.title('phi')
-plt.imshow(np.tanh(psi0),cmap=plt.get_cmap('winter'),origin='lower')
-ax02 = fig0.add_subplot(122)
-plt.title('U')
-plt.imshow(U0,cmap=plt.get_cmap('winter'),origin='lower')
+# fig0 =plt.figure()
+# ax01 = fig0.add_subplot(121)
+# plt.title('phi')
+# plt.imshow(np.tanh(psi0),cmap=plt.get_cmap('winter'),origin='lower')
+# ax02 = fig0.add_subplot(122)
+# plt.title('U')
+# plt.imshow(U0,cmap=plt.get_cmap('winter'),origin='lower')
 # =============================================================================
 #======================time evolusion=======================
 rhs_temp = rhs_dirsolid(y,t)
@@ -310,11 +310,11 @@ for ii in range(Mt): #Mt
     
   
     t += dt
-    if (ii+1)%kts==0:     # data saving 
-       kk = int(np.floor((ii+1)/kts))
-       print('=================================')
-       print('now time is ',t)  
-       Tishot[:,[kk]] = reshape_data(y)
+#    if (ii+1)%kts==0:     # data saving 
+#       kk = int(np.floor((ii+1)/kts))
+#       print('=================================')
+#       print('now time is ',t)  
+#       Tishot[:,[kk]] = reshape_data(y)
        
 # phif = np.tanh(np.reshape(y[:nv],(nz,nx))/sqrt2)
 # Uf = np.reshape(y[nv:],(nz,nx))
@@ -332,7 +332,7 @@ end = time.time()
 
 print('elapsed time : ', end-start )
 
-save(os.path.join(direc,filename),{'xx':xx*W0,'zz':zz*W0,'y':Tishot,'dt':dt*tau0,'nx':nx,'nz':nz,'t':t*tau0,'mach_time':end-start})
+# save(os.path.join(direc,filename),{'xx':xx*W0,'zz':zz*W0,'y':Tishot,'dt':dt*tau0,'nx':nx,'nz':nz,'t':t*tau0,'mach_time':end-start})
 
 
 

@@ -44,7 +44,7 @@ def simu_para(W0,Dl_tilde):
     
     lxd = 200                     # horizontal length in micron
     aratio = 2                   # aspect ratio
-    nx = 1000                       # number of grids in x   nx*aratio must be int
+    nx = 800                       # number of grids in x   nx*aratio must be int
     dx = lxd/nx/W0
     dt = (dx/W0)**2/(5*Dl_tilde)                   # time step size for forward euler
     Mt = 10
