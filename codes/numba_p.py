@@ -6,9 +6,7 @@
 
 import numpy as np
 from numba import njit,prange
-from timeit import timeit
-
-# In[57]:
+import time
 
 
 def ident_np_nojit(x):
@@ -25,9 +23,11 @@ def ident_loops(x):
     for i in range(n):
         r[i] = np.cos(x[i]) ** 2 + np.sin(x[i]) ** 2
     return r
+
 @njit(parallel=True)
 def ident_np2(x):
     return np.cos(x) ** 2 + np.sin(x) ** 2
+
 
 @njit(parallel=True)
 def ident_loops2(x):
@@ -38,42 +38,50 @@ def ident_loops2(x):
     return r
 
 
-# In[51]:
+nloop = 100
+A = np.arange(64*10000).reshape((800,800))
 
 
-A = np.arange(10000).reshape((100,100))
+start=time.time()
+for i in range(nloop):
+    ident_np_nojit(A)
+end=time.time()
+print('numpy,native = ' ,(end - start)/nloop)
+
 ident_np(A)
-timeit.timeit('ident_np(A)', number = 10)
+start=time.time()
+for i in range(nloop):
+    ident_np(A)
+end=time.time()
+print('numpy,jit = ' ,(end - start)/nloop)
 
-
-# In[52]:
 
 
 ident_loops(A)
-# get_ipython().run_line_magic('timeit', 'ident_loops(A)')
+start=time.time()
+for i in range(nloop):
+    ident_loops(A)
+end=time.time()
+print('python,jit = ' ,(end - start)/nloop)
 
-
-# In[53]:
 
 
 ident_np2(A)
-# get_ipython().run_line_magic('timeit', 'ident_np2(A)')
+start=time.time()
+for i in range(nloop):
+    ident_np2(A)
+end=time.time()
+print('numpy,jit,parallel = ' ,(end - start)/nloop)
 
-
-# In[54]:
 
 
 ident_loops2(A)
-# get_ipython().run_line_magic('timeit', 'ident_loops2(A)')
+start=time.time()
+for i in range(nloop):
+    ident_loops2(A)
+end=time.time()
+print('python,jit,parfor = ' ,(end - start)/nloop)
 
-
-# In[55]:
-
-
-# get_ipython().run_line_magic('timeit', 'ident_np_nojit(A)')
-
-
-# In[ ]:
 
 
 
