@@ -122,7 +122,7 @@ def tau_psi_mask(tau_psi):
     mask = 1*(tau_psi>k)
     return mask*tau_psi + (1-mask)*k
 
-# @njit(parallel=pflag)
+@njit()
 def normal(phi):
     
     phi = add_BCs(phi, 'P', 'R')
@@ -185,13 +185,16 @@ def U_div(phi, U, jat, nxx, nzz):
     return fgradx( hi, diffx + jatx ) + fgradz( hi, diffz + jatz )
 
 
-# @njit(parallel=pflag)
+#@njit(parallel=pflag)
+# @njit(parallel=pflag,nogil=True)
 def rhs_dirsolid(y,t):
     
     psi = np.reshape(y[:nv], (nz,nx))
     U = np.reshape(y[nv:], (nz,nx))
-    phi = np.tanh(psi/sqrt2)
     
+    phi_tmp = psi**2
+    phi = np.tanh(psi/sqrt2)
+
     psib = add_BCs(psi, 'P', 'R')
     
     nxx, nzx, nxz, nzz, nxc, nzc, nxxo, nzzo = normal(phi)
@@ -307,8 +310,7 @@ for ii in range(Mt): #Mt
     rhs = rhs_dirsolid(y,t)
     
     y = y + dt*rhs + noise(y)#forward euler
-    
-  
+ 	  
     t += dt
 #    if (ii+1)%kts==0:     # data saving 
 #       kk = int(np.floor((ii+1)/kts))

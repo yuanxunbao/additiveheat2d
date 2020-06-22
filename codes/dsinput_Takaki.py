@@ -61,7 +61,7 @@ def IO_para(W0,lxd):
     r0 = 0.5625/W0
     nw = 1                        # number of perturbations Lx= nw*Lambda
     mag = z0*0.05                 # magnitude of sin perturbation  in W0
-    nts = 2                      # number of samples in time   Mt/nts must be int
+    nts = 1                      # number of samples in time   Mt/nts must be int
     direc = '.'
     
 
