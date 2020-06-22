@@ -6,8 +6,7 @@
 
 import numpy as np
 from numba import njit,prange
-import timeit
-
+from timeit import timeit
 
 # In[57]:
 
@@ -44,34 +43,34 @@ def ident_loops2(x):
 
 A = np.arange(10000).reshape((100,100))
 ident_np(A)
-get_ipython().run_line_magic('timeit', 'ident_np(A)')
+timeit.timeit('ident_np(A)', number = 10)
 
 
 # In[52]:
 
 
 ident_loops(A)
-get_ipython().run_line_magic('timeit', 'ident_loops(A)')
+# get_ipython().run_line_magic('timeit', 'ident_loops(A)')
 
 
 # In[53]:
 
 
 ident_np2(A)
-get_ipython().run_line_magic('timeit', 'ident_np2(A)')
+# get_ipython().run_line_magic('timeit', 'ident_np2(A)')
 
 
 # In[54]:
 
 
 ident_loops2(A)
-get_ipython().run_line_magic('timeit', 'ident_loops2(A)')
+# get_ipython().run_line_magic('timeit', 'ident_loops2(A)')
 
 
 # In[55]:
 
 
-get_ipython().run_line_magic('timeit', 'ident_np_nojit(A)')
+# get_ipython().run_line_magic('timeit', 'ident_np_nojit(A)')
 
 
 # In[ ]:
