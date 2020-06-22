@@ -27,7 +27,7 @@ from dsinput_Takaki import phys_para, simu_para, IO_para
 from grad_routine import gradxx,gradzx,gradxz,gradzz,gradxc,gradzc,avgx,avgz,fgradx,fgradz,norm2d
 #from ds_routine import atheta,misorien,mask_divi,normal,Phase_div,U_div,rhs_dirsolid
 #from ds_routine import add_BCs,initial,noise,tau_psi_mask,reshape_data
-from numba import njit
+from numba import njit,jit
 # import matplotlib.pyplot as plt
 from scipy.io import savemat as save
 
@@ -185,14 +185,17 @@ def U_div(phi, U, jat, nxx, nzz):
     return fgradx( hi, diffx + jatx ) + fgradz( hi, diffz + jatz )
 
 
-#@njit(parallel=pflag)
-# @njit(parallel=pflag,nogil=True)
+# @njit(parallel=pflag)
+# # @njit(parallel=pflag,nogil=True)
+# @njit(parallel=pflag)
+
+# @jit(nopython=True)
 def rhs_dirsolid(y,t):
     
     psi = np.reshape(y[:nv], (nz,nx))
     U = np.reshape(y[nv:], (nz,nx))
     
-    phi_tmp = psi**2
+#    phi_tmp = psi**2
     phi = np.tanh(psi/sqrt2)
 
     psib = add_BCs(psi, 'P', 'R')

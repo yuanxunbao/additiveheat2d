@@ -12,11 +12,11 @@ import time
 def ident_np_nojit(x):
     return np.cos(x) ** 2 + np.sin(x) ** 2
 
-@njit
+@njit()
 def ident_np(x):
     return np.cos(x) ** 2 + np.sin(x) ** 2
 
-@njit
+@njit()
 def ident_loops(x):
     r = np.empty_like(x)
     n = len(x)
@@ -39,7 +39,8 @@ def ident_loops2(x):
 
 
 nloop = 100
-A = np.arange(64*10000).reshape((800,800))
+nsize = 1000
+A = np.arange(nsize*nsize).reshape((nsize,nsize))
 
 
 start=time.time()
