@@ -393,6 +393,27 @@ $\Delta x$ & mesh size & 1.5 & $W_0$ \\
      \caption{(a) Dendrite morphologies and concentration distributions with different misorientation angle $\alpha_0$ and noise level $\eta$. Use the same physical parameters of Al-Cu in \cite{Takaki2014}(b) Comparison with the reference \cite{Takaki2014}}
      \label{fig:Ech}
    \end{figure}
+   
+\subsection{Numba acceleration}
+  
+ \begin{table}
+\centering
+\caption{Simulation time per right hand side iteration. (Average 100 iterations. Unit is second) }
+\begin{tabular}{l l c c }
+\toprule
+$x grids \times z grids$ & numpy & jit serial & jit parallel (threads=4) \\
+\midrule
+$1600\times3201$ & 2.886 & 2.483  & 1.590 \\
+$800\times1601$ & 0.407 & 0.328  & 0.211 \\
+$400\times801$ & 0.084 & 0.084  & 0.055 \\
+$200\times401$ & 0.021 & 0.019  & 0.012 \\
+$100\times201$ & 0.0050 & 0.0044  & 0.0047 \\
+\bottomrule
+\end{tabular}\label{tab:Takaki}
+
+\end{table} 
+   
+   
 \bibliographystyle{unsrt}
 \bibliography{Directional-Solidification.bib}
 
