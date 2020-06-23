@@ -290,7 +290,16 @@ $T_m$ is the melting temperature of the pure material.
 
 \subsection{Moving domain}
 
-
+\subsection{Quantities of Interest}
+Al-Cu:
+$T_m=933.25K=660^\circ C$, $T_{eutectic}=821K=548^\circ C$
+\begin{figure}[h]
+\centering
+\includegraphics[width=1\linewidth]{./figures/Phase_diagram_Al-Cu.png}
+\caption{Phase diagram of Al-Cu}
+\end{figure}
+   
+\subsection{noise model}
 
 
 \begin{table}
@@ -398,7 +407,7 @@ $\Delta x$ & mesh size & 1.5 & $W_0$ \\
   
  \begin{table}
 \centering
-\caption{Simulation time per right hand side iteration. (Average 100 iterations. Unit is second) }
+\caption{Simulation time per right hand side iteration on Neymar. (Average 100 iterations. Unit is second) }
 \begin{tabular}{l l c c }
 \toprule
 $x grids \times z grids$ & numpy & jit serial & jit parallel (threads=4) \\
@@ -412,7 +421,28 @@ $100\times201$ & 0.0050 & 0.0044  & 0.0047 \\
 \end{tabular}\label{tab:Takaki}
 
 \end{table} 
+
+ \begin{table}
+\centering
+\caption{Simulation time per right hand side iteration on my PC. (Average 100 iterations. Unit is second) }
+\begin{tabular}{l l c c }
+\toprule
+$x grids \times z grids$ & numpy & jit serial & jit parallel (threads=4) \\
+\midrule
+$1600\times3201$ & 2.119 & 1.376  & 1.220 \\
+$800\times1601$ & 0.478 & 0.302  & 0.267 \\
+$400\times801$ & 0.090 & 0.062  & 0.054 \\
+$200\times401$ & 0.018 & 0.012  & 0.009 \\
+$100\times201$ & 0.0041 & 0.0028  & 0.0028 \\
+\bottomrule
+\end{tabular}\label{tab:Takaki}
+
+\end{table} 
    
+
+
+
+
    
 \bibliographystyle{unsrt}
 \bibliography{Directional-Solidification.bib}
