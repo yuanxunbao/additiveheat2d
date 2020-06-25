@@ -4,29 +4,32 @@
 # In[56]:
 
 
+import os
+os.environ["NUMBA_NUM_THREADS"] = '8'
+
 import numpy as np
 from numba import njit,prange
 import time
 
 
 def ident_np_nojit(x):
-    return np.cos(x) ** 2 + np.sin(x) ** 2
+    return x**3 + x**2 + x**4
 
 @njit()
 def ident_np(x):
-    return np.cos(x) ** 2 + np.sin(x) ** 2
+    return x**3 + x**2 + x**4
 
 @njit()
 def ident_loops(x):
     r = np.empty_like(x)
     n = len(x)
     for i in range(n):
-        r[i] = np.cos(x[i]) ** 2 + np.sin(x[i]) ** 2
+        r[i] =  (x[i]) ** 3 + (x[i]) ** 2 + (x[i])**4
     return r
 
 @njit(parallel=True)
 def ident_np2(x):
-    return np.cos(x) ** 2 + np.sin(x) ** 2
+    return x**3 + x**2 + x**4
 
 
 @njit(parallel=True)
@@ -34,12 +37,12 @@ def ident_loops2(x):
     r = np.empty_like(x)
     n = len(x)
     for i in prange(n):
-        r[i] = np.cos(x[i]) ** 2 + np.sin(x[i]) ** 2
+        r[i] = (x[i]) ** 3 + (x[i]) ** 2 + (x[i])**4
     return r
 
 
 nloop = 100
-nsize = 1000
+nsize = 4000
 A = np.arange(nsize*nsize).reshape((nsize,nsize))
 
 
