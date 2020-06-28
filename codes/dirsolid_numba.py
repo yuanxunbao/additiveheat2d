@@ -3,22 +3,22 @@
 """
 Created on Thu Jun 25 23:10:13 2020
 
-@author: yigong qin, yuanxunbao
+@author: yigong qin, yuanxun bao
 """
 
 import numba
 from numba import njit, stencil, vectorize, float32, float64
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from dsinput_Takaki import phys_para, simu_para, IO_para 
 import time
 
-print(numba.get_num_threads())
+# print(numba.get_num_threads())
 
-numba.set_num_threads(2)
+# numba.set_num_threads(2)
 
-print(numba.get_num_threads())
+# print(numba.get_num_threads())
 
 delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0 = phys_para()
 eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename = simu_para(W0,Dl_tilde)
@@ -108,7 +108,8 @@ def aptheta2(ux, uz):
     else:
         return 0.0
     
-# modify global, don't njit this  
+    
+# update global array, don't jit compile this function
 def set_BC(u,BCx,BCy):
     
     # 0 periodic, 1 no flux (Neumann)
@@ -326,15 +327,15 @@ def _rhs_U(U,ph,psi_t):
     
 
 @njit(parallel=True)
-def rhs_psi(ps,ph,U,zz,t):
-    
-    return _rhs_psi(ps,ph,U,zz,t)
+def rhs_psi(ps,ph,U,zz,t): return _rhs_psi(ps,ph,U,zz,t)
 
 
 @njit(parallel=True)
-def rhs_U(U,ph,psi_t):
-    
-    return _rhs_U(U,ph,psi_t)
+def rhs_U(U,ph,psi_t): return _rhs_U(U,ph,psi_t)
+
+
+
+
 
 
 ##############################################################################
