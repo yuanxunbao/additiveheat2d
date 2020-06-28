@@ -134,7 +134,6 @@ def tau_psi_mask(tau_psi):
 def normal(phi):
     
     phi = add_BCs(phi, 'P', 'R')
-    
     phi_xx = gradxx(hi,phi); phi_zx = gradzx(hi,phi)
     phi_nx = norm2d( phi_xx, phi_zx )
     nxx = mask_divi(phi_xx, phi_nx, eps); nzx = mask_divi(phi_zx, phi_nx, eps)

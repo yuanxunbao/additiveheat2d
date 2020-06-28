@@ -38,13 +38,13 @@ def phys_para():
 
 def simu_para(W0,Dl_tilde):
     
-    eps = 1e-4                      #divide-by-zero treatment
+    eps = 1e-2                      #divide-by-zero treatment
     alpha0 = 0                    # misorientation angle in degree
     
     
     lxd = 200                     # horizontal length in micron
     aratio = 4                  # aspect ratio
-    nx = 640                      # number of grids in x   nx*aratio must be int
+    nx = 160                      # number of grids in x   nx*aratio must be int
     dx = lxd/nx/W0
     dt = (dx/W0)**2/(5*Dl_tilde)                   # time step size for forward euler
     Mt = 100

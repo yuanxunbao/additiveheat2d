@@ -1,17 +1,17 @@
 import os
 #must set these before loading numpy:
-os.environ["OMP_NUM_THREADS"] = '4' # export OMP_NUM_THREADS=4
-os.environ["OPENBLAS_NUM_THREADS"] = '4' # export OPENBLAS_NUM_THREADS=4 
-os.environ["MKL_NUM_THREADS"] = '4' # export MKL_NUM_THREADS=6
+#os.environ["OMP_NUM_THREADS"] = '4' # export OMP_NUM_THREADS=4
+#os.environ["OPENBLAS_NUM_THREADS"] = '4' # export OPENBLAS_NUM_THREADS=4 
+#os.environ["MKL_NUM_THREADS"] = '4' # export MKL_NUM_THREADS=6
 #os.environ["VECLIB_MAXIMUM_THREADS"] = '4' # export VECLIB_MAXIMUM_THREADS=4
 #os.environ["NUMEXPR_NUM_THREADS"] = '4' # export NUMEXPR_NUM_THREADS=6
-
-
-os.environ["NUMBA_NUM_THREADS"] = '1'
-
+import numba
+from numba import njit
 import numpy as np
 import time
-from numba import njit
+
+numba.set_num_threads(1)
+
 
 # from grad_routine_nojit import * 
 
@@ -29,11 +29,10 @@ def gradxx_par(h_in,v):
 
 	return  h_in*( v[1:-1,1:] -  v[1:-1,:-1] )
 
-
-nx = 160
-ny = 640
+nx = 160*4
+ny = 640*2
 h = 1.0
-Mt = 3003
+Mt = 1000
 
 phi = np.random.randn(nx,ny)
 
