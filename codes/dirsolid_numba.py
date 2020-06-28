@@ -9,7 +9,7 @@ Created on Thu Jun 25 23:10:13 2020
 import numba
 from numba import njit, stencil, vectorize, float32, float64
 import numpy as np
-# import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 from dsinput_Takaki import phys_para, simu_para, IO_para 
 import time
@@ -46,9 +46,8 @@ x = np.linspace(0,lx-dx,nx)
 z = np.linspace(0,lz,nz)
 
 xx, zz = np.meshgrid(x, z)
+t=0
 
-dx=1.0
-dz=1.0
 dxdz_in = 1./(dx*dz)  
 
 hi= 1./dx
@@ -66,7 +65,7 @@ def set_halo(u):
 # the equations are divergence of fluxs, having the form F_x + J_z 
 def initial(): # properties/parameters of interests
     
-    r0 = 0.5625*20
+    r0 = 0.5625#*20
     r = np.sqrt( (xx-lx/2) **2+(zz)**2) - r0    
     psi0 = - r 
     U0 = 0*psi0 -0.3
@@ -76,7 +75,7 @@ def initial(): # properties/parameters of interests
 
 @vectorize([float32(float32, float32),
             float64(float64, float64)])
-def atheta2(ux, uz):
+def atheta(ux, uz):
     
     ux2 = ux**2
     uz2 = uz**2
@@ -84,7 +83,7 @@ def atheta2(ux, uz):
     # return MAG_sq2
     MAG_sq2 = (ux2 + uz2)**2
     
-    if (MAG_sq2 > 1e-8):
+    if (MAG_sq2 > eps**2):
         
         return a_s*( 1 + epsilon*(ux2**2 + uz2**2) / MAG_sq2   )
         # return uz/MAG_sq2
@@ -94,14 +93,14 @@ def atheta2(ux, uz):
     
 @vectorize([float32(float32, float32),
             float64(float64, float64)])
-def aptheta2(ux, uz):
+def aptheta(ux, uz):
     
     ux2 = ux**2
     uz2 = uz**2
     
     MAG_sq2 = (ux2 + uz2)**2
     
-    if (MAG_sq2 > 1e-8):
+    if (MAG_sq2 > eps**2):
         
         return -a_12*ux*uz*(ux2 - uz2) /  MAG_sq2
     
@@ -169,8 +168,8 @@ def _rhs_psi(ps,ph,U,zz,t):
     phx = ph[1,0]-ph[0,0]
     phz = phipjp - phipjm
     
-    A  = atheta2( phx,phz)
-    Ap = aptheta2(phx,phz)
+    A  = atheta( phx,phz)
+    Ap = aptheta(phx,phz)
     JR = A * ( A*psx - Ap*psz )
     
     # ============================
@@ -181,8 +180,8 @@ def _rhs_psi(ps,ph,U,zz,t):
     phx = ph[0,0]-ph[-1,0]
     phz = phimjp - phimjm
     
-    A  = atheta2( phx,phz)
-    Ap = aptheta2(phx,phz)
+    A  = atheta( phx,phz)
+    Ap = aptheta(phx,phz)
     JL = A * ( A*psx - Ap*psz )
     
     # ============================
@@ -194,8 +193,8 @@ def _rhs_psi(ps,ph,U,zz,t):
     phz = ph[0,1]-ph[0,0]
 
 
-    A  = atheta2( phx,phz)
-    Ap = aptheta2(phx,phz)
+    A  = atheta( phx,phz)
+    Ap = aptheta(phx,phz)
     JT = A * ( A*psz + Ap*psx )
     
     # ============================
@@ -206,8 +205,8 @@ def _rhs_psi(ps,ph,U,zz,t):
     phx = phipjm - phimjm
     phz = ph[0,0]-ph[0,-1]
     
-    A  = atheta2( phx,phz)
-    Ap = aptheta2(phx,phz)
+    A  = atheta( phx,phz)
+    Ap = aptheta(phx,phz)
     JB = A * ( A*psz + Ap*psx )
     
     
@@ -224,7 +223,7 @@ def _rhs_psi(ps,ph,U,zz,t):
     psxn = ( ps[ 1, 0] - ps[-1, 0] ) * 0.5
     pszn = ( ps[ 0, 1] - ps[ 0,-1] ) * 0.5
     
-    A2 = atheta2(phxn,phzn)**2
+    A2 = atheta(phxn,phzn)**2
     gradps2 = (psxn)**2 + (pszn)**2
     extra =  -sqrt2 * A2 * ph[0,0] * gradps2
     
@@ -269,13 +268,13 @@ def _rhs_U(U,ph,psi_t):
     phx = ph[1,0]-ph[0,0]
     phz = phipjp - phipjm
     phn2 = phx**2 + phz**2
-    nx = phx / np.sqrt(phn2) if (phn2**2 > 1e-8) else 0.
+    nx = phx / np.sqrt(phn2) if (phn2 > eps) else 0.
     
     jat    = 0.5*(1+(1-k)*U[0,0])*(1-ph[0,0]**2)*psi_t[0,0]
     jat_ip = 0.5*(1+(1-k)*U[1,0])*(1-ph[1,0]**2)*psi_t[1,0]
         
     UR = Dl_tilde*0.5*(2 - ph[0,0] - ph[1,0])*(U[1,0]-U[0,0]) + \
-         0.5*(jat + jat_ip)*nx
+         0.5*(jat + jat_ip)*nx/hi
          
          
     # ============================
@@ -284,12 +283,12 @@ def _rhs_U(U,ph,psi_t):
     phx = ph[0,0]-ph[-1,0]
     phz = phimjp - phimjm
     phn2 = phx**2 + phz**2
-    nx = phx / np.sqrt(phn2) if (phn2**2 > 1e-8) else 0.
+    nx = phx / np.sqrt(phn2) if (phn2 > eps) else 0.
     
     jat_im = 0.5*(1+(1-k)*U[-1,0])*(1-ph[-1,0]**2)*psi_t[-1,0]
     
     UL = Dl_tilde*0.5*(2 - ph[0,0] - ph[-1,0])*(U[0,0]-U[-1,0]) + \
-         0.5*(jat + jat_im)*nx
+         0.5*(jat + jat_im)*nx/hi
          
          
     # ============================
@@ -298,12 +297,12 @@ def _rhs_U(U,ph,psi_t):
     phx = phipjp - phimjp
     phz = ph[0,1]-ph[0,0]
     phn2 = phx**2 + phz**2
-    nz = phz / np.sqrt(phn2) if (phn2**2 > 1e-8) else 0.
+    nz = phz / np.sqrt(phn2) if (phn2 > eps) else 0.
           
     jat_jp = 0.5*(1+(1-k)*U[0,1])*(1-ph[0,1]**2)*psi_t[0,1]      
     
     UT = Dl_tilde*0.5*(2 - ph[0,0] - ph[0,1])*(U[0,1]-U[0,0]) + \
-         0.5*(jat + jat_jp)*nz
+         0.5*(jat + jat_jp)*nz/hi
          
          
     # ============================
@@ -312,12 +311,12 @@ def _rhs_U(U,ph,psi_t):
     phx = phipjm - phimjm
     phz = ph[0,0]-ph[0,-1]
     phn2 = phx**2 + phz**2
-    nz = phz / np.sqrt(phn2) if (phn2**2 > 1e-8) else 0.
+    nz = phz / np.sqrt(phn2) if (phn2 > eps) else 0.
     
     jat_jm = 0.5*(1+(1-k)*U[0,-1])*(1-ph[0,-1]**2)*psi_t[0,-1]      
     
     UB = Dl_tilde*0.5*(2 - ph[0,0] - ph[0,-1])*(U[0,0]-U[0,-1]) + \
-         0.5*(jat + jat_jm)*nz 
+         0.5*(jat + jat_jm)*nz/hi 
     
     rhs_U = ( (UR-UL) + (UT-UB) ) * hi**2 + sqrt2 * jat
     tau_U = (1+k) - (1-k)*ph[0,0]
@@ -341,22 +340,22 @@ def rhs_U(U,ph,psi_t): return _rhs_U(U,ph,psi_t)
 ##############################################################################
 
 psi0,U0 = initial()
-psi0 = set_halo(psi0.T)
-U0 = set_halo(U0.T)
+psi = set_halo(psi0.T)
+U = set_halo(U0.T)
 zz = set_halo(zz.T)
 
 
-phi0 = np.tanh(psi0/sqrt2) # expensive replace
+#phi0 = np.tanh(psi0/sqrt2) # expensive replace
 
 
 start = time.time()
 
-psi = set_BC(psi0, 0, 1)
-phi = set_BC(phi0, 0, 1)
-U =   set_BC(U0, 0, 1)
+psi = set_BC(psi, 0, 1)
+phi = np.tanh(psi/sqrt2)
+U =   set_BC(U, 0, 1)
 
 
-dPSI = rhs_psi(psi, phi, U, zz, 0)
+dPSI = rhs_psi(psi, phi, U, zz, t)
 dPSI = set_BC(dPSI, 0, 1)
 # dPSI_int=dPSI[1:-1,1:-1]
 
@@ -368,38 +367,33 @@ end = time.time()
 print('elapsed: ', end - start )
 
 
-    # dU_int = dU[1:-1,1:-1]
 
 start = time.time()
-for i in range(100):
+
+for i in range(10000):
 
     
-    psi = set_BC(psi0, 0, 1)
-    phi = set_BC(phi0, 0, 1)
-    U =   set_BC(U0, 0, 1)
+    psi = set_BC(psi, 0, 1)
+
+    U = set_BC(U, 0, 1)
     
     phi = np.tanh(psi/sqrt2) # expensive replace
     
     
-    dPSI = rhs_psi(psi, phi, U, zz, 0)
+    dPSI = rhs_psi(psi, phi, U, zz, t)
     dPSI = set_BC(dPSI, 0, 1)
-    # dPSI_int=dPSI[1:-1,1:-1]
     
-    
-    dU = rhs_U(U,phi,dPSI)
-    # dU_int = dU[1:-1,1:-1]
-    
-    
-    # dU = rhs_U(Ub.T,phib.T,dPSIb.T)
-    # dU = dU[1:-1,1:-1]
-    
-    # # dU_int = dU[:-1,1:-1]
-    
+    psi = psi + dt*dPSI
+  
+    U = U + dt*rhs_U(U,phi,dPSI)
+    t += dt
     
 end = time.time()
 
 
 print('elapsed: ', end - start )
 
+phif = np.tanh(psi[1:-1,1:-1].T/sqrt2)
+Uf = U[1:-1,1:-1].T
 
 
