@@ -5,24 +5,21 @@ Created on Thu Jun 25 23:10:13 2020
 
 @author: yigong qin, yuanxun bao
 """
-
-import numba
+import importlib
+import sys
+import os
+from scipy.io import savemat as save
 from numba import njit, stencil, vectorize, float32, float64
 import numpy as np
-#import matplotlib.pyplot as plt
-
-from dsinput_Takaki import phys_para, simu_para, IO_para 
+from numpy.random import random
 import time
 
-# print(numba.get_num_threads())
+#PARA = importlib.import_module(sys.argv[1])
+import dsinput as PARA
 
-# numba.set_num_threads(2)
-
-# print(numba.get_num_threads())
-
-delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0 = phys_para()
-eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename = simu_para(W0,Dl_tilde)
-nts, direc, r0 = IO_para(W0,lxd)
+delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0 = PARA.phys_para()
+eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename = PARA.simu_para(W0,Dl_tilde)
+U_0, seed, nts, direc = PARA.IO_para(W0,lxd)
 
 a_s = 1 - 3*delta
 epsilon = 4*delta/a_s
@@ -51,6 +48,11 @@ t=0
 dxdz_in = 1./(dx*dz)  
 
 hi= 1./dx
+dt_sr = np.sqrt(dt)
+
+Tishot = np.zeros((2*nv,nts+1))
+
+np.random.seed(seed)
 
 @njit
 def set_halo(u):
@@ -62,15 +64,6 @@ def set_halo(u):
     
     return ub
 
-# the equations are divergence of fluxs, having the form F_x + J_z 
-def initial(): # properties/parameters of interests
-    
-    r0 = 0.5625#*20
-    r = np.sqrt( (xx-lx/2) **2+(zz)**2) - r0    
-    psi0 = - r 
-    U0 = 0*psi0 -0.3
-    
-    return psi0,U0
 
 
 @vectorize([float32(float32, float32),
@@ -139,7 +132,7 @@ def set_BC(u,BCx,BCy):
         
 
 @stencil
-def _rhs_psi(ps,ph,U,zz,t):
+def _rhs_psi(ps,ph,U,zz):
 
     # ps = psi, ph = phi
     
@@ -234,7 +227,7 @@ def _rhs_psi(ps,ph,U,zz,t):
     # 
     # =============================================================
     
-    Up = (zz[0,0] - R_tilde*t)/lT_tilde
+    Up = (zz[0,0] )/lT_tilde
     
     rhs_psi = ((JR-JL) + (JT-JB) + extra) * hi**2 + \
                sqrt2*ph[0,0] - lamd*(1-ph[0,0]**2)*sqrt2*(U[0,0] + Up) 
@@ -247,8 +240,8 @@ def _rhs_psi(ps,ph,U,zz,t):
     # =============================================================
     tp = (1-(1-k)*Up)
     tau_psi = tp*A2 if tp >= k else k*A2
-    
-    return rhs_psi/tau_psi
+
+    return rhs_psi/tau_psi + eta*(random()-0.5)/dt_sr
 
 
 
@@ -273,8 +266,8 @@ def _rhs_U(U,ph,psi_t):
     jat    = 0.5*(1+(1-k)*U[0,0])*(1-ph[0,0]**2)*psi_t[0,0]
     jat_ip = 0.5*(1+(1-k)*U[1,0])*(1-ph[1,0]**2)*psi_t[1,0]
         
-    UR = Dl_tilde*0.5*(2 - ph[0,0] - ph[1,0])*(U[1,0]-U[0,0]) + \
-         0.5*(jat + jat_ip)*nx/hi
+    UR = hi*Dl_tilde*0.5*(2 - ph[0,0] - ph[1,0])*(U[1,0]-U[0,0]) + \
+         0.5*(jat + jat_ip)*nx
          
          
     # ============================
@@ -287,8 +280,8 @@ def _rhs_U(U,ph,psi_t):
     
     jat_im = 0.5*(1+(1-k)*U[-1,0])*(1-ph[-1,0]**2)*psi_t[-1,0]
     
-    UL = Dl_tilde*0.5*(2 - ph[0,0] - ph[-1,0])*(U[0,0]-U[-1,0]) + \
-         0.5*(jat + jat_im)*nx/hi
+    UL = hi*Dl_tilde*0.5*(2 - ph[0,0] - ph[-1,0])*(U[0,0]-U[-1,0]) + \
+         0.5*(jat + jat_im)*nx
          
          
     # ============================
@@ -301,8 +294,8 @@ def _rhs_U(U,ph,psi_t):
           
     jat_jp = 0.5*(1+(1-k)*U[0,1])*(1-ph[0,1]**2)*psi_t[0,1]      
     
-    UT = Dl_tilde*0.5*(2 - ph[0,0] - ph[0,1])*(U[0,1]-U[0,0]) + \
-         0.5*(jat + jat_jp)*nz/hi
+    UT = hi*Dl_tilde*0.5*(2 - ph[0,0] - ph[0,1])*(U[0,1]-U[0,0]) + \
+         0.5*(jat + jat_jp)*nz
          
          
     # ============================
@@ -315,10 +308,10 @@ def _rhs_U(U,ph,psi_t):
     
     jat_jm = 0.5*(1+(1-k)*U[0,-1])*(1-ph[0,-1]**2)*psi_t[0,-1]      
     
-    UB = Dl_tilde*0.5*(2 - ph[0,0] - ph[0,-1])*(U[0,0]-U[0,-1]) + \
-         0.5*(jat + jat_jm)*nz/hi 
+    UB = hi*Dl_tilde*0.5*(2 - ph[0,0] - ph[0,-1])*(U[0,0]-U[0,-1]) + \
+         0.5*(jat + jat_jm)*nz
     
-    rhs_U = ( (UR-UL) + (UT-UB) ) * hi**2 + sqrt2 * jat
+    rhs_U = ( (UR-UL) + (UT-UB) ) * hi + sqrt2 * jat
     tau_U = (1+k) - (1-k)*ph[0,0]
     
     
@@ -326,7 +319,7 @@ def _rhs_U(U,ph,psi_t):
     
 
 @njit(parallel=True)
-def rhs_psi(ps,ph,U,zz,t): return _rhs_psi(ps,ph,U,zz,t)
+def rhs_psi(ps,ph,U,zz): return _rhs_psi(ps,ph,U,zz)
 
 
 @njit(parallel=True)
@@ -334,32 +327,33 @@ def rhs_U(U,ph,psi_t): return _rhs_U(U,ph,psi_t)
 
 
 
-
+def save_data(phi,U):
+    
+    c_tilde = ( 1+ (1-k)*U )*( k*(1+phi)/2 + (1-phi)/2 )
+    
+    return np.vstack(( np.reshape(phi[1:-1,1:-1].T,(nv,1),order='F') , \
+                      np.reshape(c_tilde[1:-1,1:-1].T,(nv,1),order='F') ) )
 
 
 ##############################################################################
 
-psi0,U0 = initial()
+psi0 = PARA.seed_initial(xx,lx,zz)
+U0 = 0*psi0 + U_0
+
 psi = set_halo(psi0.T)
 U = set_halo(U0.T)
 zz = set_halo(zz.T)
 
-
-#phi0 = np.tanh(psi0/sqrt2) # expensive replace
-
-
-start = time.time()
-
 psi = set_BC(psi, 0, 1)
-phi = np.tanh(psi/sqrt2)
+phi = np.tanh(psi/sqrt2)   # expensive replace
 U =   set_BC(U, 0, 1)
+Tishot[:,[0]] = save_data(phi,U)
 
 
-dPSI = rhs_psi(psi, phi, U, zz, t)
+#complie
+start = time.time()
+dPSI = rhs_psi(psi, phi, U, zz)
 dPSI = set_BC(dPSI, 0, 1)
-# dPSI_int=dPSI[1:-1,1:-1]
-
-
 dU = rhs_U(U,phi,dPSI)
 
 end = time.time()
@@ -370,30 +364,38 @@ print('elapsed: ', end - start )
 
 start = time.time()
 
-for i in range(10000):
+for jj in range(nts):
 
-    
-    psi = set_BC(psi, 0, 1)
+    for ii in range(int(Mt/nts)):
 
-    U = set_BC(U, 0, 1)
+
+        dPSI = rhs_psi(psi, phi, U, zz - R_tilde*t)
     
-    phi = np.tanh(psi/sqrt2) # expensive replace
+        dPSI = set_BC(dPSI, 0, 1)
+        
+        psi = psi + dt*dPSI
+      
+        U = U + dt*rhs_U(U,phi,dPSI)
+        
+        # add boundary
+        psi = set_BC(psi, 0, 1)
     
-    
-    dPSI = rhs_psi(psi, phi, U, zz, t)
-    dPSI = set_BC(dPSI, 0, 1)
-    
-    psi = psi + dt*dPSI
-  
-    U = U + dt*rhs_U(U,phi,dPSI)
-    t += dt
+        U = set_BC(U, 0, 1)
+        
+        phi = np.tanh(psi/sqrt2) 
+        
+        
+        t += dt
+
+    #print('now time is ',t)  
+    Tishot[:,[jj+1]] = save_data(phi,U)
     
 end = time.time()
 
 
 print('elapsed: ', end - start )
 
-phif = np.tanh(psi[1:-1,1:-1].T/sqrt2)
+
 Uf = U[1:-1,1:-1].T
 
-
+save(os.path.join(direc,filename),{'xx':xx*W0,'zz':zz[1:-1,1:-1].T*W0,'y':Tishot,'dt':dt*tau0,'nx':nx,'nz':nz,'t':t*tau0,'mach_time':end-start})

@@ -1,0 +1,122 @@
+
+\documentclass[11pt]{article}
+\usepackage{geometry} % see geometry.pdf on how to lay out the page. There's lots.
+\geometry{a4paper} % or letter or a5paper or ... etc
+\usepackage{amsmath}
+
+\title{Microscale Quantities of Interest for the AM Testbed Problem}
+\author{Stephen DeWitt}
+
+%%% BEGIN DOCUMENT
+\begin{document}
+
+\maketitle
+
+\emph{Note: Unless otherwise noted, all of the expressions below assume that the simulation result has been cropped such that only the steady state portion of the solid is included, and only a small, standardized portion of the liquid ahead of the solidification front is included. An algorithm for determining the where it should be cropped is needed. I propose that we first focus on implementing automatic tools for extracting these quantities of interest from the whole simulation result and then we can test a few different approaches for cropping the domain.}
+
+\section{Cellular-to-Dendritic Transition}
+\subsection{Approach 1: Total Interfacial Length}
+A quantity proportional to the total interfacial length can be determined by:
+\begin{equation}
+L_{interface} \propto \int \phi (1-\phi) dV
+\end{equation}
+
+\subsection{Approach 2: During Directional Variation in $\phi$}
+In a cellular microstructure there should be very little variation in $\phi$ along lines parallel to the growth direction (i.e. the line should be either entirely inside the cell or inside the inter-cellular region). In contrast, a dendritic microstructure will have large areas where these lines along the growth direction repeatedly enter and exit secondary arms.
+
+When the misorientation is zero, an approach to quantify this difference is:
+\begin{enumerate}
+\item At every grid index $i$ along the x axis, calculate the standard deviation of the $\phi_{ij}$ values for all values of grid index $j$ along the y axis, $\sigma_i$
+\item The quantity of interest is the average of $\sigma_i$
+\end{enumerate}
+
+When the misorientation is nonzero, a similar approach could be taken following lines normal to the expected growth direction using interpolated values of $\phi$. 
+
+\section{Cell Spacing/Primary Dendrite Arm Spacing}
+Assuming zero misorientation, the number of cells/primary dendrites (which, along with the computational domain size determines the spacing) can be determined by:
+\begin{enumerate}
+\item Summing $\phi_{ij}$ along the $j$ direction
+\item Determining the number of times that 1D quantity crosses some indicator value (e.g. 0 or -0.25) and dividing it by 2
+\end{enumerate}
+
+When the misorientation is nonzero, a similar approach could be taken following lines normal to the expected growth direction using interpolated values of $\phi$. 
+
+\section{Secondary Dendrite Arm Spacing}
+Automatic characterization of the secondary dendrite arm spacing is a bit more complicated, but it builds on the algorithms for the earlier quantities of interest.
+
+\begin{enumerate}
+\item IF QoI \#1 indicates a dendritic structure:
+\item Identify the interdendritic regions using the directional sums of $\phi_{ij}$ along the $j$ direction from QoI \#2
+\item Redo the analysis from  QoI \#2 in the interdendritic region, now rotating the direction of the sum by 90 degrees to obtain the secondary dendrite arm spacing in that region
+\item Average the secondary dendrite arm spacing from each interdendritic region
+\end{enumerate}
+
+\section{Eutectic Volume Fraction}
+Phase field models of this type assume two phases -- the solid and the liquid. However, in real systems a eutectic reaction is possible, combining two solid species. From Ref. 1, one can assume that the remaining liquid quickly transforms to the eutectic at the eutectic temperature (821 K for Al-Cu). Therefore, with zero misorientation one can determine the volume fraction (area fraction in 2D) of the eutectic regions by:
+\begin{equation}
+f_{eutectic} = \frac{1}{N_x (N_y^{ss} - N_y^{eutectic})} \sum_{i=1}^{N_x} \sum_{j=N_y^{ss}}^{N_y^{eutectic}}  (1-\phi_{ij})/2
+\end{equation}
+Where $N_y^{ss}$ is the grid index along the y direction where growth first reaches steady state and $N_x^{eutectic}$ is the largest grid index along the y direction where T is below the eutectic temperature.
+
+\section{Solute Variability}
+The spatial variation in the solute concentration does not have a direct effect on hot cracking, but can affect the eventual mechanical properties of the material through the nucleation and growth of spatially varying secondary phases (e.g. $\theta'$ in Al-Cu). We only care about the solute variation in the fully solidified material, so in this case we only consider where T is less than the eutectic temperature. Therefore the QoI for the solute variability is the standard deviation of the concentration in the portion of the domain where the microstructure has reached steady state and T is less than the eutectic temperature.
+
+\section{Solid Fraction as a Function of Temperature}
+A common analysis of solidification simulations is to plot the solid fraction as a function of temperature, $f_s(T)$. In and of itself, it is not a quantity of interest, but it is necessary to calculate two of the quantities of interest below. Its calculation is involved enough that I'm putting it in its own section.
+
+Following the approach in Ref. 1,  $f_s(T)$ is determined by averaging $(\phi+1)/2$ along isotherms (level sets of the temperature field). Also following Ref. 1, $f_s$ should be corrected such that any "liquid" below the eutectic temperature should be considered as having solidified as a eutectic compound.
+
+With zero misorientation $f_s(T)$ is determined by:
+\begin{equation}
+ \tilde{\phi}_{ij} =
+    \begin{cases}
+      1 & T < T_{eutectic}\\
+      \phi_{ij} & \text{otherwise}
+    \end{cases}       
+\end{equation}
+\begin{equation}
+\tilde{f_s}(T_j) = \frac{1}{N_y} \sum_i (\tilde{\phi}_{ij}+1)/2
+\end{equation}
+where $\phi_{cutoff}$ is a cutoff parameter for denoting the liquid side of the interface (e.g. $\phi_{cutoff} = -0.99$). The optimal choice of $\phi_{cutoff}$ may need to be determined via experimentation.
+
+Depending on the number of cells/dendrites in the domain and the morphology of the interdendritic region, the raw $f_s(T)$ may be rather noisy. Smoothing may be necessary (as in Ref. 2) to ensure that it is monotonically decreasing as expected. The type and amount of smoothing may need to be determined via experimentation.
+
+\section{Kou Criterion}
+One measure of hot cracking susceptibility is the Kou criterion:
+\begin{equation}
+HCS_{Kou} = \max \left(\left|\frac{dT}{d\sqrt{f_s}} \right| \right)
+\end{equation}
+which can be directly determined from $f_s(T)$.
+
+\section{Vulnerable Time}
+Another measure of hot cracking susceptibility is the "vulnerable time" (as described in Ref. 2), the time between near coalescence of the interdendritic region and coalescence. A traditional choice for this metric is the time between $f_s=0.9$ and $f_s=0.95$. This can be accomplished by converting $f_s(T)$ to $f_s(t)$, using the analytic expression for the temperature $T(y,t)=T_0+G(z-Rt)$.
+
+The above formulation of the vulnerable time uses an empirical assumption that coalescence happens near $f_s=0.95$. In addition to reporting the vulnerable time from this conventional metric, the coalescence temperature can also be measured from $\phi$. The coalescence temperature can be determined from the temperature corresponding to the lowest liquid point that is connected to the liquid ahead of the solidification front (determined using a "connected components" function in an image processing library such as scikit-image). The observed coalescence temperature can be measured at multiple times through the simulation (after steady state is reached) and then averaged before calculating the vulnerable time.
+
+\section{Permeability}
+An important measure of the ability of the liquid to flow to the base of a directionally solidifying structure to heal incipient hot cracks is the permeability.
+
+For cellular microstructures the permeability can be described by the Carmen-Kozeny approximation (as in Ref. 1):
+\begin{equation}
+K_{cellular} = \frac{\lambda_1^2 (1-f_s^2)^3}{180f_s^2}
+\end{equation}
+
+For dendritic microstructures, the permeability is better described by the Heinrich and Poirier modified Blake–Kozeny permeability [3], which has been shown to accurately represent flow through dendritic networks [4]. For flow parallel to the growth direction (the relevant case):
+\begin{equation}
+K_{dendritic} = 
+	\begin{cases}
+	0.074 \left[ \ln (f_s)^{-1}-1.49+2 f_s - 0.5f_s^2 \right] \lambda_1^2 & f_s < 0.25 \\
+	2.05 \times 10^{-7} \left( \frac{1-f_s}{f_s} \right)^{10.739} \lambda_1^2 & 0.25 \le f_s < 0.35 \\
+	3.75 \times 10^{-4}(1-f_s)^2\lambda_1^2 & f_s \ge 0.35
+	\end{cases}
+\end{equation}
+
+\section{References}
+\begin{enumerate}
+\item Lei Wang, Nan Wang, Nikolas Provatas, Liquid channel segregation and morphology and their relation with hot cracking susceptibility during columnar growth in binary alloys, Acta Materialia, Volume 126, 2017, Pages 302-312
+\item Bottger, Apel, Santillana, Eskin, Relationship Between Solidification Microstructure and Hot Cracking Susceptibility for Continuous Casting of Low-Carbon and High-Strength Low-Alloyed Steels: A Phase-Field Study, Metallurigcal and Materials Transactions A, Volume 44A, 2013, Pages 3765-3777.
+\item Heinrich, Poirier, Convection Modeling in Directional Solidification, Comptes Rendus Mecanique, 332, 2004, 429-445.
+\item Madison, Spowart, Rowenhorst, Aagesen, Thornton, Pollock, Modeling fluid flow in three-dimensional single crystal dendritic structures, Acta Materialia, 58, 2010, Pages 2864-2875. 
+
+\end{enumerate}
+\end{document}

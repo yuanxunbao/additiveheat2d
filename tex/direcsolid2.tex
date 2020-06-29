@@ -292,7 +292,7 @@ $T_m$ is the melting temperature of the pure material.
 
 \subsection{Quantities of Interest}
 Al-Cu:
-$T_m=933.25K=660^\circ C$, $T_{eutectic}=821K=548^\circ C$
+$T_m=933K=660^\circ C$, $T_{eutectic}=821K=548^\circ C$
 \begin{figure}[h]
 \centering
 \includegraphics[width=1\linewidth]{./figures/Phase_diagram_Al-Cu.png}
@@ -356,7 +356,7 @@ $\Delta x$ & mesh size & 1.5 & $W_0$ \\
 \subsection{convergence}
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\linewidth]{./figures/preconditioner.png}
+\includegraphics[width=0.6\linewidth]{./figures/preconditioner.png}
 \caption{Average error with and without preconditioner}
 \end{figure}
    
@@ -440,7 +440,18 @@ $100\times201$ & 0.0041 & 0.0028  & 0.0028 \\
 \end{table} 
    
 
+ \begin{table}
+\centering
+\caption{Simulation time per right hand side iteration on frontera. (Average 100 iterations. Unit is second) }
+\begin{tabular}{l c c c c c}
+\toprule
+$x grids \times z grids$ & numpy & jit serial & threads=2 & threads=4 & threads=8\\
+\midrule
+$1600\times3201$ & 2.354 & 1.581  & 1.344 & 0.952 & 0.815\\
+\bottomrule
+\end{tabular}\label{tab:Takaki}
 
+\end{table} 
 
 
    
