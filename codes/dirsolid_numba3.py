@@ -9,7 +9,7 @@ Created on Thu Jun 25 23:10:13 2020
 import numba
 from numba import njit, stencil, vectorize, float32, float64
 import numpy as np
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 from dsinput_Takaki import phys_para, simu_para, IO_para 
 import time
@@ -139,7 +139,7 @@ def set_BC(u,BCx,BCy):
         
 
 @stencil
-def _rhs_psi(ps,ph,U,zz,t):
+def _rhs_psi(ps,ph,U,zz):
 
     # ps = psi, ph = phi
     
@@ -234,7 +234,7 @@ def _rhs_psi(ps,ph,U,zz,t):
     # 
     # =============================================================
     
-    Up = (zz[0,0] - R_tilde*t)/lT_tilde
+    Up = (zz[0,0] )/lT_tilde
     
     rhs_psi = ((JR-JL) + (JT-JB) + extra) * hi**2 + \
                sqrt2*ph[0,0] - lamd*(1-ph[0,0]**2)*sqrt2*(U[0,0] + Up) 
@@ -247,7 +247,7 @@ def _rhs_psi(ps,ph,U,zz,t):
     # =============================================================
     tp = (1-(1-k)*Up)
     tau_psi = tp*A2 if tp >= k else k*A2
-    
+
     return rhs_psi/tau_psi
 
 
@@ -273,8 +273,8 @@ def _rhs_U(U,ph,psi_t):
     jat    = 0.5*(1+(1-k)*U[0,0])*(1-ph[0,0]**2)*psi_t[0,0]
     jat_ip = 0.5*(1+(1-k)*U[1,0])*(1-ph[1,0]**2)*psi_t[1,0]
         
-    UR = Dl_tilde*0.5*(2 - ph[0,0] - ph[1,0])*(U[1,0]-U[0,0]) + \
-         0.5*(jat + jat_ip)*nx/hi
+    UR = hi*Dl_tilde*0.5*(2 - ph[0,0] - ph[1,0])*(U[1,0]-U[0,0]) + \
+         0.5*(jat + jat_ip)*nx
          
          
     # ============================
@@ -287,8 +287,8 @@ def _rhs_U(U,ph,psi_t):
     
     jat_im = 0.5*(1+(1-k)*U[-1,0])*(1-ph[-1,0]**2)*psi_t[-1,0]
     
-    UL = Dl_tilde*0.5*(2 - ph[0,0] - ph[-1,0])*(U[0,0]-U[-1,0]) + \
-         0.5*(jat + jat_im)*nx/hi
+    UL = hi*Dl_tilde*0.5*(2 - ph[0,0] - ph[-1,0])*(U[0,0]-U[-1,0]) + \
+         0.5*(jat + jat_im)*nx
          
          
     # ============================
@@ -301,8 +301,8 @@ def _rhs_U(U,ph,psi_t):
           
     jat_jp = 0.5*(1+(1-k)*U[0,1])*(1-ph[0,1]**2)*psi_t[0,1]      
     
-    UT = Dl_tilde*0.5*(2 - ph[0,0] - ph[0,1])*(U[0,1]-U[0,0]) + \
-         0.5*(jat + jat_jp)*nz/hi
+    UT = hi*Dl_tilde*0.5*(2 - ph[0,0] - ph[0,1])*(U[0,1]-U[0,0]) + \
+         0.5*(jat + jat_jp)*nz
          
          
     # ============================
@@ -315,10 +315,10 @@ def _rhs_U(U,ph,psi_t):
     
     jat_jm = 0.5*(1+(1-k)*U[0,-1])*(1-ph[0,-1]**2)*psi_t[0,-1]      
     
-    UB = Dl_tilde*0.5*(2 - ph[0,0] - ph[0,-1])*(U[0,0]-U[0,-1]) + \
-         0.5*(jat + jat_jm)*nz/hi 
+    UB = hi*Dl_tilde*0.5*(2 - ph[0,0] - ph[0,-1])*(U[0,0]-U[0,-1]) + \
+         0.5*(jat + jat_jm)*nz
     
-    rhs_U = ( (UR-UL) + (UT-UB) ) * hi**2 + sqrt2 * jat
+    rhs_U = ( (UR-UL) + (UT-UB) ) * hi + sqrt2 * jat
     tau_U = (1+k) - (1-k)*ph[0,0]
     
     
@@ -326,7 +326,7 @@ def _rhs_U(U,ph,psi_t):
     
 
 @njit(parallel=True)
-def rhs_psi(ps,ph,U,zz,t): return _rhs_psi(ps,ph,U,zz,t)
+def rhs_psi(ps,ph,U,zz): return _rhs_psi(ps,ph,U,zz)
 
 
 @njit(parallel=True)
@@ -355,7 +355,7 @@ phi = np.tanh(psi/sqrt2)
 U =   set_BC(U, 0, 1)
 
 
-dPSI = rhs_psi(psi, phi, U, zz, t)
+dPSI = rhs_psi(psi, phi, U, zz)
 dPSI = set_BC(dPSI, 0, 1)
 # dPSI_int=dPSI[1:-1,1:-1]
 
@@ -370,7 +370,7 @@ print('elapsed: ', end - start )
 
 start = time.time()
 
-for i in range(10000):
+for i in range(100):
 
     
     psi = set_BC(psi, 0, 1)
@@ -379,8 +379,9 @@ for i in range(10000):
     
     phi = np.tanh(psi/sqrt2) # expensive replace
     
-    
-    dPSI = rhs_psi(psi, phi, U, zz, t)
+    zzp = zz - R_tilde*t
+    dPSI = rhs_psi(psi, phi, U, zzp)
+    #dPSI = rhs_psi(psi, phi, U, zz, t)
     dPSI = set_BC(dPSI, 0, 1)
     
     psi = psi + dt*dPSI
@@ -397,3 +398,10 @@ phif = np.tanh(psi[1:-1,1:-1].T/sqrt2)
 Uf = U[1:-1,1:-1].T
 
 
+fig1 = plt.figure()
+ax11 = fig1.add_subplot(121)
+plt.title('phi')
+plt.imshow(phif,cmap=plt.get_cmap('winter'),origin='lower')
+ax12 = fig1.add_subplot(122)
+plt.title('U')
+plt.imshow(Uf,cmap=plt.get_cmap('winter'),origin='lower')
