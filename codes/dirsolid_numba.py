@@ -11,7 +11,7 @@ import os
 from scipy.io import savemat as save
 from numba import njit, stencil, vectorize, float32, float64
 import numpy as np
-from numpy.random import rand
+from numpy.random import random
 import time
 from math import pi
 #PARA = importlib.import_module(sys.argv[1])
@@ -247,7 +247,7 @@ def _rhs_psi(ps,ph,U,zz):
     tp = (1-(1-k)*Up)
     tau_psi = tp*A2 if tp >= k else k*A2
 
-    return rhs_psi/tau_psi 
+    return rhs_psi/tau_psi + eta*(random()-0.5)/dt_sr
 
 
 
@@ -343,7 +343,7 @@ def save_data(phi,U):
 
 ##############################################################################
 
-psi0 = PARA.sins_initial(lx,nx,xx,zz)
+psi0 = PARA.seed_initial(xx,lx,zz)
 U0 = 0*psi0 + U_0
 
 psi = set_halo(psi0.T)
@@ -379,7 +379,7 @@ for jj in range(nts):
     
         dPSI = set_BC(dPSI, 0, 1)
         
-        psi = psi + dt*dPSI + eta*(rand(nx+2,nz+2)-0.5)*dt_sr
+        psi = psi + dt*dPSI 
       
         U = U + dt*rhs_U(U,phi,dPSI)
         
