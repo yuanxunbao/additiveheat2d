@@ -13,13 +13,18 @@ from numba import njit, stencil, vectorize, float32, float64
 import numpy as np
 from numpy.random import random
 import time
-
+from math import pi
 #PARA = importlib.import_module(sys.argv[1])
 import dsinput as PARA
 
 delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0 = PARA.phys_para()
 eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename = PARA.simu_para(W0,Dl_tilde)
 U_0, seed, nts, direc = PARA.IO_para(W0,lxd)
+
+alpha0 = alpha0*pi/180
+
+cosa = np.cos(alpha0)
+sina = np.sin(alpha0)
 
 a_s = 1 - 3*delta
 epsilon = 4*delta/a_s
@@ -69,9 +74,9 @@ def set_halo(u):
 @vectorize([float32(float32, float32),
             float64(float64, float64)])
 def atheta(ux, uz):
-    
-    ux2 = ux**2
-    uz2 = uz**2
+
+    ux2 = ( cosa*ux + sina*uz )**2
+    uz2 = ( -sina*ux + cosa*uz)**2
         
     # return MAG_sq2
     MAG_sq2 = (ux2 + uz2)**2
@@ -87,15 +92,16 @@ def atheta(ux, uz):
 @vectorize([float32(float32, float32),
             float64(float64, float64)])
 def aptheta(ux, uz):
-    
-    ux2 = ux**2
-    uz2 = uz**2
+    uxr = cosa*ux + sina*uz
+    uzr = -sina*ux + cosa*uz
+    ux2 = uxr**2
+    uz2 = uzr**2
     
     MAG_sq2 = (ux2 + uz2)**2
     
     if (MAG_sq2 > eps**2):
         
-        return -a_12*ux*uz*(ux2 - uz2) /  MAG_sq2
+        return -a_12*uxr*uzr*(ux2 - uz2) /  MAG_sq2
     
     else:
         return 0.0
@@ -337,7 +343,7 @@ def save_data(phi,U):
 
 ##############################################################################
 
-psi0 = PARA.seed_initial(xx,lx,zz)
+psi0 = PARA.sins_initial(lx,nx,xx,zz)
 U0 = 0*psi0 + U_0
 
 psi = set_halo(psi0.T)

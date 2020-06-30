@@ -1,0 +1,6 @@
+NUMBA_NUM_THREADS=4 python3 dirsolid_numba.py dsinput
+echo "Hello, World! from job $LAUNCHER_JID running on task $LAUNCHER_TSK_ID"
+echo "Hello, World! from job $LAUNCHER_JID running on task $LAUNCHER_TSK_ID"
+echo "Hello, World! from job $LAUNCHER_JID running on task $LAUNCHER_TSK_ID"
+echo "Hello, World! from job $LAUNCHER_JID running on task $LAUNCHER_TSK_ID"
+

@@ -42,12 +42,12 @@ def simu_para(W0,Dl_tilde):
     alpha0 = 0                    # misorientation angle in degree
     
     
-    lxd = 40                     # horizontal length in micron
-    aratio = 1                  # aspect ratio
-    nx = 40                      # number of grids in x   nx*aratio must be int
+    lxd = 1340                     # horizontal length in micron
+    aratio = 0.25                  # aspect ratio
+    nx = 1000                      # number of grids in x   nx*aratio must be int
     dx = lxd/nx/W0
     dt = (dx)**2/(5*Dl_tilde)                   # time step size for forward euler
-    Mt = 10000                                 # number of time steps
+    Mt = 200000                                 # number of time steps
     Tt = 60                                    # total time
 
     eta = 0.00                   # magnitude of noise
@@ -59,8 +59,8 @@ def IO_para(W0,lxd):
     
     U_0 = - 0.3                  # initial value for U, -1< U_0 < 0
     seed = 1                     # randnom seed number
-    nts = 10                      # number of snapshots in time   Mt/nts must be int
-    direc = '.'                  # saving directory
+    nts = 100                      # number of snapshots in time   Mt/nts must be int
+    direc = '/work/07428/ygqin/frontera/data'                  # saving directory
     
     return  U_0, seed, nts, direc
 
