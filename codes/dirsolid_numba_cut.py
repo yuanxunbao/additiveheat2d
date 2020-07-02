@@ -5,6 +5,7 @@ Created on Thu Jun 25 23:10:13 2020
 
 @author: yigong qin, yuanxun bao
 """
+from matplotlib import pyplot as plt
 import importlib
 import sys
 import os
@@ -18,7 +19,7 @@ from math import pi
 import dsinput as PARA
 
 delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0 = PARA.phys_para()
-eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename = PARA.simu_para(W0,Dl_tilde)
+cut, eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename = PARA.simu_para(W0,Dl_tilde)
 U_0, seed, nts, direc = PARA.IO_para(W0,lxd)
 
 alpha0 = alpha0*pi/180
@@ -81,12 +82,12 @@ def atheta(ux, uz):
     # return MAG_sq2
     MAG_sq2 = (ux2 + uz2)**2
     
-    #if (MAG_sq2 > eps**2):
+    if (MAG_sq2 > eps**2):
         
-    return a_s*( 1 + epsilon*(ux2**2 + uz2**2) / MAG_sq2   )
+        return a_s*( 1 + epsilon*(ux2**2 + uz2**2) / MAG_sq2   )
        
-    #else:
-        #return a_s
+    else:
+        return a_s
     
     
 @vectorize([float32(float32, float32),
@@ -99,12 +100,12 @@ def aptheta(ux, uz):
     
     MAG_sq2 = (ux2 + uz2)**2
     
-    #if (MAG_sq2 > eps**2):
+    if (MAG_sq2 > eps**2):
         
-    return -a_12*uxr*uzr*(ux2 - uz2) /  MAG_sq2
+        return -a_12*uxr*uzr*(ux2 - uz2) /  MAG_sq2
     
-    #else:
-        #return 0.0
+    else:
+        return 0.0
     
     
 # update global array, don't jit compile this function
@@ -140,7 +141,7 @@ def set_BC(u,BCx,BCy):
 @stencil
 def _rhs_psi(ps,ph,U,zz):
 
-    if ph[0,0]<1-eps and ph[0,0]>-1+eps:
+    if ph[0,0]<1-cut and ph[0,0]>-1+cut:
         
         # ps = psi, ph = phi
         
@@ -255,7 +256,7 @@ def _rhs_psi(ps,ph,U,zz):
         #JT = A * ( A*psz )
         #psz = ps[0,0]-ps[0,-1]
         #JB = A * ( A*psz  )
-        Lap = ps[1,0]-ps[0,0] -(ps[0,0]-ps[-1,0]) + ps[0,1]-ps[0,0] -(ps[0,0]-ps[0,-1])
+        Lap = ps[1,0] + ps[-1,0] + ps[0,1] + ps[0,-1] - 4*ps[0,0]
         # =============================================================
         # 
         # 2. EXTRA TERM: sqrt2 * atheta**2 * phi * |grad psi|^2
@@ -280,7 +281,7 @@ def _rhs_psi(ps,ph,U,zz):
         
         Up = (zz[0,0] )/lT_tilde
         
-        rhs_psi = ( a_s**2*Lap + extra) * hi**2 + \
+        rhs_psi = ( A2*Lap + extra) * hi**2 + \
                    sqrt2*ph[0,0] - lamd*(1-ph[0,0]**2)*sqrt2*(U[0,0] + Up) 
 
 
@@ -304,7 +305,7 @@ def _rhs_psi(ps,ph,U,zz):
 def _rhs_U(U,ph,psi_t):
     
     jat    = 0.5*(1+(1-k)*U[0,0])*(1-ph[0,0]**2)*psi_t[0,0]
-    if ph[0,0]<1-eps and ph[0,0]>-1+eps:
+    if ph[0,0]<1-cut and ph[0,0]>-1+cut:
     
     
         # define cell centered values
@@ -319,7 +320,7 @@ def _rhs_U(U,ph,psi_t):
         phx = ph[1,0]-ph[0,0]
         phz = phipjp - phipjm
         phn2 = phx**2 + phz**2
-        nx = phx / np.sqrt(phn2) #if (phn2 > eps) else 0.
+        nx = phx / np.sqrt(phn2) if (phn2 > eps) else 0.
         
 
         jat_ip = 0.5*(1+(1-k)*U[1,0])*(1-ph[1,0]**2)*psi_t[1,0]
@@ -334,7 +335,7 @@ def _rhs_U(U,ph,psi_t):
         phx = ph[0,0]-ph[-1,0]
         phz = phimjp - phimjm
         phn2 = phx**2 + phz**2
-        nx = phx / np.sqrt(phn2) #if (phn2 > eps) else 0.
+        nx = phx / np.sqrt(phn2) if (phn2 > eps) else 0.
         
         jat_im = 0.5*(1+(1-k)*U[-1,0])*(1-ph[-1,0]**2)*psi_t[-1,0]
         
@@ -348,7 +349,7 @@ def _rhs_U(U,ph,psi_t):
         phx = phipjp - phimjp
         phz = ph[0,1]-ph[0,0]
         phn2 = phx**2 + phz**2
-        nz = phz / np.sqrt(phn2) #if (phn2 > eps) else 0.
+        nz = phz / np.sqrt(phn2) if (phn2 > eps) else 0.
               
         jat_jp = 0.5*(1+(1-k)*U[0,1])*(1-ph[0,1]**2)*psi_t[0,1]      
         
@@ -362,7 +363,7 @@ def _rhs_U(U,ph,psi_t):
         phx = phipjm - phimjm
         phz = ph[0,0]-ph[0,-1]
         phn2 = phx**2 + phz**2
-        nz = phz / np.sqrt(phn2) #if (phn2 > eps) else 0.
+        nz = phz / np.sqrt(phn2) if (phn2 > eps) else 0.
         
         jat_jm = 0.5*(1+(1-k)*U[0,-1])*(1-ph[0,-1]**2)*psi_t[0,-1]      
         
@@ -494,7 +495,15 @@ end = time.time()
 
 print('elapsed: ', end - start )
 
-
+phif = phi[1:-1,1:-1].T
 Uf = U[1:-1,1:-1].T
 
+
+fig1 = plt.figure()
+ax11 = fig1.add_subplot(121)
+plt.title('phi')
+plt.imshow(phif,cmap=plt.get_cmap('winter'),origin='lower')
+ax12 = fig1.add_subplot(122)
+plt.title('U')
+plt.imshow(Uf,cmap=plt.get_cmap('winter'),origin='lower')
 #save(os.path.join(direc,filename),{'xx':xx*W0,'zz':zz[1:-1,1:-1].T*W0,'y':Tishot,'dt':dt*tau0,'nx':nx,'nz':nz,'t':t*tau0,'mach_time':end-start})
