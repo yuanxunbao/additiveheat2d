@@ -21,7 +21,8 @@
 #SBATCH -o launcher_test.o%j
 #SBATCH -e launcher_test.e%j
 #SBATCH -t 00:59:00
-#SBATCH --mail-user=yxbao@utexas.edu
+#SBATCH --mail-type=all   #Send email at begin and end of job
+#SBATCH --mail-user=ygqin@utexas.edu
 ##SBATCH -A <acct_name>   #uncomment and insert acct name if necessary
 #------------------------------------------------------
 

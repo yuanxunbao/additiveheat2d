@@ -37,7 +37,7 @@ def phys_para():
 
 
 def simu_para(W0,Dl_tilde):
-    
+    cut = 1e-3    
     eps = 1e-8                      #divide-by-zero treatment
     alpha0 = 0                    # misorientation angle in degree
     
@@ -53,7 +53,7 @@ def simu_para(W0,Dl_tilde):
     eta = 0.00                   # magnitude of noise
     filename = 'noi' + str('%4.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lxd)+'nx'+str(nx)+'AR'+str(aratio)+'.mat'
     
-    return eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename
+    return cut, eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename
 
 def IO_para(W0,lxd):
     

@@ -5,7 +5,6 @@ Created on Thu Jun 25 23:10:13 2020
 
 @author: yigong qin, yuanxun bao
 """
-from matplotlib import pyplot as plt
 import importlib
 import sys
 import os
@@ -495,15 +494,4 @@ end = time.time()
 
 print('elapsed: ', end - start )
 
-phif = phi[1:-1,1:-1].T
-Uf = U[1:-1,1:-1].T
-
-
-fig1 = plt.figure()
-ax11 = fig1.add_subplot(121)
-plt.title('phi')
-plt.imshow(phif,cmap=plt.get_cmap('winter'),origin='lower')
-ax12 = fig1.add_subplot(122)
-plt.title('U')
-plt.imshow(Uf,cmap=plt.get_cmap('winter'),origin='lower')
-#save(os.path.join(direc,filename),{'xx':xx*W0,'zz':zz[1:-1,1:-1].T*W0,'y':Tishot,'dt':dt*tau0,'nx':nx,'nz':nz,'t':t*tau0,'mach_time':end-start})
+save(os.path.join(direc,filename),{'xx':xx*W0,'zz':zz[1:-1,1:-1].T*W0,'y':Tishot,'dt':dt*tau0,'nx':nx,'nz':nz,'t':t*tau0,'mach_time':end-start})
