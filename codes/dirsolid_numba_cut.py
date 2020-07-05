@@ -140,7 +140,7 @@ def set_BC(u,BCx,BCy):
 @stencil
 def _rhs_psi(ps,ph,U,zz):
 
-    if ph[0,0]<1-cut and ph[0,0]>-1+cut:
+    if (1-ph[0,0]**2)>cut:
         
         # ps = psi, ph = phi
         
@@ -304,7 +304,7 @@ def _rhs_psi(ps,ph,U,zz):
 def _rhs_U(U,ph,psi_t):
     
     jat    = 0.5*(1+(1-k)*U[0,0])*(1-ph[0,0]**2)*psi_t[0,0]
-    if ph[0,0]<1-cut and ph[0,0]>-1+cut:
+    if (1-ph[0,0]**2)>cut:
     
     
         # define cell centered values
