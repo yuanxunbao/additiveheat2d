@@ -86,7 +86,7 @@ def atheta(ux, uz):
         return a_s*( 1 + epsilon*(ux2**2 + uz2**2) / MAG_sq2   )
        
     else:
-        return a_s
+        return 1.0
     
     
 @vectorize([float32(float32, float32),
