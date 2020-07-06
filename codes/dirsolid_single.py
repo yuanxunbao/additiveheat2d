@@ -256,8 +256,8 @@ def _rhs_psi(ps,ph,U,zz):
     tp = (s1-(s1-k)*Up)
     tau_psi = tp*A2 if tp >= k else k*A2
     
-    return divi(rhs_psi, tau_psi,s0, s0) #+ eta*(f32(random())- p5 )/dt_sr
 
+    return rhs_psi/tau_psi + eta*(f32(random())- p5 )/dt_sr
 
 
 
@@ -335,11 +335,11 @@ def _rhs_U(U,ph,jat):
     
 
 
-@njit#(parallel=True)
+@njit(parallel=True)
 def rhs_psi(ps,ph,U,zz): return _rhs_psi(ps,ph,U,zz)
 
 
-@njit#(parallel=True)
+@njit(parallel=True)
 def rhs_U(U,ph,psi_t): return _rhs_U(U,ph,psi_t)
 
 
@@ -396,7 +396,7 @@ for jj in range(nts):
         
         jat = set_BC( p5*(s1+(s1-k)*U)*(s1-phi**s2)*dPSI , 0, 1)
         
-        psi = psi + dt*dPSI #+ dt_sr*eta*f32(rand(nx+2,nz+2)-p5)
+        psi = psi + dt*dPSI
        
         U = U + dt*rhs_U(U, phi, jat )
        
