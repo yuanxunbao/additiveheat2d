@@ -15,7 +15,7 @@ from numpy.random import random
 import time
 from math import pi
 #PARA = importlib.import_module(sys.argv[1])
-import dsinput as PARA
+import dsinput_conv as PARA
 
 delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0 = PARA.phys_para()
 eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename, nxs = PARA.simu_para(W0,Dl_tilde)
@@ -355,7 +355,7 @@ def save_data(phi,U):
 
 ##############################################################################
 
-psi0 = PARA.seed_initial(xx,lx,zz)
+psi0 = PARA.planar_initial(lx,zz)
 U0 = 0*psi0 + U_0
 
 psi = set_halo(psi0.T)
