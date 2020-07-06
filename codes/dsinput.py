@@ -52,8 +52,9 @@ def simu_para(W0,Dl_tilde):
 
     eta = 0.00                   # magnitude of noise
     filename = 'mvnoi' + str('%4.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lxd)+'nx'+str(nx)+'AR'+str(aratio)+'.mat'
-    
-    return eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename
+    nxs = 100
+	    
+    return eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename, nxs
 
 def IO_para(W0,lxd):
     
