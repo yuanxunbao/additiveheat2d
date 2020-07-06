@@ -1,6 +1,9 @@
-NUMBA_NUM_THREADS=4 python3 dirsolid_numba.py dsinput
-echo "Hello, World! from job $LAUNCHER_JID running on task $LAUNCHER_TSK_ID"
-echo "Hello, World! from job $LAUNCHER_JID running on task $LAUNCHER_TSK_ID"
-echo "Hello, World! from job $LAUNCHER_JID running on task $LAUNCHER_TSK_ID"
-echo "Hello, World! from job $LAUNCHER_JID running on task $LAUNCHER_TSK_ID"
+NUMBA_NUM_THREADS=7 python3 dirsolid_numba_conv.py dsinput_conv1m1
+NUMBA_NUM_THREADS=7 python3 dirsolid_numba_conv.py dsinput_conv1m2   
+NUMBA_NUM_THREADS=7 python3 dirsolid_numba_conv.py dsinput_conv1m3   
+NUMBA_NUM_THREADS=7 python3 dirsolid_numba_conv.py dsinput_conv1m4
+NUMBA_NUM_THREADS=7 python3 dirsolid_numba_conv.py dsinput_conv1l1
+NUMBA_NUM_THREADS=7 python3 dirsolid_numba_conv.py dsinput_conv1l2
+NUMBA_NUM_THREADS=7 python3 dirsolid_numba_conv.py dsinput_conv1l3
+NUMBA_NUM_THREADS=7 python3 dirsolid_numba_conv.py dsinput_conv1l4      
 

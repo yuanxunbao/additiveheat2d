@@ -20,7 +20,7 @@ def phys_para():
     c_infm = 1.519                  # shift in melting temperature     K
     Dl = 3000                       # liquid diffusion coefficient      um**2/s
     d0 = 0.02572                    # capillary length -- associated with GT coefficient   um
-    W0 = 0.9375*1.25                     # interface thickness      um
+    W0 = 0.9375                     # interface thickness      um
     
     lT = c_infm*( 1.0/k-1 )/G       # thermal length           um
     lamd = 5*np.sqrt(2)/8*W0/d0     # coupling constant
@@ -41,18 +41,18 @@ def simu_para(W0,Dl_tilde):
     eps = 1e-8                      #divide-by-zero treatment
     alpha0 = 0                    # misorientation angle in degree
     
-    
+    fc = 1
     lxd = 350                     # horizontal length in micron
-    aratio = 3                  # aspect ratio
-    nx = 200                      # number of grids in x   nx*aratio must be int
+    aratio = 1                  # aspect ratio
+    nx = 250*fc                      # number of grids in x   nx*aratio must be int
     dx = lxd/nx/W0
     dt = (dx)**2/(5*Dl_tilde)                   # time step size for forward euler
-    Mt = 100000                                 # number of time steps
+    Mt = 50000*fc**2                                 # number of time steps
     Tt = 60                                    # total time
 
     eta = 0.02                   # magnitude of noise
     filename = '1noi' + str('%4.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lxd)+'nx'+str(nx)+'AR'+str(aratio)+'.mat'
-    nxs = nx
+    nxs = int(nx/fc)
 	    
     return eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename, nxs
 
@@ -60,7 +60,7 @@ def IO_para(W0,lxd):
     
     U_0 = - 0.3                  # initial value for U, -1< U_0 < 0
     seed = 1                     # randnom seed number
-    nts = 20                      # number of snapshots in time   Mt/nts must be int
+    nts = 100                      # number of snapshots in time   Mt/nts must be int
     direc = '/work/07428/ygqin/frontera/data'                  # saving directory
     
     return  U_0, seed, nts, direc
