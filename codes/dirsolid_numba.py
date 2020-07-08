@@ -15,7 +15,7 @@ from numpy.random import random
 import time
 from math import pi
 #PARA = importlib.import_module(sys.argv[1])
-import dsinput as PARA
+import dsinput_s as PARA
 
 delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0 = PARA.phys_para()
 eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename = PARA.simu_para(W0,Dl_tilde)
@@ -331,7 +331,8 @@ def rhs_psi(ps,ph,U,zz): return _rhs_psi(ps,ph,U,zz)
 @njit(parallel=True)
 def rhs_U(U,ph,psi_t): return _rhs_U(U,ph,psi_t)
 
-
+@njit(parallel=True)
+def ntanh(a): return np.tanh(a)
 
 def save_data(phi,U):
     
@@ -361,7 +362,7 @@ start = time.time()
 dPSI = rhs_psi(psi, phi, U, zz)
 dPSI = set_BC(dPSI, 0, 1)
 dU = rhs_U(U,phi,dPSI)
-
+ntanh(psi)
 end = time.time()
 
 print('elapsed: ', end - start )
@@ -388,7 +389,7 @@ for jj in range(nts):
     
         U = set_BC(U, 0, 1)
         
-        phi = np.tanh(psi/sqrt2) 
+        phi = ntanh(psi/sqrt2) 
         
         
         t += dt
