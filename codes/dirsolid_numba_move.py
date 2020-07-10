@@ -18,7 +18,7 @@ PARA = importlib.import_module(sys.argv[1])
 #import dsinput as PARA
 
 delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0 = PARA.phys_para()
-eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename = PARA.simu_para(W0,Dl_tilde)
+eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename, Nset = PARA.simu_para(W0,Dl_tilde)
 U_0, seed, nts, direc = PARA.IO_para(W0,lxd)
 
 alpha0 = alpha0*pi/180
@@ -59,7 +59,7 @@ Tishot = np.zeros((2*nv,nts+1))
 
 np.random.seed(seed)
 
-Nset = nz - 81 #int(7/8*nz)
+#Nset = nz - 81 #int(7/8*nz)
 Ntip=1
 Ntip_arr= np.zeros(Mt)
 ztip_arr= np.zeros(Mt)
