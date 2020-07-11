@@ -63,11 +63,11 @@ np.random.seed(seed)
 dns = int( nx/nxs )
 nzs = int(nxs*ratio+1); nvs=nzs*nxs
 ins = np.zeros((nzs,nxs),dtype=int)
-ins[[0],:] = np.arange(0,nx,dns)
+ins[[0],:] = np.arange(0,nv-1,nz*dns)
 for i in range(1,nzs):
-    ins[[i],:]=ins[[i-1],:]+dns*nx
+    ins[[i],:]=ins[[i-1],:]+dns
    
-ins = np.reshape(ins,(nvs)) 
+ins = np.reshape(ins,(nvs),order='F') 
 
 Tishot = np.zeros((2*nvs,nts+1))
 
