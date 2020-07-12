@@ -17,7 +17,7 @@
 #SBATCH -J launcher_test
 #SBATCH -N 1
 #SBATCH -n 56             #use site recommended # of cores
-#SBATCH -p development
+#SBATCH -p normal
 #SBATCH -o launcher_test.o%j
 #SBATCH -e launcher_test.e%j
 #SBATCH -t 00:10:00
