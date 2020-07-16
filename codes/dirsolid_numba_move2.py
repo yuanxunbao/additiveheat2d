@@ -64,7 +64,7 @@ Ntip=1
 Ntip_arr= np.zeros(Mt)
 ztip_arr= np.zeros(Mt)
 
-def move_frame(Ntip, psi, phi, U, zz, dPSI, dPSIb, psib, Ub):
+def move_frame(Ntip, psi, phi, U, zz, dPSI, dPSIb, psib, Ub, flag):
     
     
     #phi_tip = phi[Ntip,:]
@@ -391,16 +391,16 @@ psi = set_halo(psi0.T)
 U = set_halo(U0.T)
 zz = set_halo(zz.T)
 
-psi = set_BC(psi, 0, 1)
+psi = set_BC(psi, 0, 1, psi[:,0])
 phi = np.tanh(psi/sqrt2)   # expensive replace
-U =   set_BC(U, 0, 1)
+U =   set_BC(U, 0, 1, U[:,0])
 Tishot[:,[0]] = save_data(phi,U)
 
 
 #complie
 start = time.time()
 dPSI = rhs_psi(psi, phi, U, zz)
-dPSI = set_BC(dPSI, 0, 1)
+dPSI = set_BC(dPSI, 0, 1, dPSI[:,0])
 dU = rhs_U(U,phi,dPSI)
 
 end = time.time()
@@ -425,7 +425,7 @@ for ii in range(Mt):
     # check cross Nset, if true, move down
     # after all the variables (psi,U,zz) updated, 
     
-    psi, U, zz, dPSIb, psib, Ub, Ntip,ztip,flag = move_frame(Ntip, psi, phi, U, zz, dPSI, dPSIb, psib, Ub)
+    psi, U, zz, dPSIb, psib, Ub, Ntip,ztip,flag = move_frame(Ntip, psi, phi, U, zz, dPSI, dPSIb, psib, Ub, flag)
     Ntip_arr[ii]=Ntip; ztip_arr[ii]=ztip
     # add boundary
     psi = set_BC(psi, 0, flag, psib)
