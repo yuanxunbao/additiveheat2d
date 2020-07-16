@@ -13,15 +13,15 @@ from math import pi
 
 def phys_para():    
 # NOTE: for numbers entered here, if having units: length in micron, time in second, temperature in K.
-    scl = 45
+
     G = 0.02                        # thermal gradient        K/um
-    R = 50*scl**2                          # pulling speed           um/s
-    delta = 0.02                    # strength of the surface tension anisotropy         
+    R = 1e5                          # pulling speed           um/s
+    delta = 0.01                    # strength of the surface tension anisotropy         
     k = 0.14                        # interface solute partition coefficient
-    c_infm = 1.519                  # shift in melting temperature     K
+    c_infm = 10.4                  # shift in melting temperature     K
     Dl = 3000                       # liquid diffusion coefficient      um**2/s
-    d0 = 0.02572                    # capillary length -- associated with GT coefficient   um
-    W0 = 0.9375/scl                     # interface thickness      um
+    d0 = 3.76e-3                    # capillary length -- associated with GT coefficient   um
+    W0 = 5e-3                     # interface thickness      um
     
     lT = c_infm*( 1.0/k-1 )/G       # thermal length           um
     lamd = 5*np.sqrt(2)/8*W0/d0     # coupling constant
@@ -34,35 +34,35 @@ def phys_para():
     Dl_tilde = Dl*tau0/W0**2
     lT_tilde = lT/W0
 
-    return delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0, scl
+    return delta, k, lamd, R_tilde, Dl_tilde, lT_tilde, W0, tau0
 
 
-def simu_para(W0,Dl_tilde,scl):
+def simu_para(W0,Dl_tilde):
     cut = 1e-6    
     eps = 1e-8                      #divide-by-zero treatment
     alpha0 = 0                    # misorientation angle in degree
     
     
-    lxd = 40/scl                     # horizontal length in micron
+    lxd = 1                     # horizontal length in micron
     aratio = 1                  # aspect ratio
-    nx = 40                     # number of grids in x   nx*aratio must be int
+    nx = 135                     # number of grids in x   nx*aratio must be int
     dx = lxd/nx/W0
     dt = 0.2*(dx)**2/(4*Dl_tilde)                   # time step size for forward euler
-    Mt = 200                                 # number of time steps
+    Mt = 20000                                 # number of time steps
     Tt = 60                                    # total time
 
     eta = 0.00                   # magnitude of noise
-    filename = 'mvnoi' + str('%4.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lxd)+'nx'+str(nx)+'AR'+str(aratio)+'.mat'
+    filename = '0.6noi' + str('%4.2E'%eta)+'ang'+str(alpha0)+'lx'+ str(lxd)+'nx'+str(nx)+'AR'+str(aratio)+'.mat'
     nxs = 100
 	    
     return eps, alpha0, lxd, aratio, nx, dt, Mt, eta, filename
 
 def IO_para(W0,lxd):
     
-    U_0 = - 1.6                  # initial value for U, -1< U_0 < 0
+    U_0 = - 0.6                  # initial value for U, -1< U_0 < 0
     seed = 1                     # randnom seed number
-    nts = 100                      # number of snapshots in time   Mt/nts must be int
-    direc = '.'#'/work/07428/ygqin/frontera/data'                  # saving directory
+    nts = 20                      # number of snapshots in time   Mt/nts must be int
+    direc = '/work/07428/ygqin/frontera/data'                  # saving directory
     
     return  U_0, seed, nts, direc
 
