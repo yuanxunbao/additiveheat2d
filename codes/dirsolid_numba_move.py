@@ -371,7 +371,8 @@ def rhs_U(U,ph,psi_t): return _rhs_U(U,ph,psi_t)
 
 def save_data(phi,U):
     
-    c_tilde = ( 1+ (1-k)*U )*( k*(1+phi)/2 + (1-phi)/2 )
+    cr =  1+ (1-k)*U_0
+    c_tilde = ( 1+ (1-k)*U )*( k*(1+phi)/2 + (1-phi)/2 )/cr
     
     return np.vstack(( np.reshape(phi[1:-1,1:-1].T,(nv,1),order='F') , \
                       np.reshape(c_tilde[1:-1,1:-1].T,(nv,1),order='F') ) )
