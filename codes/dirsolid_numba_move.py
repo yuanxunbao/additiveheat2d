@@ -283,7 +283,7 @@ def _rhs_psi(ps,ph,U,zz):
     tp = (1-(1-k)*Up)
     tau_psi = tp*A2 if tp >= k else k*A2
 
-    return rhs_psi/tau_psi + eta*(random()-0.5)/dt_sr
+    return rhs_psi/tau_psi + eta*(random()-0.5)/dt_sr/dx
 
 
 
