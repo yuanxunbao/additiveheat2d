@@ -42,14 +42,15 @@ Te = 821
 
 Ntip = 1
 
-mph = 'cell'
+mph = 'dendrite'
+#mph = 'cell'
 
 ## ======================= load data ==========================##
-loadfile1 = 'nomove_eta0.mat'
+loadfile1 = 'move_eta004.mat'
 
-phi = loadmat(loadfile1)['order_param']
-conc = cle*loadmat(loadfile1)['conc']
-zz = loadmat(loadfile1)['zz']
+phi = (loadmat(loadfile1)['order_param']).T
+conc = (cle*loadmat(loadfile1)['conc']).T
+zz = (loadmat(loadfile1)['zz']).T
 
 Tz =  Ti + G*( zz[:,3] - R*Ttd )
 

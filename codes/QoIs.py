@@ -130,7 +130,7 @@ def spacings(phi, Ntip, lxd, dxd, mph):
     else:
         
         # for secondary need to cut
-        phi_cp = tcp(phi,Ntip,-100)
+        phi_cp = tcp(phi,Ntip,-150)
         sigmai = np.std(phi_cp, axis=0)          #(nx,)
         # further, need to do some filtering for sigmai to ensure sidebranching is big enough
         sec_spac_arr, sides = secondary_spacing(cells, sigmai, phi_cp, dxd)
