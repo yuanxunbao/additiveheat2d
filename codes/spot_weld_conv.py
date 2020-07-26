@@ -15,7 +15,7 @@ import numpy as np
 from macro_param import phys_parameter, simu_parameter 
 from scipy import sparse as sp
 from scipy.sparse import linalg as la
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from scipy.io import savemat as save
 from math import pi
 #from sksparse.cholmod import cholesky
@@ -228,14 +228,24 @@ t0 = s.t0
 
 for ii in range(Mt):
     q0_arr[ii] = energy_decay(Tt_arr[ii], t0)
- 
+
+'''
 fig5 = plt.figure()
 plt.plot(Tt_arr, q0_arr )
-
+'''
 
 # ===================Sampling parameters=================
 nts = s.nts
 kts = int( Mt/nts )
+
+nxs = s.nxs
+dns = int( (nx-1)/(nxs-1) )
+nys = int((nxs-1)*aratio+1); nvs=nys*nxs
+ins = np.zeros((nys,nxs),dtype=int)
+ins[[0],:] = np.arange(0,nv-1,ny*dns)
+for i in range(1,nys):
+    ins[[i],:]=ins[[i-1],:]+dns
+ins = np.reshape(ins,(nvs),order='F') 
 #=====================Generate matrix========================
 
 I = sp.eye(nx*ny,format='csc')
@@ -268,13 +278,13 @@ A0 = Q@(I - C/2.0*L)
 
 
 ##====================Initial condition=========================
-Temp = np.zeros((nv,nts+1))
-G_arr = np.zeros((nv,nts+1)); R_arr = np.zeros((nv,nts+1))
+Temp = np.zeros((nvs,nts+1))
+G_arr = np.zeros((nvs,nts+1)); R_arr = np.zeros((nvs,nts+1))
 #T = np.zeros((ny,nx))      # temperature T0
 #T = np.arange(nv).reshape((ny,nx))
 T0 = p.Te*np.ones((ny,nx))
 y = np.reshape(T0,(nv,1),order='F')  #T0/y0
-Temp[:,[0]] = y
+Temp[:,[0]] = y[ins]
 
 #Gv,Rv = gradients(y,y,dx)
 
@@ -324,24 +334,24 @@ for ii in range(Mt):
     # save QoIs
     yj_arr, Tj_arr, Gj_arr, Rj_arr, Radj_arr, thetaj_arr = \
         liquid_contour(y, G, R, yj_arr, Tj_arr, Gj_arr, Rj_arr, Radj_arr, thetaj_arr)
-    QoI_save(t,xj_arr,yj_arr,Tj_arr,Gj_arr,Rj_arr,Radj_arr,thetaj_arr)
+    #QoI_save(t,xj_arr,yj_arr,Tj_arr,Gj_arr,Rj_arr,Radj_arr,thetaj_arr)
     
     if (ii+1)%kts==0:
        kk = int(np.floor((ii+1)/kts))
        print('=================================') 
        print('now time is ',t) 
        print('=================================') 
-       Temp[:,[kk]] = y
-       G_arr[:,[kk]] = np.reshape(G,(nv,1),order='F') 
-       R_arr[:,[kk]] = np.reshape(R,(nv,1),order='F') 
+       Temp[:,[kk]] = y[ins]
+       G_arr[:,[kk]] = np.reshape(G,(nv,1),order='F')[ins]
+       R_arr[:,[kk]] = np.reshape(R,(nv,1),order='F')[ins]
        #print('gmres iterations: ',counter)
+       
+       
+       
 Tf = np.reshape(y,(ny,nx),order='F')
 print(Tf[0,int(nx/4)],Tf[0,int(nx/2)])
 
-
-#yj_arr, Tj_arr, Gj_arr, Rj_arr, thetaj_arr = liquid_contour(y, G, R, yj_arr, Tj_arr, Gj_arr, Rj_arr, thetaj_arr)
-
-
+'''
 fig2 = plt.figure(figsize=[12,4])
 ax2 = fig2.add_subplot(121)
 plt.imshow(Tf,cmap=plt.get_cmap('hot'))
@@ -362,15 +372,17 @@ ax5 = fig3.add_subplot(122)
 ax5.plot(x,yj_arr)
 plt.imshow(R[1:-1,1:-1],cmap=plt.get_cmap('hot'))
 plt.colorbar();plt.title('R')
+'''
 
 
 
-
-filename = 'Qlatdt' + str(dt)+'xgrids'+str(nx)+'.mat'
 tempname = 'temp'+str(nx)
 
-save(os.path.join(s.direc,s.filename),{tempname: Temp,'G_arr':G_arr,'R_arr':R_arr,'nx':nx,'ny':ny,'xx':xx,'yy':yy})
 
+xxs=np.reshape(np.reshape(xx,(nv),order='F')[ins],(nys,nxs),order='F')
+yys=np.reshape(np.reshape(yy,(nv),order='F')[ins],(nys,nxs),order='F')
+
+save(os.path.join(s.direc,s.filename),{tempname: Temp,'G_arr':G_arr,'R_arr':R_arr,'nx':nxs,'ny':nys,'xx':xxs,'yy':yys})
 
 end =time.time()
 print('time used: ',end-start)

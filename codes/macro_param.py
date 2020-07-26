@@ -68,6 +68,8 @@ def simu_parameter(rb):
         filename = 'heat2d' + '_lx'+ str(lxd)+'_nx'+str(nx)+'_asp'+str(asp_ratio)+'_dt'+str('%4.2e'%dt)+'_Mt'+str(Mt)+'.mat'
         outname = 'macro_output'+'_t0'+str('%4.2e'%t0)+'_dt'+str('%4.2e'%dt)+'_Tt'+str('%4.2e'%(dt*Mt))+'.csv'
         
+        nxs = int((nx-1)/2+1)
+        
     return simu_para
         
         
