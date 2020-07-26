@@ -11,8 +11,10 @@ Created on Mon Mar  9 10:45:21 2020
 # linear solver CG
 
 import os
+import sys
+import importlib
 import numpy as np
-from macro_param import phys_parameter, simu_parameter 
+#from macro_param_conv import phys_parameter, simu_parameter 
 from scipy import sparse as sp
 from scipy.sparse import linalg as la
 #import matplotlib.pyplot as plt
@@ -20,7 +22,7 @@ from scipy.io import savemat as save
 from math import pi
 #from sksparse.cholmod import cholesky
 import time
-
+param = importlib.import_module(sys.argv[1])
 
 #from scipy.sparse import csc_matrix
 class gmres_counter(object):
@@ -169,8 +171,8 @@ start = time.time()
 
 #====================parameters==========================
 
-p = phys_parameter()
-s = simu_parameter(p.rb)
+p = param.phys_parameter()
+s = param.simu_parameter(p.rb)
 
 lx = s.lxd
 aratio = s.asp_ratio
