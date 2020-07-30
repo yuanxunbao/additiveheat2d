@@ -580,6 +580,40 @@ $M_t$ & time steps& 120000 & \\
    \end{figure}
 
 
+\section{Macro statistics}
+
+\begin{figure}[!ht]
+     \subfloat[G\label{subfig-1:phi}]{%
+       \includegraphics[width=1\textwidth]{./figures/G_distribution.png}
+     }
+     \hfill
+     \subfloat[R\label{subfig-2:c/cinf}]{%
+       \includegraphics[width=1\textwidth]{./figures/R_distribution.png}
+     }
+     \caption{Distributions of G and R on the liquid contour at different time steps. ($\Delta x/4, \Delta t/4$)}
+     \label{fig:Ech}
+   \end{figure}
+
+\begin{figure}[!ht]
+     \subfloat[scatter plots at different times. ($\Delta x/4, \Delta t/4$)\label{subfig-1:resu}]{%
+       \includegraphics[width=1\textwidth]{./figures/GR_scatter.png}
+     }
+     \hfill
+     \subfloat[convergence\label{subfig-2:ref}]{%
+       \includegraphics[width=1\textwidth]{./figures/conv_GR.png}
+     }
+     \caption{Scatter plots of G, R and their convergence. $\Delta t = 1\times 10^{-5} s$, $\Delta x = 3.77 \mu m$}
+     \label{fig:Ech}
+   \end{figure}
+   
+ \begin{figure}[h]
+\centering
+\includegraphics[width=1.1\linewidth]{./figures/clusters_GR.png}
+\caption{ Estimated clusters using DBSCAN. }
+\end{figure}
+
+
+
 \bibliographystyle{unsrt}
 \bibliography{Directional-Solidification.bib}
 
