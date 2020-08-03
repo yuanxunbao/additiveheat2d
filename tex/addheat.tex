@@ -232,9 +232,9 @@ After we solve the discrete system of equations \Cref{eq:macro_discrete}, we com
 & \frac{d \V{x}_p }{dt} = - \grad{} T \bigg|_{\V{x} = \V{x}_p},  \label{eq:sl_cont } \\
 & \V{x}_p (t = t_0) = \V{x}_{0},
 \end{align}
-where $\V{x}_0$ denotes the initial solid-liquid interface.  We solve the discrete system of equations using the midpoint scheme
+where $\V{x}_0$ denotes the initial solid-liquid interface.  We update the position of the solid-liquid interface explicitly (perhaps RK?):
 \begin{equation}
-\frac{\V{x}_p^{n+1} - \V{x}_p^n}{\Delta t} = - \frac{1}{2} (   \mathcal{I}_{ \grad{} T } (\V{x}^{n}_p)  + \mathcal{I}_{ \grad{} T } (\V{x}^{n+1}_p) ) ,
+\frac{\V{x}_p^{n+1} - \V{x}_p^n}{\Delta t} = -   \mathcal{I}_{ \grad{} T } (\V{x}^{n}_p) , 
 \end{equation}
 where $\mathcal{I}_{\grad{} T}$ interpolates $\grad{} T$ at the Lagrangian point $\V{x}_p$ from those values on the regular computational grid. 
 
