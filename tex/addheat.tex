@@ -58,49 +58,49 @@
 \maketitle
 
 
-\section{Macroscopic model}
+%\section{Macroscopic model}
+%
+%We model the macroscopic heat transfer in the rectangular domain $\Omega$
+%
+%\begin{equation}
+%\frac{\partial \rho c_{p} T}{ \partial t} = \div{} ( K \grad{} T) -\frac{\partial \rho L  f_l(T)}{\partial t} \quad \text{in }  \Omega
+%\end{equation}
+%\begin{equation}
+%\frac{\partial T}{ \partial t} = \alpha \Delta T - \frac{L}{c_p}\frac{\partial   f_l(T)}{\partial t} \quad \text{in }  \Omega
+%\end{equation}
+%with boundary conditions 
+%\begin{align}
+%(-K \grad{} T) \cdot \hat{n} = -q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
+%(-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
+%\end{align}
+%where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
+%\begin{equation}
+%f_l(T) =
+%\left\{
+%\begin{array}{cc}
+%1 & T>T_l \\
+%\frac{T-T_s}{T_l - T_s} & T_s \leq T \leq T_l \\
+%0 & T < T_s
+%\end{array}
+%\right.
+%\end{equation}
+%where $T_l$ and $T_s$ are the liquidus and solidus temperature, respectively.
+%The heat source $q_S$ is modeled as a moving Gaussian
+%\begin{equation}
+%q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} \right),
+%\end{equation}
+%where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
 
-We model the macroscopic heat transfer in the rectangular domain $\Omega$
-
+\section{Macroscopic heat model}
+We consider the following macroscopic heat model
 \begin{equation}
-\frac{\partial \rho c_{p} T}{ \partial t} = \div{} ( K \grad{} T) -\frac{\partial \rho L  f_l(T)}{\partial t} \quad \text{in }  \Omega
+\rho C_p(T) \frac{\partial T}{\partial t} = K \grad{}^2 T, \quad (x,y) \in \Omega
 \end{equation}
-\begin{equation}
-\frac{\partial T}{ \partial t} = \alpha \Delta T - \frac{L}{c_p}\frac{\partial   f_l(T)}{\partial t} \quad \text{in }  \Omega
-\end{equation}
-with boundary conditions 
-\begin{align}
-(-K \grad{} T) \cdot \hat{n} = -q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
-(-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
-\end{align}
-where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L$ is the latent heat. The fluid mass fraction $f_l$ is modeled as
-\begin{equation}
-f_l(T) =
-\left\{
-\begin{array}{cc}
-1 & T>T_l \\
-\frac{T-T_s}{T_l - T_s} & T_s \leq T \leq T_l \\
-0 & T < T_s
-\end{array}
-\right.
-\end{equation}
-where $T_l$ and $T_s$ are the liquidus and solidus temperature, respectively.
-The heat source $q_S$ is modeled as a moving Gaussian
-\begin{equation}
-q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} \right),
-\end{equation}
-where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
-
-\section{Macroscopic model 2}
-We consider the following macroscopic heat transfer model
-\begin{equation}
-\rho C_p(T) \frac{\partial T}{\partial t} = K \grad{}^2 T,
-\end{equation}
-where $C_p(T)$ is the heat capacity which can be modeled as
+with heat conductivity $K$ and heat capacity 
 \begin{equation}
 C_p(T) = C_{p,solid} ( 1-\alpha(T)) + C_{p,liquid} \alpha(T) + L_{s\rightarrow l} \frac{d \alpha}{ dT},
 \end{equation}
-where $\alpha(T)$ is the phase transition function
+where $L_{s\rightarrow l}$ is the latent heat, and $\alpha(T)$ is a phase transition function defined by
 \begin{equation}
 \alpha(T) = 
 \left\{
@@ -111,81 +111,132 @@ where $\alpha(T)$ is the phase transition function
 \end{array}
 \right.
 \end{equation}
-with boundary conditions 
-\begin{align}
-(-K \grad{} T) \cdot \hat{n} = -q_s + h(T - T_e) + \epsilon \sigma (T^4 - T_e^4)  & \quad \text{on } \Gamma_{top} \\
-(-K \grad{} T) \cdot \hat{n} = 0  & \quad \text{on } \Gamma  \backslash \Gamma_{top}
-\end{align}
-where $K$ is the heat conductivity, $\alpha$ is thermal diffusivity, $h$ is the convective heat transfer coefficient, $\epsilon$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant, and $L_{s\rightarrow l}$ is the latent heat. 
+On the top boundary $\Gamma_{top}$, we impose boundary conditions from the heat source $q_s(x,t)$, the radiation  and the convection
+\begin{equation}
+-K \grad{} T \cdot \hat{n} = -q_s + h_c(T - T_e) + \epsilon \sigma (T^4 - T_e^4)   \quad \text{on } \Gamma_{top} 
+\end{equation}
+where $h_c$ is the convective heat transfer coefficient, $T_e$ is the ambient temperature, $\epsilon_{rad}$ is the thermal radiation coefficient, $\sigma$ is the Stefan-Boltzmann constant.
 
-The heat source $q_S$ is modeled as a moving Gaussian
+The heat source $q_s$ is modeled as a Gaussian
 \begin{equation}
 q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x-V_s t)^2}{ r_b^2} \right),
 \end{equation}
 where $Q$ is the source of heat power, $\eta$ is the absorption coefficient, $r_b$ is the radius of heat source and $V_s$ is the scanning speed.  
 
-The microscopic model  is coupled to the macroscopic model through the temperature field, where:
+
+
+%The heat source $q_S$ is modeled as a moving Gaussian
+%\begin{equation}
+%q_s(x, t ) = \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2(x)^2}{ r_b^2} \right)   \exp \left( -\frac{ 2(V_s t)^2}{ r_b^2} \right) , 
+%\end{equation}
+
+%The microscopic model  is coupled to the macroscopic model through the temperature field, where:
+%\begin{align}
+%    &G = ||\nabla {T}||_2 \\
+%    &R = \frac{1}{G}\frac{\partial {T}}{\partial t}
+%\end{align}
+
+\section{Discretization}
+We discretize the spatial domain with a computational grid of size $(N_x +1) \times (N_y+1)$ with meshwidth $h$, and  $l_x = N_x h$ and $l_y = N_y h$. Let $\B{T}^n = \{T_{i,j}^n\}$ for $i=0,\dots,N_x$ and $j = 0, \dots, N_y$. The discrete system of equations is
+\begin{equation}
+ \rho C_p (\B{T}^n)  \frac{\B{T}^{n+1} -\B{T}^n }{\Delta t}= \frac{K}{2}  \V{L} ( \B{T}^{n+1} + \B{T}^{n}) + \B{b},
+ \label{eq:macro_discrete}
+\end{equation}
+where $\V{L}$ is the 5-point discrete Laplacian and $\B{b}$ comes from the boundary conditions:
+\begin{itemize}
+
+\item On the top boundary $(j=N_y-1)$, we treat the convection and radiation term explicitly, for $i = 0,\dots, N_x-1$,
+\begin{equation}
+-K \frac{T_{i, j+1}^{n+1} - T_{i,j-1}^{n+1}}{2h} = -q_s (x_i, t_{n}) + h_c (T^{n}_{i,j} - T_e) + \epsilon \sigma ( (T^{n}_{i,j})^4 - T_e^4),
+\end{equation}
+
+\item On all other boundaries:
 \begin{align}
-    &G = ||\nabla {T}||_2 \\
-    &R = \frac{1}{G}\frac{\partial {T}}{\partial t}
+& T_{i, N_y}^n =T_{i,N_y-2}^n, \ i = 0 , \dots , N_x - 1 \\
+& T_{1, j}^n =T_{-1,j}^n, \ j = 0 , \dots , N_y-1 \\
+& T_{N_x, j}^n =T_{N_x-2,j}^n, \ j = 0 , \dots , N_y-1
 \end{align}
+\end{itemize}
 
-\section{Macro model discretization}
-\subsection{Forward Euler scheme}
-We discretize the domain $\Omega$ using $(N+1) \times (M+1)$ grid with meshwidth $h$. Lx = Nh, x = ih.
-Let $T_{ij}^n=T(ih, jh, t_n )$ for $i=0,\dots,N$ and $j = 0, \dots, M$.
 
-\begin{equation}
-\frac{T_{i,j}^n - T_{i,j}^{n-1}}{\Delta t} = \alpha \frac{T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n }{h^2} - L_m \frac{\partial f_l(T) }{\partial t} \bigg|_{t = t_n}
-\end{equation}
-At the top boundary $(j=0)$, we treat the convection and radiation term explicitly,
-\begin{equation}
--K \frac{T_{i, -1}^n - T_{i,1}^n}{2h} = -q_s (ih, t_{n-1}) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4), \ i = 0 , \dots , N
-\end{equation}
 
+
+
+
+
+%\subsection{Forward Euler scheme}
+%We discretize the domain $\Omega$ using $(N+1) \times (M+1)$ grid with meshwidth $h$. Lx = Nh, x = ih.
+%Let $T_{ij}^n=T(ih, jh, t_n )$ for $i=0,\dots,N$ and $j = 0, \dots, M$.
+%
+%\begin{equation}
+%\frac{T_{i,j}^n - T_{i,j}^{n-1}}{\Delta t} = \alpha \frac{T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n }{h^2} - L_m \frac{\partial f_l(T) }{\partial t} \bigg|_{t = t_n}
+%\end{equation}
+%At the top boundary $(j=0)$, we treat the convection and radiation term explicitly,
+%\begin{equation}
+%-K \frac{T_{i, -1}^n - T_{i,1}^n}{2h} = -q_s (ih, t_{n-1}) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4), \ i = 0 , \dots , N
+%\end{equation}
+%
+%\begin{equation}
+%T_{i, -1}^n = T_{i,1}^n -\frac{2h}{K}\left(-q_s (ih, t_{n-1}) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right)=T_{i,1}^n+U_i^{n-1}, \ i = 0 , \dots , N
+%\end{equation}
+%Other boundaries:
+%\begin{align}
+%T_{i, M+1}^n =T_{i,M-1}^n, \ i = 0 , \dots , N\\
+%T_{-1, j}^n =T_{1,j}^n, \ j = 0 , \dots ,M\\
+%T_{N-1, j}^n =T_{N+1,j}^n, \ j = 0 , \dots ,M
+%\end{align}
+%
+%Eventually, the linear system of equation should look like 
+%\begin{equation}
+%(\B{I} - C\B{L} ) \B{T}^n + \B{N} (\B{T}^n) = \B{T}^{n-1} +\B{N} (\B{T}^{n-1})+ \text{BC terms}
+%\end{equation}
+%where C is CFL number, $\B{L}$ is the discrete 2D laplacian with Neumann BCs and $\B{N}$ is a nonlinear function due the implicit treatment of latent heat term. If we treat the latent heat term explicitly, we need two starting values initially. 
+%
+%% \yxb{3. Can you find out what $\B{L}$, $\B{N}$ and BC terms are?}
+%% \yxb{4. I am afraid we have to solve nonlinear system of equation due to the latent heat term.}
+%
+%\subsection{Crank-Nicolson}
+%
+%First, we absorb the latent heat to the left hand side, rewrite the equation in Crank-Nicolson scheme:
+%\begin{equation}
+%\B{La}(T_{i,j}^{n-1})\left({T_{i,j}^n - T_{i,j}^{n-1}} \right)= \frac{C}{2}\left( T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n \right)+\frac{C}{2}\left( T_{i,j+1}^{n-1} + T_{i,j-1}^{n-1} + T_{i-1,j}^{n-1} + T_{i+1,j}^{n-1} - 4 T_{i,j}^{n-1} \right)
+%\end{equation}
+%
+%\begin{equation}
+%\B{La}(\B{T}^{n-1})\left({\B{T}^{n} - \B{T}^{n-1}} \right)= \frac{C}{2}\B{L}(\B{T}^{n})+\frac{C}{2}\B{L}(\B{T}^{n-1})
+%\end{equation}
+%Add boundary condition (check if the convergence is right)
+%\begin{equation}
+%(\B{La}(\B{T}^{n-1})-\frac{C}{2}\B{L})\B{T}^{n} = (\B{La}(\B{T}^{n-1})+\frac{C}{2}\B{L})\B{T}^{n-1}+ \text{BC terms}
+%\end{equation}
+%
+%If there is no latent heat, $\B{La}=\B{I}$
+%
+%\subsection{Symmetrization}
+%
+%$\B{La}(\B{T}^{n-1})$is diagonal, in order to make the system symmetric, pre-multiply a matrix Q.
+%
+%\begin{equation}
+%Q\left((\B{La}(\B{T}^{n-1})-\frac{C}{2}\B{L})\B{T}^{n} \right)= Q\left((\B{La}(\B{T}^{n-1})+\frac{C}{2}\B{L})\B{T}^{n-1}+ \text{BC terms}\right)
+%\end{equation}
+
+
+\section{Spot Weld Model}
+To model spot welding, we use the following heat source model
 \begin{equation}
-T_{i, -1}^n = T_{i,1}^n -\frac{2h}{K}\left(-q_s (ih, t_{n-1}) + h (T^{n-1}_{i,0} - T_e) + \epsilon \sigma ( (T^{n-1}_{i,0})^4 - T_e^4)\right)=T_{i,1}^n+U_i^{n-1}, \ i = 0 , \dots , N
+q_s(x,t) =  \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2x^2}{ r_b^2} \right)   \exp \left( -\frac{ 2V_s^2t^2}{ r_b^2} \right).
 \end{equation}
-Other boundaries:
+Let $\V{x}_p \in S$ be a point on the solid-liquid interface, i.e., $\{  \V{x}_p \in \Omega : T(\V{x}_p ,t) = T_{liquidus}  \}$.
+After we solve the discrete system of equations \Cref{eq:macro_discrete}, we compute $G =  | \grad{} T |$ and $R = \frac{1}{G} | \frac{\partial T}{\partial t} |$ on the regular computational grid. To evolve the solid liquid interface $S$, we solve the following ODE,
 \begin{align}
-T_{i, M+1}^n =T_{i,M-1}^n, \ i = 0 , \dots , N\\
-T_{-1, j}^n =T_{1,j}^n, \ j = 0 , \dots ,M\\
-T_{N-1, j}^n =T_{N+1,j}^n, \ j = 0 , \dots ,M
+& \frac{d \V{x}_p }{dt} = - \grad{} T \bigg|_{\V{x} = \V{x}_p},  \label{eq:sl_cont } \\
+& \V{x}_p (t = t_0) = \V{x}_{0},
 \end{align}
-
-Eventually, the linear system of equation should look like 
+where $\V{x}_0$ denotes the initial solid-liquid interface.  We solve the discrete system of equations using the midpoint scheme
 \begin{equation}
-(\B{I} - C\B{L} ) \B{T}^n + \B{N} (\B{T}^n) = \B{T}^{n-1} +\B{N} (\B{T}^{n-1})+ \text{BC terms}
+\frac{\V{x}_p^{n+1} - \V{x}_p^n}{\Delta t} = - \frac{1}{2} (   \mathcal{I}_{ \grad{} T } (\V{x}^{n}_p)  + \mathcal{I}_{ \grad{} T } (\V{x}^{n+1}_p) ) ,
 \end{equation}
-where C is CFL number, $\B{L}$ is the discrete 2D laplacian with Neumann BCs and $\B{N}$ is a nonlinear function due the implicit treatment of latent heat term. If we treat the latent heat term explicitly, we need two starting values initially. 
-
-% \yxb{3. Can you find out what $\B{L}$, $\B{N}$ and BC terms are?}
-% \yxb{4. I am afraid we have to solve nonlinear system of equation due to the latent heat term.}
-
-\subsection{Crank-Nicolson}
-
-First, we absorb the latent heat to the left hand side, rewrite the equation in Crank-Nicolson scheme:
-\begin{equation}
-\B{La}(T_{i,j}^{n-1})\left({T_{i,j}^n - T_{i,j}^{n-1}} \right)= \frac{C}{2}\left( T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n \right)+\frac{C}{2}\left( T_{i,j+1}^{n-1} + T_{i,j-1}^{n-1} + T_{i-1,j}^{n-1} + T_{i+1,j}^{n-1} - 4 T_{i,j}^{n-1} \right)
-\end{equation}
-
-\begin{equation}
-\B{La}(\B{T}^{n-1})\left({\B{T}^{n} - \B{T}^{n-1}} \right)= \frac{C}{2}\B{L}(\B{T}^{n})+\frac{C}{2}\B{L}(\B{T}^{n-1})
-\end{equation}
-Add boundary condition (check if the convergence is right)
-\begin{equation}
-(\B{La}(\B{T}^{n-1})-\frac{C}{2}\B{L})\B{T}^{n} = (\B{La}(\B{T}^{n-1})+\frac{C}{2}\B{L})\B{T}^{n-1}+ \text{BC terms}
-\end{equation}
-
-If there is no latent heat, $\B{La}=\B{I}$
-
-\subsection{Symmetrization}
-
-$\B{La}(\B{T}^{n-1})$is diagonal, in order to make the system symmetric, pre-multiply a matrix Q.
-
-\begin{equation}
-Q\left((\B{La}(\B{T}^{n-1})-\frac{C}{2}\B{L})\B{T}^{n} \right)= Q\left((\B{La}(\B{T}^{n-1})+\frac{C}{2}\B{L})\B{T}^{n-1}+ \text{BC terms}\right)
-\end{equation}
+where $\mathcal{I}_{\grad{} T}$ interpolates $\grad{} T$ at the Lagrangian point $\V{x}_p$ from those values on the regular computational grid. 
 
 
 \section{Macro model numerical tests}
@@ -193,8 +244,9 @@ Q\left((\B{La}(\B{T}^{n-1})-\frac{C}{2}\B{L})\B{T}^{n} \right)= Q\left((\B{La}(\
 \subsection{No latent heat term}
 
 \begin{equation}
-\frac{T_{i,j}^n - T_{i,j}^{n-1}}{\Delta t} = \alpha \frac{T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n }{h^2} 
+\frac{T_{i,j}^n - T_{i,j}^{n-1}}{\Delta t} = \alpha \frac{T_{i,j+1}^n + T_{i,j-1}^n + T_{i-1,j}^n + T_{i+1,j}^n - 4 T_{i,j}^n }{h^2}.
 \end{equation}
+
 
 for top boundary (j=0)
 \begin{equation}
@@ -322,262 +374,262 @@ Iterations per time step with precondtioner: 20, 17, 16,...      \ \        but 
 
 \newpage
 
-\section{Microscopic model}
-
-
-This model also makes the frozen temperature approximation \cite{Tourret2015,Echebarria2010,Plapp2007,Echebarria2004}:
-\begin{align}
-    & T(z,t) = T_0 + G(z-Rt),
-\end{align}
-where $T_0 = T_m - |m|c_l^0$ and $c_l^0 = c_{\infty}/ k$. 
-
-The compute set of phase-field equations are 
-\begin{align}
-\tau_{\phi} (\hat{n},z) \frac{\partial \phi}{\partial t} &= W^2_0 \left\{ \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
-\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right)  \right \}  \nonumber \\
-& \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-R t}{ l_T} \right),  \label{eq:micro_phi}\\
-\tau_U \frac{\partial U}{\partial t} &= \div{} [D_l d(\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1}{2}  \frac{\partial \phi}{\partial t}, \label{eq:micro_U}
-\end{align}
-where 
-\begin{align}
-U = \frac{1}{1-k} \left( \frac{ c/c_l^0}{(1-\phi)/2 + k(1+\phi)/2} -1\right), \quad d(\phi) = (1-\phi)/2 .
-\end{align}
-Other parameters and terms are defined as
-\begin{align}
-    & \tau_{\phi}(\hat{n},z) = \tau_0(a_s(\hat{n}))^2 \left[1-(1-k) \frac{(z-Rt)}{ l_T} \right] \\
-	& \tau_U = \frac{1+k}{2} - \frac{1-k}{2}\phi \\
-	& \vec{j}_{at} =  \frac{1}{2\sqrt{2}} W_0 [1+(1-k)U] \frac{\nabla \phi}{|\nabla \phi|} \frac{\partial \phi}{\partial t} \\
-	& a_{s}(\hat{n}) = (1-3\delta)\left\{1+\frac{4 \delta}{1-3\delta}(\hat{n}_x^4 + \hat{n}_z^4) \right\} \\
-    & \hat{n} =  \frac{\nabla \phi}{|\nabla \phi|} \\
-    & l_T = \frac{|m|c_{\infty}(1/k-1)}{G} \\
-    & \lambda =  \frac{5\sqrt{2}}{8}  \frac{W_0}{d_0} \\
-    & d_0 = \frac{\Gamma}{|m|c_{\infty}(1/k-1)} =   \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
-    & \tau_0 =  \frac{0.6267\lambda W_0^2}{D_l}
-\end{align}
-
-\begin{table}
-\centering
-\begin{tabular}{l l c c }
-\toprule
-symbol & meaning & values & units \\
-\midrule
-$c_{\infty}$ & nominal solute concentration &  0.4 & wt.\%\\
-$c_l^0$ & equilibrium concentration & $c_{\infty}/k$ & wt.\% \\
-$m$ & liquidus slope & -3.02  &  K wt./\%\\
-$k$ & interface solute partition coefficient & 0.1-0.3 &\\
-$T_0$ & reference solidus temperature &  &\\
-$T_m$ & melting temperature of pure material $A$ &  &\\
-$l_T$ & thermal length &  & mm \\
-$\gamma$ &  average surface tension &  & \\
-$\delta$ & strength of the surface tension anisotropy  &  0.007 or 0.011 &\\
-$\Gamma$ & Gibbs-Thompson coefficient & $6.4\times 10^{-8}$ & Km \\
-$d_0$ & capillary length & $\approx 10^{-3}$  & $\mu$m \\
-$G$ & thermal gradient & 10-300 & $\text{K} / \text{cm}$ \\
-$R$ & pulling speed &  8-32 & $\mu \text{m} / \text{s}$ \\
-$D_l$ & solute diffusion coefficient &$10^{-9}$ &  $\text{m}^2/\text{s}$ \\
-$L$ & latent heat &  & \\
-$W_0$ & interface thickness  & 40-90  & $d_0$ \\
-$\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The boundary conditions are periodic in the $x$-direction and no-flux in the $z$-direction.
-
-\subsection{Non-dimensionalized equations}
-We use  the interfacial width $W_0$ as the length scale and $\tau_0$ as the time scale to non-dimensionalize the equations:
-\begin{align}
- \left[1-(1-k) \frac{(z- \tilde{R} t)}{ \tilde{l}_T} \right] a_s(\hat{n}^2) \frac{\partial \phi}{\partial t} &= 
-  \div{} [a_s(\hat{n})^2 \grad{} \phi] + \nonumber  \\  
- & \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  + 
-\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right)   \nonumber \\
-& \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-\tilde{R} t}{ \tilde{l}_T} \right) \\
-\left(\frac{1+k}{2}-\frac{1-k}{2}\phi \right) \frac{\partial U}{\partial t} &= \div{} [\tilde{D}_l d(\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1}{2}  \frac{\partial \phi}{\partial t},
-\end{align}
-where the non-dimensional parameters are  $\tilde{R} = R\tau_0 / W$, $\tilde{D} = D \tau_0 / W_0^2$ and $\tilde{l}_T = l_T / W_0$.
-
-\subsection{Micro model discretization}
-\subsubsection{$\phi$-equation}
-We first discretize the $\phi$-equation in \cref{eq:micro_phi}. The challenge is to discretize the anisotropic surface tension term. We will make a few simplications. First, note the anisotropic surface tension can be parametrized by $\theta \equiv \arctan(\phi_y / \phi_x)$, i.e., 
-\begin{align}
-& a_s(\theta)=  1 + \delta \cos(4 \theta) \\
-& a_s'(\theta) = -4 \delta \sin(4\theta) 
-\end{align}
-By using some trigonometric identities (check), and $\cos(\theta) = \phi_x / |\grad{} \phi|$ and  $\sin(\theta) = \phi_y / |\grad{} \phi|$, we have
-\begin{align}
-& \cos(4\theta) = 1-8\cos^2(\theta) \sin^2(\theta) = 1- 8 \frac{ \phi_x^2 \phi_z^2 }{|\grad{} \phi|^4} \\
-& \sin(4\theta) = 4 \sin(\theta) \cos(\theta) ( \cos^2(\theta) - \sin^2(\theta)) = 4 \frac{(\phi_x^3 \phi_z - \phi_x \phi_z^3 )}{|\grad{} \phi|^4}.
-\end{align}
-We can also write (see Appendix B of \cite{Tourret2015})
-\begin{align}
-& \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right) = \partial_x (-a'_s(\theta) a_s(\theta) \partial_z \phi ) \\
-& \partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) = 
-\partial_z (a'_s(\theta) a_s(\theta) \partial_x \phi).
-\end{align}
-Therefore,
-\begin{align}
- & \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
-\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) \nonumber \\
-= &  \  \partial_x  \underbrace{ \left[ a_s^2(\theta) \partial_x \phi - a'_s(\theta) a_s(\theta) \partial_z \phi \right]}_{=: F} + 
-\partial_z \underbrace{ \left[ a_s^2(\theta) \partial_z \phi + a'_s(\theta) a_s(\theta) \partial_x \phi \right]}_{=: J}  
-\label{eq:aniso_surf2}
-\end{align}
-
-We define $\phi(i,j)$ on the cell nodes. Therefore, \cref{eq:aniso_surf2} is discretized as
-\begin{equation}
-\frac{F(i+1/2, j) - F(i-1/2,j)}{\Delta x} + \frac{J(i,j+1/2)-J(i,j-1/2)}{\Delta z}
-\end{equation}
-Note $F,J$ are defined on cell edges. For example, to evaluate $F(i+\frac{1}{2},j)$, we need to evaluate
-\begin{align}
-& a_s(\theta) \bigg|_{i+1/2,j} = \left( 1-3\delta + 4\delta  \frac{\phi_x^4 +  \phi_z^4}{|\grad{} \phi|^4} \right)\bigg|_{i+1/2,j} \\
-& a'_s(\theta) \bigg|_{i+1/2,j} = -16\delta  \frac{(\phi_x^3 \phi_z- \phi_x \phi_z^3 )}{|\grad{} \phi|^4} \bigg|_{i+1/2,j}\\
-& \partial_x \phi \bigg|_{i+1/2,j} = \frac{\phi_{i+1,j}-\phi_{i,j}}{\Delta x} \\
-& \partial_z \phi \bigg|_{i+1/2,j}  = \frac{\phi_{i,j+1}+\phi_{i+1,j+1}-\phi_{i,j-1}-\phi_{i+1,j-1}}{4\Delta z} 
-\end{align}
-Note evaluating $\partial_z \phi |_{i+1/2,j}$ requires averaging nearby cells.  Please work out the details for $F(i-1/2,j)$, $J(i,j+1/2)$ and $J(i,j-1/2)$. Many of them are redundant. I think you only need 
-$\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
-
-
-\yxb{Note that you need both $a_s(\grad{}\phi_{i\pm 1/2, j\pm 1/2} )$ for $a_s(\hat{n})$ on the right-hand-side and $a_s(\grad{}\phi_{i, j} )$ for $\tau_{\phi}(\hat{n},z)$ on the left-hand-side.}
-
-Once we discretize \cref{eq:aniso_surf2}, the rest is straightforward. Please fill in the details.
-
-\subsubsection{Misorientation}
-
-\begin{equation}
-\partial_{x^{\prime}} \phi=\cos \alpha_{0} \partial_{x} \phi+\sin \alpha_{0} \partial_{y} \phi
-\end{equation}
-
-\begin{equation}
-\partial_{z^{\prime}} \phi=-\sin \alpha_{0} \partial_{x} \phi+\cos\alpha_{0} \partial_{z} \phi
-\end{equation}
-
-\begin{align}
-& \cos(4(\theta-\alpha_0)) =  1- 8 \frac{ \phi_{x^{\prime}}^2 \phi_{z^{\prime}}^2 }{|\grad{} \phi|^4} \\
-& \sin(4(\theta-\alpha_0)) =  4 \frac{(\phi_{x^{\prime}}^3 \phi_{z^{\prime}} - \phi_{x^{\prime}} \phi_{z^{\prime}}^3 )}{|\grad{} \phi|^4}.
-\end{align}
-
-\subsubsection{Divide-by-zero in anisotropy}
-On page 66 of \cite{Provatas2010}, whenever $|\grad{}\phi(i,j)|^{2} \leq \epsilon $, say $\epsilon = 10^{-8}$, we just set
-\begin{align*}
-a_s(\hat{n}) &= 1-3\delta, \\
-a'_s(\hat{n}) &= 0.
-\end{align*}
-In \cite{Karma1998}, Karma explained the need for $a_s(\hat{n})$ in the definition $\tau_{\phi}$ on the LHS of \cref{eq:micro_phi} because it is related to the correct kinetics in the Stefan problem. Fortunately this term is never zero so it is safe to divide. 
-
-
-\subsubsection{$U$-equation}
-\begin{itemize}
-\item A routine that takes in edge-centered vector data and outputs the divergence at cell nodes, i.e.,
-\begin{equation}
-\div{} \B{u} = \frac{u_{i+1/2,j} - u_{i-1/2,j}}{\Delta x} +  \frac{v_{i, j+1/2} - v_{i,j-1/2}}{\Delta z}
-\end{equation}
-
-\item we need the following terms at $(i+1/2,j)$ and $(i,j+1/2)$
-\begin{align}
-& [(1-\phi) U_x]_{i+1/2,j} = \left( 1- \frac{\phi_{i+1,j} + \phi_{i,j}}{2} \right) \frac{U_{i+1,j}-U_{i,j}}{\Delta x}\\
-& [(1-\phi) U_z]_{i,j+1/2} = \left( 1- \frac{\phi_{i,j+1} + \phi_{i,j}}{2} \right) \frac{U_{i,j+1}-U_{i,j}}{\Delta z}\\
-\end{align}
-
-\item Similarly, for the anti-trapping flux $\vec{j}_{at}$, we need
-\begin{align}
-& \left[ [1+(1-k)U]  \frac{\phi_x}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i+1/2,j} = \nonumber \\
-&  \frac{1}{2}\left[[1+(1-k)U_{i+1,j}]\partial_t\phi_{i+1,j}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i+1/2,j}  \\
-& \left[ [1+(1-k)U]  \frac{\phi_y}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i,j+1/2} = \nonumber \\ 
-& \frac{1}{2}\left[[1+(1-k)U_{i,j+1}]\partial_t\phi_{i,j+1}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i,+1/2j}  
-\end{align}
-\end{itemize}
-
-\yxb{The bottom line with finite difference is that: whenever the quantity is not defined on the target grid points, you just average nearby cell data.}
-
-\yxb{I strongly recommend you read the appendices of \cite{Tourret2015}, and page 65, page 101-102 of \cite{Provatas2010}. }
-
-
-\subsubsection{Initial condition}
-The initial condition is a planar interface perturbed with sinusoidal bumps:
-\begin{equation}
-\phi(x,z,t=0) = 1- \tanh \left( \frac{z - z_0 - A_0\sin(2n\pi x /L_x  ) }{W_0}  \right),
-\end{equation}
-where $z_0$ is the initial height, $A_0$ is the amplitude to initial perturbation, and $n$ is the number of  sinusoidal bumps.  
-
-For the initial condition of $U$, we set $c_l = c_{\infty}, c_s = k c_l$ \cite{Echebarria2004}, which with the definition of $c_l^0 = c_{\infty} /k $, corresponds to $U \equiv -1$ in the whole system!
-
-\begin{figure}
-\centering
-\includegraphics[width=0.9\linewidth]{./figures/initial.png}
-\caption{sample initial condition for $\phi$ and U}
-\end{figure}
-
-
-\subsubsection{Noise}
-
-
-
-\begin{table}
-\centering
-\caption{Parameters for SCN.}
-\begin{tabular}{l l c c }
-\toprule
-symbol & meaning & values & units \\
-\midrule
-$c_{\infty}m$ & nominal solute concentration &  2 & K \\
-$c_l^0$ & equilibrium concentration & $c_{\infty}/k$ & wt.\% \\
-$k$ & interface solute partition coefficient & 0.3 &\\
-$\delta$ & strength of the surface tension anisotropy  &  0.007  &\\
-$\Gamma$ & Gibbs-Thompson coefficient & $6.48\times 10^{-8}$ & Km \\
-$d_0$ & capillary length & $ 1.3\times10^{-2}$  & $\mu$m \\
-$G$ & thermal gradient & 140 & $\text{K} / \text{cm}$ \\
-$R$ & pulling speed &  32 & $\mu \text{m} / \text{s}$ \\
-$D_l$ & solute diffusion coefficient &$10^{3}$ &  ${\mu\text{m}}^2/\text{s}$ \\
-$W_0$ & interface thickness  & 40-90  & $d_0$ \\
-$\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}
-\centering
-\caption{Simulation parameters}
-\begin{tabular}{l l c c }
-\toprule
-symbol & meaning & values & units \\
-\midrule
-$\epsilon$ & divide-by-zero  & 1e-4  &\\
-$\Delta x$ & mesh size & 0.8 & $W_0$ \\
-$\Delta t$ & time step size& 0.0005& $\tau_0$ \\
-$\Lambda$ & primary spacing & 22.5 & $\mu m$ \\
-$A_p$ & amplitude of initial perturbation& 0.2 & $W_0$\\
-$L_x$ & length of computation domain  &  1  & $\Lambda$\\
-$M_t$ & time steps& 120000 & \\
-
-
-\bottomrule
-\end{tabular}
-\end{table}
-\subsection{Simulation results}
-\begin{figure}[!ht]
-     \subfloat[$\phi$\label{subfig-1:phi}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_phi.png}
-     }
-     \hfill
-     \subfloat[$c/c_{\infty}$\label{subfig-2:c/cinf}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_c.png}
-     }
-     \caption{phase field and concentration for SCN.}
-     \label{fig:Ech}
-   \end{figure}
-
-\begin{figure}[!ht]
-     \subfloat[results\label{subfig-1:resu}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_tip.png}
-     }
-     \hfill
-     \subfloat[reference\label{subfig-2:ref}]{%
-       \includegraphics[width=0.45\textwidth]{./figures/Ech_shape.png}
-     }
-     \caption{phase field shape}
-     \label{fig:Ech}
-   \end{figure}
+%\section{Microscopic model}
+%
+%
+%This model also makes the frozen temperature approximation \cite{Tourret2015,Echebarria2010,Plapp2007,Echebarria2004}:
+%\begin{align}
+%    & T(z,t) = T_0 + G(z-Rt),
+%\end{align}
+%where $T_0 = T_m - |m|c_l^0$ and $c_l^0 = c_{\infty}/ k$. 
+%
+%The compute set of phase-field equations are 
+%\begin{align}
+%\tau_{\phi} (\hat{n},z) \frac{\partial \phi}{\partial t} &= W^2_0 \left\{ \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
+%\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right)  \right \}  \nonumber \\
+%& \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-R t}{ l_T} \right),  \label{eq:micro_phi}\\
+%\tau_U \frac{\partial U}{\partial t} &= \div{} [D_l d(\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1}{2}  \frac{\partial \phi}{\partial t}, \label{eq:micro_U}
+%\end{align}
+%where 
+%\begin{align}
+%U = \frac{1}{1-k} \left( \frac{ c/c_l^0}{(1-\phi)/2 + k(1+\phi)/2} -1\right), \quad d(\phi) = (1-\phi)/2 .
+%\end{align}
+%Other parameters and terms are defined as
+%\begin{align}
+%    & \tau_{\phi}(\hat{n},z) = \tau_0(a_s(\hat{n}))^2 \left[1-(1-k) \frac{(z-Rt)}{ l_T} \right] \\
+%	& \tau_U = \frac{1+k}{2} - \frac{1-k}{2}\phi \\
+%	& \vec{j}_{at} =  \frac{1}{2\sqrt{2}} W_0 [1+(1-k)U] \frac{\nabla \phi}{|\nabla \phi|} \frac{\partial \phi}{\partial t} \\
+%	& a_{s}(\hat{n}) = (1-3\delta)\left\{1+\frac{4 \delta}{1-3\delta}(\hat{n}_x^4 + \hat{n}_z^4) \right\} \\
+%    & \hat{n} =  \frac{\nabla \phi}{|\nabla \phi|} \\
+%    & l_T = \frac{|m|c_{\infty}(1/k-1)}{G} \\
+%    & \lambda =  \frac{5\sqrt{2}}{8}  \frac{W_0}{d_0} \\
+%    & d_0 = \frac{\Gamma}{|m|c_{\infty}(1/k-1)} =   \frac{\gamma T_m/L}{|m|c_{\infty}(1/k-1)}  \\
+%    & \tau_0 =  \frac{0.6267\lambda W_0^2}{D_l}
+%\end{align}
+%
+%\begin{table}
+%\centering
+%\begin{tabular}{l l c c }
+%\toprule
+%symbol & meaning & values & units \\
+%\midrule
+%$c_{\infty}$ & nominal solute concentration &  0.4 & wt.\%\\
+%$c_l^0$ & equilibrium concentration & $c_{\infty}/k$ & wt.\% \\
+%$m$ & liquidus slope & -3.02  &  K wt./\%\\
+%$k$ & interface solute partition coefficient & 0.1-0.3 &\\
+%$T_0$ & reference solidus temperature &  &\\
+%$T_m$ & melting temperature of pure material $A$ &  &\\
+%$l_T$ & thermal length &  & mm \\
+%$\gamma$ &  average surface tension &  & \\
+%$\delta$ & strength of the surface tension anisotropy  &  0.007 or 0.011 &\\
+%$\Gamma$ & Gibbs-Thompson coefficient & $6.4\times 10^{-8}$ & Km \\
+%$d_0$ & capillary length & $\approx 10^{-3}$  & $\mu$m \\
+%$G$ & thermal gradient & 10-300 & $\text{K} / \text{cm}$ \\
+%$R$ & pulling speed &  8-32 & $\mu \text{m} / \text{s}$ \\
+%$D_l$ & solute diffusion coefficient &$10^{-9}$ &  $\text{m}^2/\text{s}$ \\
+%$L$ & latent heat &  & \\
+%$W_0$ & interface thickness  & 40-90  & $d_0$ \\
+%$\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
+%\bottomrule
+%\end{tabular}
+%\end{table}
+%
+%The boundary conditions are periodic in the $x$-direction and no-flux in the $z$-direction.
+%
+%\subsection{Non-dimensionalized equations}
+%We use  the interfacial width $W_0$ as the length scale and $\tau_0$ as the time scale to non-dimensionalize the equations:
+%\begin{align}
+% \left[1-(1-k) \frac{(z- \tilde{R} t)}{ \tilde{l}_T} \right] a_s(\hat{n}^2) \frac{\partial \phi}{\partial t} &= 
+%  \div{} [a_s(\hat{n})^2 \grad{} \phi] + \nonumber  \\  
+% & \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  + 
+%\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right)   \nonumber \\
+%& \quad + \phi - \phi^3 - \lambda (1-\phi^2)^2 \left(U + \frac{z-\tilde{R} t}{ \tilde{l}_T} \right) \\
+%\left(\frac{1+k}{2}-\frac{1-k}{2}\phi \right) \frac{\partial U}{\partial t} &= \div{} [\tilde{D}_l d(\phi) \grad{} U + \vec{j}_{at}] + [1+(1-k)U]\frac{1}{2}  \frac{\partial \phi}{\partial t},
+%\end{align}
+%where the non-dimensional parameters are  $\tilde{R} = R\tau_0 / W$, $\tilde{D} = D \tau_0 / W_0^2$ and $\tilde{l}_T = l_T / W_0$.
+%
+%\subsection{Micro model discretization}
+%\subsubsection{$\phi$-equation}
+%We first discretize the $\phi$-equation in \cref{eq:micro_phi}. The challenge is to discretize the anisotropic surface tension term. We will make a few simplications. First, note the anisotropic surface tension can be parametrized by $\theta \equiv \arctan(\phi_y / \phi_x)$, i.e., 
+%\begin{align}
+%& a_s(\theta)=  1 + \delta \cos(4 \theta) \\
+%& a_s'(\theta) = -4 \delta \sin(4\theta) 
+%\end{align}
+%By using some trigonometric identities (check), and $\cos(\theta) = \phi_x / |\grad{} \phi|$ and  $\sin(\theta) = \phi_y / |\grad{} \phi|$, we have
+%\begin{align}
+%& \cos(4\theta) = 1-8\cos^2(\theta) \sin^2(\theta) = 1- 8 \frac{ \phi_x^2 \phi_z^2 }{|\grad{} \phi|^4} \\
+%& \sin(4\theta) = 4 \sin(\theta) \cos(\theta) ( \cos^2(\theta) - \sin^2(\theta)) = 4 \frac{(\phi_x^3 \phi_z - \phi_x \phi_z^3 )}{|\grad{} \phi|^4}.
+%\end{align}
+%We can also write (see Appendix B of \cite{Tourret2015})
+%\begin{align}
+%& \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right) = \partial_x (-a'_s(\theta) a_s(\theta) \partial_z \phi ) \\
+%& \partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) = 
+%\partial_z (a'_s(\theta) a_s(\theta) \partial_x \phi).
+%\end{align}
+%Therefore,
+%\begin{align}
+% & \div{} [a_s(\hat{n})^2 \grad{} \phi] +  \partial_x \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_x \phi)}  \right)  +
+%\partial_z \left( |\grad{} \phi|^2 a_s(\hat{n}) \frac{\partial a_s(\hat{n})}{\partial (\partial_z \phi)}  \right) \nonumber \\
+%= &  \  \partial_x  \underbrace{ \left[ a_s^2(\theta) \partial_x \phi - a'_s(\theta) a_s(\theta) \partial_z \phi \right]}_{=: F} + 
+%\partial_z \underbrace{ \left[ a_s^2(\theta) \partial_z \phi + a'_s(\theta) a_s(\theta) \partial_x \phi \right]}_{=: J}  
+%\label{eq:aniso_surf2}
+%\end{align}
+%
+%We define $\phi(i,j)$ on the cell nodes. Therefore, \cref{eq:aniso_surf2} is discretized as
+%\begin{equation}
+%\frac{F(i+1/2, j) - F(i-1/2,j)}{\Delta x} + \frac{J(i,j+1/2)-J(i,j-1/2)}{\Delta z}
+%\end{equation}
+%Note $F,J$ are defined on cell edges. For example, to evaluate $F(i+\frac{1}{2},j)$, we need to evaluate
+%\begin{align}
+%& a_s(\theta) \bigg|_{i+1/2,j} = \left( 1-3\delta + 4\delta  \frac{\phi_x^4 +  \phi_z^4}{|\grad{} \phi|^4} \right)\bigg|_{i+1/2,j} \\
+%& a'_s(\theta) \bigg|_{i+1/2,j} = -16\delta  \frac{(\phi_x^3 \phi_z- \phi_x \phi_z^3 )}{|\grad{} \phi|^4} \bigg|_{i+1/2,j}\\
+%& \partial_x \phi \bigg|_{i+1/2,j} = \frac{\phi_{i+1,j}-\phi_{i,j}}{\Delta x} \\
+%& \partial_z \phi \bigg|_{i+1/2,j}  = \frac{\phi_{i,j+1}+\phi_{i+1,j+1}-\phi_{i,j-1}-\phi_{i+1,j-1}}{4\Delta z} 
+%\end{align}
+%Note evaluating $\partial_z \phi |_{i+1/2,j}$ requires averaging nearby cells.  Please work out the details for $F(i-1/2,j)$, $J(i,j+1/2)$ and $J(i,j-1/2)$. Many of them are redundant. I think you only need 
+%$\partial_x \phi |_{i,j+1/2}$ and $\partial_z \phi |_{i,j+1/2}$.
+%
+%
+%\yxb{Note that you need both $a_s(\grad{}\phi_{i\pm 1/2, j\pm 1/2} )$ for $a_s(\hat{n})$ on the right-hand-side and $a_s(\grad{}\phi_{i, j} )$ for $\tau_{\phi}(\hat{n},z)$ on the left-hand-side.}
+%
+%Once we discretize \cref{eq:aniso_surf2}, the rest is straightforward. Please fill in the details.
+%
+%\subsubsection{Misorientation}
+%
+%\begin{equation}
+%\partial_{x^{\prime}} \phi=\cos \alpha_{0} \partial_{x} \phi+\sin \alpha_{0} \partial_{y} \phi
+%\end{equation}
+%
+%\begin{equation}
+%\partial_{z^{\prime}} \phi=-\sin \alpha_{0} \partial_{x} \phi+\cos\alpha_{0} \partial_{z} \phi
+%\end{equation}
+%
+%\begin{align}
+%& \cos(4(\theta-\alpha_0)) =  1- 8 \frac{ \phi_{x^{\prime}}^2 \phi_{z^{\prime}}^2 }{|\grad{} \phi|^4} \\
+%& \sin(4(\theta-\alpha_0)) =  4 \frac{(\phi_{x^{\prime}}^3 \phi_{z^{\prime}} - \phi_{x^{\prime}} \phi_{z^{\prime}}^3 )}{|\grad{} \phi|^4}.
+%\end{align}
+%
+%\subsubsection{Divide-by-zero in anisotropy}
+%On page 66 of \cite{Provatas2010}, whenever $|\grad{}\phi(i,j)|^{2} \leq \epsilon $, say $\epsilon = 10^{-8}$, we just set
+%\begin{align*}
+%a_s(\hat{n}) &= 1-3\delta, \\
+%a'_s(\hat{n}) &= 0.
+%\end{align*}
+%In \cite{Karma1998}, Karma explained the need for $a_s(\hat{n})$ in the definition $\tau_{\phi}$ on the LHS of \cref{eq:micro_phi} because it is related to the correct kinetics in the Stefan problem. Fortunately this term is never zero so it is safe to divide. 
+%
+%
+%\subsubsection{$U$-equation}
+%\begin{itemize}
+%\item A routine that takes in edge-centered vector data and outputs the divergence at cell nodes, i.e.,
+%\begin{equation}
+%\div{} \B{u} = \frac{u_{i+1/2,j} - u_{i-1/2,j}}{\Delta x} +  \frac{v_{i, j+1/2} - v_{i,j-1/2}}{\Delta z}
+%\end{equation}
+%
+%\item we need the following terms at $(i+1/2,j)$ and $(i,j+1/2)$
+%\begin{align}
+%& [(1-\phi) U_x]_{i+1/2,j} = \left( 1- \frac{\phi_{i+1,j} + \phi_{i,j}}{2} \right) \frac{U_{i+1,j}-U_{i,j}}{\Delta x}\\
+%& [(1-\phi) U_z]_{i,j+1/2} = \left( 1- \frac{\phi_{i,j+1} + \phi_{i,j}}{2} \right) \frac{U_{i,j+1}-U_{i,j}}{\Delta z}\\
+%\end{align}
+%
+%\item Similarly, for the anti-trapping flux $\vec{j}_{at}$, we need
+%\begin{align}
+%& \left[ [1+(1-k)U]  \frac{\phi_x}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i+1/2,j} = \nonumber \\
+%&  \frac{1}{2}\left[[1+(1-k)U_{i+1,j}]\partial_t\phi_{i+1,j}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i+1/2,j}  \\
+%& \left[ [1+(1-k)U]  \frac{\phi_y}{ |\grad{} \phi | } \frac{\partial \phi}{\partial t}  \right]_{i,j+1/2} = \nonumber \\ 
+%& \frac{1}{2}\left[[1+(1-k)U_{i,j+1}]\partial_t\phi_{i,j+1}+[1+(1-k)U_{i,j}]\partial_t\phi_{i,j}\right]  \frac{\phi_x}{ |\grad{} \phi | }\bigg|_{i,+1/2j}  
+%\end{align}
+%\end{itemize}
+%
+%\yxb{The bottom line with finite difference is that: whenever the quantity is not defined on the target grid points, you just average nearby cell data.}
+%
+%\yxb{I strongly recommend you read the appendices of \cite{Tourret2015}, and page 65, page 101-102 of \cite{Provatas2010}. }
+%
+%
+%\subsubsection{Initial condition}
+%The initial condition is a planar interface perturbed with sinusoidal bumps:
+%\begin{equation}
+%\phi(x,z,t=0) = 1- \tanh \left( \frac{z - z_0 - A_0\sin(2n\pi x /L_x  ) }{W_0}  \right),
+%\end{equation}
+%where $z_0$ is the initial height, $A_0$ is the amplitude to initial perturbation, and $n$ is the number of  sinusoidal bumps.  
+%
+%For the initial condition of $U$, we set $c_l = c_{\infty}, c_s = k c_l$ \cite{Echebarria2004}, which with the definition of $c_l^0 = c_{\infty} /k $, corresponds to $U \equiv -1$ in the whole system!
+%
+%\begin{figure}
+%\centering
+%\includegraphics[width=0.9\linewidth]{./figures/initial.png}
+%\caption{sample initial condition for $\phi$ and U}
+%\end{figure}
+%
+%
+%\subsubsection{Noise}
+%
+%
+%
+%\begin{table}
+%\centering
+%\caption{Parameters for SCN.}
+%\begin{tabular}{l l c c }
+%\toprule
+%symbol & meaning & values & units \\
+%\midrule
+%$c_{\infty}m$ & nominal solute concentration &  2 & K \\
+%$c_l^0$ & equilibrium concentration & $c_{\infty}/k$ & wt.\% \\
+%$k$ & interface solute partition coefficient & 0.3 &\\
+%$\delta$ & strength of the surface tension anisotropy  &  0.007  &\\
+%$\Gamma$ & Gibbs-Thompson coefficient & $6.48\times 10^{-8}$ & Km \\
+%$d_0$ & capillary length & $ 1.3\times10^{-2}$  & $\mu$m \\
+%$G$ & thermal gradient & 140 & $\text{K} / \text{cm}$ \\
+%$R$ & pulling speed &  32 & $\mu \text{m} / \text{s}$ \\
+%$D_l$ & solute diffusion coefficient &$10^{3}$ &  ${\mu\text{m}}^2/\text{s}$ \\
+%$W_0$ & interface thickness  & 40-90  & $d_0$ \\
+%$\Delta x$ & mesh size & 0.4-0.8 & $W_0$ \\
+%\bottomrule
+%\end{tabular}
+%\end{table}
+%
+%\begin{table}
+%\centering
+%\caption{Simulation parameters}
+%\begin{tabular}{l l c c }
+%\toprule
+%symbol & meaning & values & units \\
+%\midrule
+%$\epsilon$ & divide-by-zero  & 1e-4  &\\
+%$\Delta x$ & mesh size & 0.8 & $W_0$ \\
+%$\Delta t$ & time step size& 0.0005& $\tau_0$ \\
+%$\Lambda$ & primary spacing & 22.5 & $\mu m$ \\
+%$A_p$ & amplitude of initial perturbation& 0.2 & $W_0$\\
+%$L_x$ & length of computation domain  &  1  & $\Lambda$\\
+%$M_t$ & time steps& 120000 & \\
+%
+%
+%\bottomrule
+%\end{tabular}
+%\end{table}
+%\subsection{Simulation results}
+%\begin{figure}[!ht]
+%     \subfloat[$\phi$\label{subfig-1:phi}]{%
+%       \includegraphics[width=0.45\textwidth]{./figures/Ech_phi.png}
+%     }
+%     \hfill
+%     \subfloat[$c/c_{\infty}$\label{subfig-2:c/cinf}]{%
+%       \includegraphics[width=0.45\textwidth]{./figures/Ech_c.png}
+%     }
+%     \caption{phase field and concentration for SCN.}
+%     \label{fig:Ech}
+%   \end{figure}
+%
+%\begin{figure}[!ht]
+%     \subfloat[results\label{subfig-1:resu}]{%
+%       \includegraphics[width=0.45\textwidth]{./figures/Ech_tip.png}
+%     }
+%     \hfill
+%     \subfloat[reference\label{subfig-2:ref}]{%
+%       \includegraphics[width=0.45\textwidth]{./figures/Ech_shape.png}
+%     }
+%     \caption{phase field shape}
+%     \label{fig:Ech}
+%   \end{figure}
 
 
 \section{Macro statistics}
