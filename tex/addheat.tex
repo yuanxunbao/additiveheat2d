@@ -226,17 +226,44 @@ To model spot welding, we use the following heat source model
 \begin{equation}
 q_s(x,t) =  \frac{2Q\eta}{\pi r_b^2} \exp \left( -\frac{ 2x^2}{ r_b^2} \right)   \exp \left( -\frac{ 2V_s^2t^2}{ r_b^2} \right).
 \end{equation}
-Let $\V{x}_p \in S$ be a point on the solid-liquid interface, i.e., $\{  \V{x}_p \in \Omega : T(\V{x}_p ,t) = T_{liquidus}  \}$.
-After we solve the discrete system of equations \Cref{eq:macro_discrete}, we compute $G =  | \grad{} T |$ and $R = \frac{1}{G} | \frac{\partial T}{\partial t} |$ on the regular computational grid. To evolve the solid liquid interface $S$, we solve the following ODE,
-\begin{align}
-& \frac{d \V{x}_p }{dt} = - \grad{} T \bigg|_{\V{x} = \V{x}_p},  \label{eq:sl_cont } \\
-& \V{x}_p (t = t_0) = \V{x}_{0},
-\end{align}
-where $\V{x}_0$ denotes the initial solid-liquid interface.  We update the position of the solid-liquid interface explicitly (perhaps RK?):
+Let $S^n$ denote the solid-liquid interface at $t=t^n$, i.e., 
 \begin{equation}
-\frac{\V{x}_p^{n+1} - \V{x}_p^n}{\Delta t} = -   \mathcal{I}_{ \grad{} T } (\V{x}^{n}_p) , 
+S^n := \{  \V{x} \in \Omega : T(\V{x} ,t^n) = T_{liquidus} \}.
 \end{equation}
-where $\mathcal{I}_{\grad{} T}$ interpolates $\grad{} T$ at the Lagrangian point $\V{x}_p$ from those values on the regular computational grid. 
+Let $\V{x}_*^n$ be a point on $S^n$. To find the corresponding $\V{x}^{n+1}_*$ on $S^{n+1}$, we use the following geometric properties:
+\begin{itemize}
+\item $\V{x}_*^{n+1}$ must be on the normal line passing through $\V{x}_*^n$ with direction  $  \grad{} T^n(\V{x}_*^n) $, that is, there exists $s \in \mathbb{R}$ such that
+\begin{equation}
+\V{x}_*^{n+1} = \V{x}_*^{n} + s \cdot  \grad{} T^n (\V{x}_*^n).
+\label{eq:sl1}
+\end{equation}
+
+\item On the other hand, we must also have $\V{x}^{n+1}_* \in S^{n+1}$, that is 
+\begin{equation}
+T( \V{x}^{n+1}_* , t^{n+1}) - T_{liquidus} = 0.
+\label{eq:sl2}
+\end{equation}
+
+\end{itemize}
+\Cref{eq:sl1,eq:sl2} define a nonlinear equation to be solved for $s$, and therefore, $\V{x}^{n+1}_*$. This can be achieved by \verb|fsolve| routine in MATLAB or similar routines in Python. Basically all you need is a function that can evaluate the following function given $\grad{} {T}^n$ and $T^{n+1}$,
+\begin{equation}
+F(s) := T^{n+1} ( \V{x_*} + s \grad{} {T}^n(\V{x_*})).
+\end{equation}
+Note $F$ is a function of $s$ not $\V{x}_*$.
+Note also that $\V{x}_*$ may not be defined on the same regular grid as $T^n$, so an interpolation is required in the above expressions. 
+
+
+%Let $\V{x}_p \in S$ be a point on the solid-liquid interface, i.e., $\{  \V{x}_p \in \Omega : T(\V{x}_p ,t) = T_{liquidus}  \}$.
+%After we solve the discrete system of equations \Cref{eq:macro_discrete}, we compute $G =  | \grad{} T |$ and $R = \frac{1}{G} | \frac{\partial T}{\partial t} |$ on the regular computational grid. To evolve the solid liquid interface $S$, we solve the following ODE,
+%\begin{align}
+%& \frac{d \V{x}_p }{dt} = - \grad{} T \bigg|_{\V{x} = \V{x}_p},  \label{eq:sl_cont } \\
+%& \V{x}_p (t = t_0) = \V{x}_{0},
+%\end{align}
+%where $\V{x}_0$ denotes the initial solid-liquid interface.  We update the position of the solid-liquid interface explicitly (perhaps RK?):
+%\begin{equation}
+%\frac{\V{x}_p^{n+1} - \V{x}_p^n}{\Delta t} = -   \mathcal{I}_{ \grad{} T } (\V{x}^{n}_p) , 
+%\end{equation}
+%where $\mathcal{I}_{\grad{} T}$ interpolates $\grad{} T$ at the Lagrangian point $\V{x}_p$ from those values on the regular computational grid. 
 
 
 \section{Macro model numerical tests}
