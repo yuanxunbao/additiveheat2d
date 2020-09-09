@@ -7,9 +7,9 @@ import scipy.io as sio
 
 def initial_condition( x ):
 
-    sigma = 0.1
-        
-    u0 = np.exp(-(x-0.5)**2/(2*sigma**2))
+    # sigma = 0.1       
+    # u0 = np.exp(-(x-0.5)**2/(2*sigma**2))
+    u0 = x - x**2
     return  u0
 
 
@@ -20,15 +20,18 @@ nproc = comm.Get_size()		# number of processors
 
 Lmin = 0 			# left domain of the whole problem
 Lmax = 1.0			# right domain of the whole problem
-Kappa = 0.1
+Kappa = 1
 
 npts = 16			# number of grid points in the current processor 
 Ntotal = nproc*npts+1
-dx = (Lmax-Lmin) / (Ntotal)
+dx = (Lmax-Lmin) / (Ntotal-1)
 
 cfl = 0.4
 dt = cfl * (dx**2/Kappa)
-Nt = 10000
+
+T = 0.025
+Nt = int (T/dt)
+dt = T/Nt
 
 
 
