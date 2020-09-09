@@ -268,6 +268,49 @@ Note also that $\V{x}_*$ may not be defined on the same regular grid as $T^n$, s
 
 \section{Macro model numerical tests}
 
+As a sanity test, we can first test the code with analytical solution:
+
+\begin{itemize}
+\item In one dimension:
+\begin{align*}
+& u_t = \kappa u_{xx}, \quad x \in (0,1), \\
+& u_x(0,t) = u_x(1,t) = 0, \\
+& u(x,0) = x - x^2.
+\end{align*}
+The exact solution is 
+\begin{equation}
+u(x,t) = \frac{1}{6} + \frac{2}{\pi^2} \sum_{n=1}^{\infty} \frac{(-1)^{n+1} - 1}{n^2}  e^{ -\kappa n^2 \pi^2 t } \cos( n \pi x ).
+\end{equation}
+
+\item In two dimensions:
+\begin{align*}
+& u_t = \kappa ( u_{xx} + u_{yy} ), \quad (x,y) \in (0,1) \times (0,1), \\
+& u_y(x,0) = u_y(x,1) = 0, u_x(0,y) = u_x(1,y) = 0 \\
+& u(x,0) =(x - x^2) (y-y^2)
+\end{align*}
+The exact solution is
+\begin{equation}
+u(x,t) = \sum_{m,n=0}^{\infty} A_{m,n}  e^{ -\kappa (m^2+n^2) \pi^2 t } \cos( m \pi x ) \cos(n \pi y ), 
+\end{equation}
+where
+\begin{equation}
+A_{m,n} = \left \{
+\begin{array}{ll}
+\frac{1}{36}, & m=n=0 \\
+\frac{1}{6} \frac{2}{\pi^2}\frac{(-1)^{n+1} - 1}{n^2},  & m = 0, n \neq 0 \\
+\frac{1}{6} \frac{2}{\pi^2}\frac{(-1)^{m+1} - 1}{m^2},  & m \neq 0, n = 0 \\
+\frac{4}{\pi^4}\frac{(-1)^{m+1} - 1}{m^2}  \frac{(-1)^{n+1} - 1}{n^2} & m \neq 0, n \neq 0
+\end{array}
+\right.
+\end{equation}
+
+
+
+
+
+\end{itemize}
+
+
 \subsection{No latent heat term}
 
 \begin{equation}
