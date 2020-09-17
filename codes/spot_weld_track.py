@@ -12,7 +12,7 @@ Created on Mon Mar  9 10:45:21 2020
 
 import os
 import numpy as np
-from macro_param import phys_parameter, simu_parameter 
+from macro_param_low import phys_parameter, simu_parameter 
 from scipy import sparse as sp
 from scipy.sparse import linalg as la
 import matplotlib.pyplot as plt
@@ -117,7 +117,7 @@ def liquid_contour(Temp): # this is only for selecting initial points
     
     for ii in range(nx):
         jj = 0
-        while(T[jj,ii]>=p.Tl): jj +=1  
+        while(T[jj,ii]>=p.Tcon): jj +=1  
         if yy[jj,0]< -20e-6:
             #xj_arr = np.concatenate((xj_arr, xx[0,ii]))
             #yj_arr = np.concatenate((yj_arr, yy[jj,0]))
@@ -201,7 +201,7 @@ def stepj(ss, *arg):
     Tj_np = T_itp(xj_np, yj_np)
     
     
-    return Tj_np - p.Tl
+    return Tj_np - p.Tcon
 
 
 
@@ -291,6 +291,7 @@ l0 = lx/2 #laser starting point
 Mt= s.Mt
 Tt = Mt*dt
 t=0
+
 
 # macro output sampling arrays
 
@@ -394,7 +395,7 @@ for ii in range(Mt):
     G,R, gTx, gTy = gradients(ynew, y, dx)
     
     #t += dt
-    
+ 
     if (t-t0)<1e-10:
         xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = liquid_contour(ynew) 
     
@@ -402,8 +403,7 @@ for ii in range(Mt):
         xj_arr, yj_arr, xj_old, yj_old, Tj_arr, Gj_arr, betaj_arr, Rj_arr \
             = trajectory(xj_arr, yj_arr, gTx, gTy, R, y, ynew)
         QoI_save(t,xj_old,yj_old,Tj_arr,Gj_arr,Rj_arr, betaj_arr)
-        
-        
+
     
     y = ynew
     # latent heat
@@ -436,7 +436,7 @@ print(Tf[0,int(nx/4)],Tf[0,int(nx/2)])
 #yj_arr, Tj_arr, Gj_arr, Rj_arr, Radj_arr, thetaj_arr = liquid_contour(y, G, R, yj_arr, Tj_arr, Gj_arr, Rj_arr, Radj_arr, thetaj_arr)
         
 
-'''
+
 
 fig2 = plt.figure(figsize=[12,4])
 ax2 = fig2.add_subplot(121)
@@ -447,7 +447,7 @@ ax3 = fig2.add_subplot(122)
 ax3.plot(xj_arr,yj_arr)
 ax3.set_aspect('equal')
 ax3.set_ylim(-ly, 0)
-
+ax3.set_xlim(0, lx)
 
 fig3 = plt.figure(figsize=[12,4])
 ax4 = fig3.add_subplot(121)
@@ -462,7 +462,7 @@ plt.colorbar();plt.title('R')
 
 
 
-filename = 'Qlatdt' + str(dt)+'xgrids'+str(nx)+'.mat'
+#filename = 'Qlatdt' + str(dt)+'xgrids'+str(nx)+'.mat'
 tempname = 'temp'+str(nx)
 
 #save(os.path.join(s.direc,s.filename),{tempname: Temp,'G_arr':G_arr,'R_arr':R_arr,'nx':nx,'ny':ny,'xx':xx,'yy':yy})
@@ -471,7 +471,7 @@ tempname = 'temp'+str(nx)
 end =time.time()
 print('time used: ',end-start)
 
-'''
+
 
 
 

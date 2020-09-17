@@ -21,38 +21,59 @@ from math import pi
 from scipy.optimize import fsolve
 from scipy.interpolate import interp2d as itp2d
 
+dataname = 'heat2d_lx0.024_nx213_asp0.5_dt1.00e-02_Mt650.mat'
+trajname = 'traj_low_try.mat'
 
-G_arr = load('heat2d_lx0.0008_nx213_asp0.5_dt1.00e-05_Mt400.mat')['G_arr']
-R_arr = load('heat2d_lx0.0008_nx213_asp0.5_dt1.00e-05_Mt400.mat')['R_arr']
-temp = load('heat2d_lx0.0008_nx213_asp0.5_dt1.00e-05_Mt400.mat')['temp213']
-xx = load('heat2d_lx0.0008_nx213_asp0.5_dt1.00e-05_Mt400.mat')['xx']
-yy = load('heat2d_lx0.0008_nx213_asp0.5_dt1.00e-05_Mt400.mat')['yy']
+t0 = 3.2
 
-nx = int(load('heat2d_lx0.0008_nx213_asp0.5_dt1.00e-05_Mt400.mat')['nx'])
-ny = int(load('heat2d_lx0.0008_nx213_asp0.5_dt1.00e-05_Mt400.mat')['ny'])
+G_arr = load(dataname)['G_arr']
+R_arr = load(dataname)['R_arr']
+temp = load(dataname)['temp213']
+xx = load(dataname)['xx']
+yy = load(dataname)['yy']
 
-lx = 800e-6
-ly = 400e-6
+nx = int(load(dataname)['nx'])
+ny = int(load(dataname)['ny'])
+
+lx = xx[0,-1]
+ly = -yy[-1,0]
+
 
 x = np.linspace(0,lx,nx)
 ycoor = np.linspace(0,-ly,ny)
 
+targ = 34  # select a point 
 
+xtarg = load(trajname)['X_']
+ytarg = load(trajname)['Y_']
+G_read = load(trajname)['G_']
+R_read = load(trajname)['R_']
+time_read = load(trajname)['time_']
+t_st = load(trajname)['t_st']
 
-xtarg = load('trajectory.mat')['X_']
-ytarg = load('trajectory.mat')['Y_']
-targ = 34
-xtarg = xtarg[targ,8:]
-ytarg = ytarg[targ,8:]
+Gtarg = G_read[targ,:]   #high speed 8
+Rtarg = R_read[targ,:]
+xtarg = xtarg[targ,:]
+ytarg = ytarg[targ,:]
 T_len = len(xtarg)
 Ttarg = np.zeros(T_len)
 T_FR = np.zeros(T_len)
 zl = np.zeros(T_len)
 
+T_aa = np.zeros((T_len,T_len))
+T_fra = np.zeros((T_len,T_len))
+
+t_arr = time_read[0,:]
+
+dt = t_arr[1] - t_arr[0]
+
+for i in range(T_len):
+    
+    zl[i] = np.sqrt( (xtarg[i]-xtarg[0])**2 + (ytarg[i]-ytarg[0])**2 )
 
 
 def tem_dis(tp):
-    time = 348 + tp
+    time = int(t0/dt)+ t_st + tp +1  #479, 349
     
     G = np.reshape(G_arr[:,time],(ny,nx),order='F')
     T = np.reshape(temp[:,time],(ny,nx),order='F')
@@ -70,49 +91,55 @@ def tem_dis(tp):
     G0 = Gitp(xtarg[tp],ytarg[tp])
     
     
-    
+    print(tp,G0)
     
     for i in range(T_len):
         
-        if i>tp: zl[i] = np.sqrt( (xtarg[i]-xtarg[tp])**2 + (ytarg[i]-ytarg[tp])**2 )
-        else: zl[i] = -np.sqrt( (xtarg[i]-xtarg[tp])**2 + (ytarg[i]-ytarg[tp])**2 )
-        
-        T_FR[i] = Ttarg[tp] + G0*zl[i]
 
-    return Ttarg, T_FR, zl
+        
+        T_FR[i] = Ttarg[tp] + G0*(zl[i]-zl[tp])
+        
+
+    return Ttarg, T_FR
+
+
+for nt in range(T_len):
+    
+    T_aa[nt,:] , T_fra[nt,:] = tem_dis(nt)
+    
+    
+    
 
 
 
 fig3 = plt.figure(figsize=[15,3])
 
-Ttarg, T_FR, zl = tem_dis(0)
 
 
 ax4 = fig3.add_subplot(131)
-ax4.plot(zl,Ttarg)
-ax4.plot(zl,T_FR)
+ax4.plot(zl,T_aa[0,:])
+ax4.plot(zl,T_fra[0,:])
 plt.xlabel('z');plt.ylabel('T');plt.title('t=0')
 plt.legend(('actual','FR'))
 
-Ttarg, T_FR, zl = tem_dis(5)
+
 
 ax5 = fig3.add_subplot(132)
-ax5.plot(zl,Ttarg)
-ax5.plot(zl,T_FR)
+ax5.plot(zl,T_aa[5,:])
+ax5.plot(zl,T_fra[5,:])
 plt.xlabel('z');plt.ylabel('T');plt.title('t=5e-5')
 plt.legend(('actual','FR'))
 
-Ttarg, T_FR, zl = tem_dis(10)
 
 ax6 = fig3.add_subplot(133)
-ax6.plot(zl,Ttarg)
-ax6.plot(zl,T_FR)
+ax6.plot(zl,T_aa[17,:])
+ax6.plot(zl,T_fra[17,:])
 plt.xlabel('z');plt.ylabel('T');plt.title('t=10e-5')
 plt.legend(('actual','FR'))
 
 
 
-
+#save('FR_check_low.mat',{'r':zl,'t_ma':t_arr,'T_actual':T_aa,'T_FR':T_fra,'G_t':Gtarg,'R_t':Rtarg})
 
 
 
