@@ -42,7 +42,7 @@ def phys_parameter():
         sigma = 5.67e-8   # stefan-boltzmann constant
         Te = 25+273       # environmental temperature        
         
-        Tcon = Ts
+        Tcon = Tl
         
     return phys_para
 
@@ -62,10 +62,10 @@ def simu_parameter(rb):
         #nx = 401
         #dx = lxd/(nx-1)
         dt = 0.01
-        Mt = 600#10 #365
+        Mt = 650#10 #365
         nts = 1#650
         
-        t0 = 1.35#3.2
+        t0 = 3.2
         
         direc = '.'
         filename = 'Tsheat2d' + '_lx'+ str(lxd)+'_nx'+str(nx)+'_asp'+str(asp_ratio)+'_dt'+str('%4.2e'%dt)+'_Mt'+str(Mt)+'.mat'
@@ -76,8 +76,7 @@ def simu_parameter(rb):
     return simu_para
         
         
-        
-        
+
         
         
         
