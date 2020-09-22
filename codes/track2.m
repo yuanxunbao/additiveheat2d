@@ -2,10 +2,10 @@ clear; close all;
 set(0,'defaultaxesfontsize',16);
 set(0,'defaultlinelinewidth',2);
 
-savedir = '/Users/yuanxun/workspace/ammfrwrd20/tex/figures';
+savedir = '/Users/yigongqin/Documents/Padas/laser';
 
 % M1 =csvread('macro_output_track_t03.20e+00_dt1.00e-02_dx2.24e-04_Tt6.50e+00.csv');
-M1 =csvread('macro_output_Ts_t03.20e+00_dt1.00e-02_dx2.24e-04_Tt6.50e+00.csv');
+M1 =csvread('macro_output_low_t00.00e+00_dt5.00e-03_dx5.01e-05_Tt1.00e+00.csv');
 time1 = M1(:,1);
 xj_arr1 = M1(:,2);
 yj_arr1 = M1(:,3);
@@ -99,8 +99,10 @@ Y_ = reshape(yj_arr1,[num_sam,num_time]);
 Beta_ = reshape(M1(:,7),[num_sam,num_time]);
 
 
+
 %% set start and end time to make sure R is in a reasonable range
-t_st = 170; t_end = num_time-10;
+t_st = 37; t_end = num_time-35;
+time_ = time_-time_(:,t_st);
 
 %% trajector plot
 traj = [10,15,30, 48];
@@ -112,18 +114,22 @@ end
 legend({'traj 1','traj 2', 'traj 3', 'traj 4'},'location','se')
 
 % plot contours
-cline = [0:21:t_end-t_st];
+cline = [0:26:t_end-t_st];
 for j = 1:length(cline)
     h1=plot(X_(:,t_st+cline(j)),Y_(:,t_st+cline(j)),'k--'); hold on;
     h1.Annotation.LegendInformation.IconDisplayStyle = 'off'; % to turn of legend off
+    if j == 1 || j==length(cline)
+        text(X_(end,t_st+cline(j)),Y_(end,t_st+cline(j)),sprintf('t = %.2f', time_(1,t_st+cline(j))))
+    end
 end
 axis equal;
-axis([0 24e-3 -12e-3 0]);
+axis([7e-3 11e-3 -2e-3 0]);
 xlabel('x');ylabel('y');title('sampled trajectory')
 
 print('-depsc', sprintf('%s/macro_traj.eps',savedir), '-r300' )
 
 %% G(t), R(t) plot
+
 figure(2)
 set(gcf,'Position',[100,100,1200,400])
 subplot(121)
@@ -148,7 +154,7 @@ for k = 1:length(traj)
     plot(time_(traj(k),t_st:t_end),Beta_(traj(k),t_st:t_end)); hold on;
 end
 xlabel('time');ylabel('thermal orientation');title('\theta over time')
-legend('point 1','point 2','point 3','point 4','point 5')
+legend('point 1','point 2','point 3','point 4')
 
 
 
@@ -156,25 +162,25 @@ X_ = X_(:,t_st:t_end);Y_ = Y_(:,t_st:t_end);
 G_ = G_(:,t_st:t_end);R_ = R_(:,t_st:t_end);T_ = T_(:,t_st:t_end);
 Beta_ = Beta_(:,t_st:t_end);
 time_ = time_(:,t_st:t_end);
-time_ = time_-time_(:,1);
+
 
 save traj_low_try.mat X_ Y_ G_ R_ Beta_ time_ T_ t_st
 
 
 
-% save data
-savedir = '/Users/yuanxun/workspace/direct-solid/codes';
+save data
+savedir = '/Users/yigongqin/Documents/Padas/direct-solid/codes';
 for k = 1:length(traj)
     
     t_macro = time_(traj(k),:);
-    G_t = G_(traj(k),:) / 1e4; % convert from K/m to K/um
+    G_t = G_(traj(k),:) / 1e6; % convert from K/m to K/um
     R_t = R_(traj(k),:) * 1e6; % convert from m/s to um/s
-    R_t(1) = 0;
+    %R_t(1) = 0;
     
-    G_t = [G_t(1), G_t];
-    t_trans = 0.1;
-    t_macro = [ 0, t_macro + t_trans];
-    R_t = [0, R_t];
+    %G_t = [G_t(1), G_t];
+   % t_trans = 0.1;
+    %t_macro = [ 0, t_macro + t_trans];
+    %R_t = [0, R_t];
     
     save(sprintf('%s/macroGR_traj%d.mat',savedir, k), 'G_t', 'R_t', 't_macro');
 end
