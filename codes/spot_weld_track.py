@@ -12,7 +12,7 @@ Created on Mon Mar  9 10:45:21 2020
 
 import os
 import numpy as np
-from macro_param_low import phys_parameter, simu_parameter 
+from macro_param_low2 import phys_parameter, simu_parameter 
 from scipy import sparse as sp
 from scipy.sparse import linalg as la
 import matplotlib.pyplot as plt
@@ -396,10 +396,10 @@ for ii in range(Mt):
     
     #t += dt
  
-    if (t-t0)<1e-10:
+    if np.absolute(t-s.ts)<1e-10:
         xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = liquid_contour(ynew) 
     
-    if t>t0 and t<tstop:  # save QoIs
+    if t>s.ts and t<tstop:  # save QoIs
         xj_arr, yj_arr, xj_old, yj_old, Tj_arr, Gj_arr, betaj_arr, Rj_arr \
             = trajectory(xj_arr, yj_arr, gTx, gTy, R, y, ynew)
         QoI_save(t,xj_old,yj_old,Tj_arr,Gj_arr,Rj_arr, betaj_arr)
@@ -415,10 +415,7 @@ for ii in range(Mt):
     bU[0:-1:ny] = U
     
     t += dt
-    # save QoIs
-    #yj_arr, Tj_arr, Gj_arr, Rj_arr, Radj_arr, thetaj_arr = \
-        #liquid_contour(y, G, R, yj_arr, Tj_arr, Gj_arr, Rj_arr, Radj_arr, thetaj_arr)
-    #QoI_save(t,xj_arr,yj_arr,Tj_arr,Gj_arr,Rj_arr,Radj_arr,thetaj_arr)
+
     
     if (ii+1)%kts==0:
        kk = int(np.floor((ii+1)/kts))
@@ -433,8 +430,6 @@ Tf = np.reshape(y,(ny,nx),order='F')
 print(Tf[0,int(nx/4)],Tf[0,int(nx/2)])
 
 
-#yj_arr, Tj_arr, Gj_arr, Rj_arr, Radj_arr, thetaj_arr = liquid_contour(y, G, R, yj_arr, Tj_arr, Gj_arr, Rj_arr, Radj_arr, thetaj_arr)
-        
 
 
 
@@ -452,6 +447,7 @@ ax3.set_xlim(0, lx)
 fig3 = plt.figure(figsize=[12,4])
 ax4 = fig3.add_subplot(121)
 plt.imshow(G[1:-1,1:-1],cmap=plt.get_cmap('hot'))
+plt.xlim()
 plt.colorbar();plt.title('G')
 
 ax5 = fig3.add_subplot(122)

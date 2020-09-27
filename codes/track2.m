@@ -5,7 +5,7 @@ set(0,'defaultlinelinewidth',2);
 savedir = '/Users/yigongqin/Documents/Padas/laser';
 
 % M1 =csvread('macro_output_track_t03.20e+00_dt1.00e-02_dx2.24e-04_Tt6.50e+00.csv');
-M1 =csvread('macro_output_low_t00.00e+00_dt5.00e-03_dx5.01e-05_Tt1.00e+00.csv');
+M1 =csvread('macro_output_low_dt5.00e-03_dx5.01e-05_Tt1.00e+00.csv');
 time1 = M1(:,1);
 xj_arr1 = M1(:,2);
 yj_arr1 = M1(:,3);
@@ -177,10 +177,10 @@ for k = 1:length(traj)
     R_t = R_(traj(k),:) * 1e6; % convert from m/s to um/s
     %R_t(1) = 0;
     
-    %G_t = [G_t(1), G_t];
-   % t_trans = 0.1;
-    %t_macro = [ 0, t_macro + t_trans];
-    %R_t = [0, R_t];
+    G_t = [G_t(1), G_t];
+    t_trans = 0.1;
+    t_macro = [ 0, t_macro + t_trans];
+    R_t = [0, R_t];
     
     save(sprintf('%s/macroGR_traj%d.mat',savedir, k), 'G_t', 'R_t', 't_macro');
 end
