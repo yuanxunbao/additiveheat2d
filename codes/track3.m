@@ -1,14 +1,14 @@
-clear; close all;
+% clear; close all;
 set(0,'defaultaxesfontsize',16);
 set(0,'defaultlinelinewidth',2);
 
 savedir = './';
 
-load macro_output_low.mat
+load macro_output_low_exp1.mat
 
 sz = size(G_traj);
-ntraj = sz(1); 
-ntime = sz(2);
+ntraj = sz(2); 
+ntime = sz(1);
 
 idx = [5:10: ntraj/2-5]; % traj index
 t_idx = [1: ntime-10]; % time index
@@ -36,7 +36,7 @@ axis([7e-3 11e-3 -2e-3 0]);
 xlabel('x')
 ylabel('y')
 
-print('-depsc', sprintf('%s/macro_traj.eps',savedir), '-r300' )
+% print('-depsc', sprintf('%s/macro_traj.eps',savedir), '-r300' )
 
 
 
@@ -67,7 +67,7 @@ end
 title('cooling rate dT/dt')
 xlabel('t')
 
-print('-depsc', sprintf('%s/macro_GR.eps',savedir), '-r300' )
+% print('-depsc', sprintf('%s/macro_GR.eps',savedir), '-r300' )
 
 
 % save data
@@ -81,7 +81,7 @@ for k = 1:length(idx)
     R_t(1) = 0;
    
     
-    save(sprintf('%s/macroGR_traj%d.mat',savedir, k), 'G_t', 'R_t', 't_macro');
+    % save(sprintf('%s/macroGR_traj%d.mat',savedir, k), 'G_t', 'R_t', 't_macro');
 end
 
 
