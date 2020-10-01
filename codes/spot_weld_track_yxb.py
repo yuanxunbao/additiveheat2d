@@ -103,6 +103,29 @@ def gradients(y_new,y_old,h):
 
 
 
+
+def base_contour(R): # this is only for selecting initial base contours
+    
+    
+    n_away_top = 10
+    c0 = axes[0,0].contour(xx[n_away_top:,:],yy[n_away_top:,:], R[n_away_top:,:], [0])
+    p = c0.collections[0].get_paths()[0]
+    vp = p.vertices
+    xj_arr = vp[:,0]
+    yj_arr = vp[:,1]
+        
+    num_sam = len(xj_arr)
+    
+    Tj_arr = np.zeros(num_sam)
+    Gj_arr = np.zeros(num_sam)
+    Rj_arr = np.zeros(num_sam)
+    betaj_arr = np.zeros(num_sam)
+    
+    return np.array(xj_arr), np.array(yj_arr), np.array(Tj_arr), Gj_arr, Rj_arr, betaj_arr
+        
+
+
+
 def liquid_contour(Temp): # this is only for selecting initial points
     
     T = np.reshape(Temp,(ny,nx),order='F') 
@@ -401,7 +424,15 @@ for ii in range(Mt):
     idx_mid = int((nx+1)/2)
     T_temp = np.reshape(ynew,(ny,nx),order='F');
     Tmid = T_temp[:,idx_mid]
-    idx_bottom = np.flatnonzero(Tmid > p.Tl)[-1]
+    idx_bottom = np.flatnonzero(Tmid > p.Tl)
+    
+    if idx_bottom.size == 0:
+        idx_bottom = 0
+    else:
+        idx_bottom = idx_bottom[-1]
+        
+            
+    
     print('(depth of melt pool, Rvalue at bottom point, timestep) = (%d, %f, %d)'%(idx_bottom, R[idx_bottom,idx_mid], ii+1))
     
     
@@ -434,9 +465,13 @@ for ii in range(Mt):
         
         istart = ii;
         found_bottom = True
-        xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = liquid_contour(ynew) 
+        # xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = liquid_contour(ynew) 
+        xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = base_contour(R) 
         num_sam = len(xj_arr)
         num_time = Mt - istart 
+        
+        
+        
         
         print('(num_sample, num_time) = (%d,%d)'%(num_sam,num_time))
         
@@ -447,8 +482,7 @@ for ii in range(Mt):
         R_traj = np.zeros((num_time,num_sam))
         beta_traj =np.zeros((num_time,num_sam))
         time_traj = np.zeros(num_time)
-        
-        
+         
         
         
     '''
@@ -539,10 +573,10 @@ plt.colorbar();plt.title('R')
 #filename = 'Qlatdt' + str(dt)+'xgrids'+str(nx)+'.mat'
 tempname = 'temp'+str(nx)
 
-#save(os.path.join(s.direc,s.filename),{tempname: Temp,'G_arr':G_arr,'R_arr':R_arr,'nx':nx,'ny':ny,'xx':xx,'yy':yy})
+# save(os.path.join(s.direc,s.filename),{tempname: Temp,'G_arr':G_arr,'R_arr':R_arr,'nx':nx,'ny':ny,'xx':xx,'yy':yy})
 
 
-traj_filename = 'macro_output_low.mat'
+traj_filename = 'macro_output_lowQ.mat'
 save(os.path.join(s.direc, traj_filename), {'x_traj':x_traj,'y_traj':y_traj,'T_traj':T_traj,'G_traj':G_traj,'R_traj':R_traj,'beta_traj':beta_traj, 'time_traj':time_traj, 't_start':istart*dt })
 
 
