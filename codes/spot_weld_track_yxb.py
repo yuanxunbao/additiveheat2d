@@ -113,6 +113,9 @@ def base_contour(R): # this is only for selecting initial base contours
     vp = p.vertices
     xj_arr = vp[:,0]
     yj_arr = vp[:,1]
+    
+    
+    print(vp)
         
     num_sam = len(xj_arr)
     
@@ -465,8 +468,8 @@ for ii in range(Mt):
         
         istart = ii;
         found_bottom = True
-        # xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = liquid_contour(ynew) 
-        xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = base_contour(R) 
+        xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = liquid_contour(ynew) 
+        # xj_arr, yj_arr, Tj_arr, Gj_arr, Rj_arr, betaj_arr = base_contour(R) 
         num_sam = len(xj_arr)
         num_time = Mt - istart 
         
@@ -543,8 +546,7 @@ print(Tf[0,int(nx/4)],Tf[0,int(nx/2)])
 
 
 
-
-
+'''
 fig2 = plt.figure(figsize=[12,4])
 ax2 = fig2.add_subplot(121)
 plt.imshow(Tf,cmap=plt.get_cmap('hot'))
@@ -567,7 +569,7 @@ ax5.plot(xj_arr,yj_arr)
 plt.imshow(R[1:-1,1:-1],cmap=plt.get_cmap('hot'))
 plt.colorbar();plt.title('R')
 
-
+'''
 
 
 #filename = 'Qlatdt' + str(dt)+'xgrids'+str(nx)+'.mat'
@@ -576,7 +578,7 @@ tempname = 'temp'+str(nx)
 # save(os.path.join(s.direc,s.filename),{tempname: Temp,'G_arr':G_arr,'R_arr':R_arr,'nx':nx,'ny':ny,'xx':xx,'yy':yy})
 
 
-traj_filename = 'macro_output_lowQ.mat'
+traj_filename = 'macro_output_higherQ.mat'
 save(os.path.join(s.direc, traj_filename), {'x_traj':x_traj,'y_traj':y_traj,'T_traj':T_traj,'G_traj':G_traj,'R_traj':R_traj,'beta_traj':beta_traj, 'time_traj':time_traj, 't_start':istart*dt })
 
 
