@@ -70,8 +70,8 @@ def simu_parameter(rb):
         nx = 2*nx -1
         #nx = 401
         #dx = lxd/(nx-1)
-        dt = 0.01/2
-        Mt = 100*2#100#10 #365
+        dt = 0.01/2 /8
+        Mt = 160*10 #100#10 #365
         nts = 1#650
         
         t0 = 0.00#3.2
@@ -79,7 +79,9 @@ def simu_parameter(rb):
         
         direc = '.'
         filename = 'Tsheat2d' + '_lx'+ str(lxd)+'_nx'+str(nx)+'_asp'+str(asp_ratio)+'_dt'+str('%4.2e'%dt)+'_Mt'+str(Mt)+'.mat'
-        outname = 'macro_output_low'+'_dt'+str('%4.2e'%dt)+'_dx'+str('%4.2e'%dx)+'_Tt'+str('%4.2e'%(dt*Mt))+'.csv'
+        # outname = 'macro_output_low'+'_dt'+str('%4.2e'%dt)+'_dx'+str('%4.2e'%dx)+'_Tt'+str('%4.2e'%(dt*Mt))+'.csv'
+        
+        outname = 'macro_output_highQ'+'_dt'+str('%4.2e'%dt)+'_dx'+str('%4.2e'%dx)+'_Tt'+str('%4.2e'%(dt*Mt))+'.mat'
         
         nxs = int((nx-1)/2+1)
         
@@ -87,9 +89,6 @@ def simu_parameter(rb):
         
         
 
-        
-        
-        
         
         
         

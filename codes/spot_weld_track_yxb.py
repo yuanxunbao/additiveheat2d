@@ -103,7 +103,7 @@ def gradients(y_new,y_old,h):
 
 
 
-
+'''
 def base_contour(R): # this is only for selecting initial base contours
     
     
@@ -125,7 +125,7 @@ def base_contour(R): # this is only for selecting initial base contours
     betaj_arr = np.zeros(num_sam)
     
     return np.array(xj_arr), np.array(yj_arr), np.array(Tj_arr), Gj_arr, Rj_arr, betaj_arr
-        
+'''     
 
 
 
@@ -443,6 +443,8 @@ for ii in range(Mt):
     '''
     yuanxun: this loop plot how R>0, T>Ts, T>Tl interfaces evolve 
     '''
+    
+    '''
     if (ii+1)%10 == 0:
         
         fig, axes = plt.subplots(2,2)
@@ -461,6 +463,7 @@ for ii in range(Mt):
         
         fig.suptitle('t = '+str(ii*dt))
         fig.savefig('interface'+str((ii+1)/10)+'.png')
+    '''
         
     
     if R[idx_bottom, idx_mid] > 0 and found_bottom == False and ii>1 : 
@@ -578,7 +581,7 @@ tempname = 'temp'+str(nx)
 # save(os.path.join(s.direc,s.filename),{tempname: Temp,'G_arr':G_arr,'R_arr':R_arr,'nx':nx,'ny':ny,'xx':xx,'yy':yy})
 
 
-traj_filename = 'macro_output_higherQ.mat'
+traj_filename = 'macro_output_ref.mat'
 save(os.path.join(s.direc, traj_filename), {'x_traj':x_traj,'y_traj':y_traj,'T_traj':T_traj,'G_traj':G_traj,'R_traj':R_traj,'beta_traj':beta_traj, 'time_traj':time_traj, 't_start':istart*dt })
 
 
