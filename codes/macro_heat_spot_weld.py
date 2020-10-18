@@ -11,10 +11,10 @@ Created on Mon Mar  9 10:45:21 2020
 # crank-nicolson/ center difference
 # linear solver CG
 
-
+import importlib
 import os, sys
 import numpy as np
-from macro_param_low2 import phys_parameter, simu_parameter 
+# from macro_param_low2 import phys_parameter, simu_parameter 
 from scipy import sparse as sp
 from scipy.sparse import linalg as spla
 import matplotlib.pyplot as plt
@@ -24,6 +24,16 @@ import time
 from scipy.optimize import fsolve, brentq
 
 from scipy.interpolate import interp2d as itp2d
+
+
+IM = importlib.import_module(sys.argv[1])
+
+
+p = IM.phys_parameter()
+s = IM.simu_parameter(p.rb)
+
+
+
 
             
 def sparse_cg(A, b, u0, TOL, P, maxit):
@@ -275,8 +285,7 @@ def track_sl_interface(x0,y0,gx,gy,u_interp,G_interp,R_interp):
 
 #====================parameters==========================
 
-p = phys_parameter()
-s = simu_parameter(p.rb)
+
 
 lx = s.lxd
 aratio = s.asp_ratio
