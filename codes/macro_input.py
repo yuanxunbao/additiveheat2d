@@ -33,16 +33,16 @@ def phys_parameter():
         
         # laser welding condition
         
-        Q = 230*8  #8.83        # laser input power    
+        Q = 1800  #8.83        # laser input power    
         eta = 0.09      # abosorption coefficient
         rb = 0.5e-3       #radius of heat source
-        Vs = 1e-3/2   #scanning speed
+        Vs = 0.5e-3   #scanning speed
         q0 = 2*Q*eta/(pi*rb**2)   # heat intensity        
         
         # environment background 
         
-        hc = 5*0#10       # convective heat transfer coefficient
-        epsilon = 0.03*0 #0.05  # thermal radiation coeffcient
+        hc = 5 #10       # convective heat transfer coefficient
+        epsilon = 0.03  #0.05  # thermal radiation coeffcient
         sigma = 5.67e-8   # stefan-boltzmann constant
         Te = 25+273       # environmental temperature        
         
@@ -59,13 +59,13 @@ def simu_parameter(rb):
     
         lxd = 18e-3
         asp_ratio = 0.5
-        nx = 128*4+1
+        nx = 128*8+1
         dx = lxd / (nx-1)
         # nx = 2*nx -1
         #nx = 401
         #dx = lxd/(nx-1)
         
-        dt = 1e-3*16
+        dt = 1e6*dx**2
         tend = 3 #100#10 #365
         Mt = int( tend/dt )
         dt = tend/Mt
@@ -75,7 +75,7 @@ def simu_parameter(rb):
         t0 = 0.00#3.2
         ts = 25*dt*2#0.4#Mt*dt-dt#0.7
         
-        direc = './'
+        direc = './macro_convergence/'
         filename = 'head2d_temp_nonlinear'+'_nx'+str(nx)+'_asp'+str(asp_ratio)+'_dt'+str('%4.2e'%dt)+'_Mt'+str(Mt)+'.mat'
         # outname = 'macro_output_low'+'_dt'+str('%4.2e'%dt)+'_dx'+str('%4.2e'%dx)+'_Tt'+str('%4.2e'%(dt*Mt))+'.csv'
         

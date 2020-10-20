@@ -14,7 +14,7 @@ Created on Mon Mar  9 10:45:21 2020
 import importlib
 import os, sys
 import numpy as np
-# from macro_param_low2 import phys_parameter, simu_parameter 
+from macro_input import phys_parameter, simu_parameter 
 from scipy import sparse as sp
 from scipy.sparse import linalg as spla
 import matplotlib.pyplot as plt
@@ -26,7 +26,7 @@ from scipy.optimize import fsolve, brentq
 from scipy.interpolate import interp2d as itp2d
 
 
-IM = importlib.import_module(sys.argv[1])
+IM = importlib.import_module('macro_input')
 
 
 p = IM.phys_parameter()
@@ -182,7 +182,7 @@ def get_initial_contour_T(u_interp, G_interp, R_interp, center , theta ):
         
         sj = brentq(f, y.min() ,0)
         
-        print(sj)
+        # print(sj)
         
         X[j] = x0 + sj *np.cos(theta[j])
         Y[j] = y0 + sj *np.sin(theta[j])
@@ -253,10 +253,10 @@ def reach_bottom_check(u,R):
     if liquid_set.size == 0:
         idx_bottom = 0
     else:
-        idx_bottom = liquid_set[-1]+1
+        idx_bottom = liquid_set[-1]
         
         
-    print( 'bottom index = %d, R = %.3e'%(idx_bottom, R[idx_bottom,idx_mid]) )
+    print( 'bottom index = %d, depth = %.3e, R = %.3e'%( idx_bottom, y[idx_bottom], R[idx_bottom,idx_mid]) )
 
         
     if R[idx_bottom, idx_mid] > 0 and u.max() > p.Tl : return True
@@ -341,7 +341,8 @@ Lap,Q = sparse_laplacian(nx,ny)
 
 I = sp.eye(nx*ny,format='csc')
 
-A0 = Q @ (I - CFL * Lap)
+# A0 = Q @ (I - CFL * Lap)
+A0 = Q @ ( I - CFL*Lap)
 
 
 # preconditioner
@@ -376,6 +377,7 @@ maxit=80
 iter_melt = 0
 iter_sol = 0
 t=0
+pool_depth = y.max()
 
 
 #==============================================================================
@@ -394,6 +396,7 @@ while (reach_bottom == False and iter_melt < Mt):
     A = A0 + lat*Q@A_l
     
     # obtain right hand side
+    # b = u + lat*A_l*u  
     b = u + lat*A_l*u 
     
     
@@ -426,7 +429,7 @@ while (reach_bottom == False and iter_melt < Mt):
     if reach_bottom_check(unew, R) :
         
         
-        print('reach the bottom at %d', iter_melt+1)
+        print('reach the bottom at %d'%(iter_melt+1))
         reach_bottom = True  
         
         # sample base countour
@@ -467,7 +470,6 @@ if reach_bottom == False:
     
     
 n_sol = Mt - iter_melt
-iter_sol
 t_sol_start = t    
 t = 0 # rest time
 
@@ -558,7 +560,7 @@ print('elapsed time = %.2f'%(end-start))
 
 
    
-traj_filename = "macroheat_Q%dW_Vs%.1fmmps_rb%.1fmm_%dx%d.mat_dt%.2e.mat"%(p.Q, p.Vs*1000, p.rb*1000, nx, ny, dt)
+traj_filename = "macroheat_Q%dW_Vs%.1fmmps_rb%.1fmm_%dx%d_dt%.2e.mat"%(p.Q, p.Vs*1000, p.rb*1000, nx, ny, dt)
 
 sio.savemat(os.path.join(s.direc, traj_filename), \
             {'x_traj':X_arr[:,:iter_sol-1] ,'y_traj': Y_arr[:,:iter_sol-1] ,\
@@ -569,3 +571,5 @@ sio.savemat(os.path.join(s.direc, traj_filename), \
              'h':dx, 'dt':dt,\
              'T_sl_start':T_sl_start})
     
+    
+
