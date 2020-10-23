@@ -26,11 +26,14 @@ from scipy.optimize import fsolve, brentq
 from scipy.interpolate import interp2d as itp2d
 
 
-IM = importlib.import_module('macro_input')
+# IM = importlib.import_module('macro_input')
+# p = IM.phys_parameter()
+# s = IM.simu_parameter(p.rb)
 
-
-p = IM.phys_parameter()
-s = IM.simu_parameter(p.rb)
+p = phys_parameter( float(sys.argv[1]),\
+                    float(sys.argv[2]),\
+                    float(sys.argv[3]))
+s = simu_parameter()
 
 
 
@@ -560,7 +563,9 @@ print('elapsed time = %.2f'%(end-start))
 
 
    
-traj_filename = "macroheat_Q%dW_Vs%.1fmmps_rb%.1fmm_%dx%d_dt%.2e.mat"%(p.Q, p.Vs*1000, p.rb*1000, nx, ny, dt)
+# traj_filename = "macroheat_Q%dW_Vs%.1fmmps_rb%.1fmm_%dx%d_dt%.2e.mat"%(p.Q, p.Vs*1000, p.rb*1000, nx, ny, dt)
+traj_filename = "macroheat_Q%dW_Vs%.2fmmps_rb%.2fmm.mat"%(p.Q, p.Vs*1000, p.rb*1000)
+
 
 sio.savemat(os.path.join(s.direc, traj_filename), \
             {'x_traj':X_arr[:,:iter_sol-1] ,'y_traj': Y_arr[:,:iter_sol-1] ,\
@@ -569,7 +574,8 @@ sio.savemat(os.path.join(s.direc, traj_filename), \
              'reach_top':reach_top[:,:iter_sol-1],\
              'theta':theta, 'distance2center':d2c_arr[:,:iter_sol-1],\
              'h':dx, 'dt':dt,\
-             'T_sl_start':T_sl_start})
+             'T_sl_start':T_sl_start,\
+             'Q':p.Q, 'rb':p.rb, 'Vs':p.Vs    })
     
     
 
